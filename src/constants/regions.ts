@@ -1,0 +1,104 @@
+import { RegionPreset } from '../types/geo';
+
+export const PRESET_REGIONS: RegionPreset[] = [
+  {
+    id: 'london-tma',
+    name: 'London TMA (UK)',
+    description: 'Heathrow, Gatwick, Stansted, and London Terminal Area airspace',
+    country: 'United Kingdom',
+    bounds: {
+      lamin: 50.8,
+      lomin: -1.2,
+      lamax: 52.2,
+      lomax: 0.8,
+    },
+    center: [51.5074, -0.1278],
+    zoom: 9,
+  },
+  {
+    id: 'new-york-tracon',
+    name: 'New York Metro (US)',
+    description: 'JFK, LaGuardia, Newark, and NY TRACON airspace corridor',
+    country: 'United States',
+    bounds: {
+      lamin: 40.0,
+      lomin: -74.8,
+      lamax: 41.5,
+      lomax: -73.0,
+    },
+    center: [40.7128, -73.9352],
+    zoom: 9,
+  },
+  {
+    id: 'frankfurt-fir',
+    name: 'Frankfurt TMA (DE)',
+    description: 'Frankfurt Main Airport (EDDF) and Rhine-Main dense transit sector',
+    country: 'Germany',
+    bounds: {
+      lamin: 49.5,
+      lomin: 7.8,
+      lamax: 50.8,
+      lomax: 9.6,
+    },
+    center: [50.0379, 8.5622],
+    zoom: 9,
+  },
+  {
+    id: 'switzerland-alps',
+    name: 'Switzerland Airspace (CH)',
+    description: 'Zurich, Geneva, Basel, and Swiss Alpine crossing routes',
+    country: 'Switzerland',
+    bounds: {
+      lamin: 45.818,
+      lomin: 5.956,
+      lamax: 47.808,
+      lomax: 10.492,
+    },
+    center: [46.8182, 8.2275],
+    zoom: 8,
+  },
+  {
+    id: 'tokyo-bay',
+    name: 'Tokyo Metro (JP)',
+    description: 'Haneda (RJTT), Narita (RJAA), and Tokyo Bay approach airspace',
+    country: 'Japan',
+    bounds: {
+      lamin: 35.0,
+      lomin: 139.0,
+      lamax: 36.2,
+      lomax: 140.8,
+    },
+    center: [35.5494, 139.7798],
+    zoom: 9,
+  },
+  {
+    id: 'singapore-fir',
+    name: 'Singapore Changi (SG)',
+    description: 'Changi Airport, Malacca Strait, and Singapore FIR approach corridors',
+    country: 'Singapore',
+    bounds: {
+      lamin: 1.0,
+      lomin: 103.4,
+      lamax: 1.8,
+      lomax: 104.4,
+    },
+    center: [1.3644, 103.9915],
+    zoom: 10,
+  },
+  {
+    id: 'custom',
+    name: 'Custom Region / Bounds',
+    description: 'User-defined geographic bounding box coordinates or map viewport',
+    country: 'Global',
+    bounds: {
+      lamin: 45.8,
+      lomin: 5.9,
+      lamax: 47.8,
+      lomax: 10.5,
+    },
+    center: [46.8, 8.2],
+    zoom: 8,
+  },
+];
+
+export const DEFAULT_REGION = PRESET_REGIONS[0]; // London TMA

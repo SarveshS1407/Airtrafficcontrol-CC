@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-atc-950 text-slate-100 antialiased overflow-hidden select-none;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+}
+
+/* Custom scrollbars for ATC telemetry logs */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0b1324;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1d2f54;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #06b6d4;
+}
+
+/* Leaflet Dark Aviation Theme Overrides */
+.leaflet-container {
+  background-color: #060b13 !important;
+  font-family: inherit;
+}
+
+.leaflet-bar {
+  border: 1px solid #1d2f54 !important;
+  border-radius: 6px !important;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+}
+
+.leaflet-bar a {
+  background-color: rgba(11, 19, 36, 0.9) !important;
+  color: #94a3b8 !important;
+  border-bottom: 1px solid #1d2f54 !important;
+  backdrop-filter: blur(8px);
+}
+
+.leaflet-bar a:hover {
+  background-color: #13213d !important;
+  color: #06b6d4 !important;
+}
+
+.leaflet-control-attribution {
+  background-color: rgba(6, 11, 19, 0.85) !important;
+  color: #64748b !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-size: 10px !important;
+  backdrop-filter: blur(4px);
+  border-top-left-radius: 4px;
+}
+
+.leaflet-control-attribution a {
+  color: #06b6d4 !important;
+  text-decoration: none;
+}
+
+.leaflet-control-attribution a:hover {
+  text-decoration: underline;
+}
+
+/* Custom Aircraft DivIcon Styling */
+.atc-aircraft-icon {
+  background: transparent !important;
+  border: none !important;
+}

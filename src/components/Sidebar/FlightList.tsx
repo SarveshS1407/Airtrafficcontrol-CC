@@ -14,18 +14,22 @@ interface FlightListProps {
   aircraftList: Aircraft[];
   selectedIcao24: string | null;
   sortConfig: AircraftSortConfig;
+  isLive?: boolean;
   onSelectAircraft: (icao24: string) => void;
   onSortChange: (field: SortField) => void;
   onResetFilters: () => void;
+  onSwitchToDemo?: () => void;
 }
 
 export const FlightList: React.FC<FlightListProps> = ({
   aircraftList,
   selectedIcao24,
   sortConfig,
+  isLive,
   onSelectAircraft,
   onSortChange,
   onResetFilters,
+  onSwitchToDemo,
 }) => {
   return (
     <div className="flex-1 flex flex-col min-h-0 bg-atc-950">
@@ -69,12 +73,22 @@ export const FlightList: React.FC<FlightListProps> = ({
                 No aircraft match the current sector bounds and filters.
               </p>
             </div>
-            <button
-              onClick={onResetFilters}
-              className="px-3 py-1.5 bg-cyan-900/40 border border-cyan-500/40 text-cyan-300 rounded font-mono text-xs hover:bg-cyan-800/60 transition"
-            >
-              Reset Filters
-            </button>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-2 pt-1">
+              <button
+                onClick={onResetFilters}
+                className="w-full sm:w-auto px-3 py-1.5 bg-cyan-900/40 border border-cyan-500/40 text-cyan-300 rounded font-mono text-xs hover:bg-cyan-800/60 transition"
+              >
+                Reset Filters
+              </button>
+              {isLive && onSwitchToDemo && (
+                <button
+                  onClick={onSwitchToDemo}
+                  className="w-full sm:w-auto px-3 py-1.5 bg-amber-950/60 border border-amber-600/40 text-amber-300 rounded font-mono text-xs hover:bg-amber-900/60 transition"
+                >
+                  Explore with Demo Fixtures
+                </button>
+              )}
+            </div>
           </div>
         ) : (
           aircraftList.map((ac) => {

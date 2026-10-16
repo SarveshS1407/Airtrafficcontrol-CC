@@ -147,9 +147,11 @@ export const App: React.FC = () => {
             aircraftList={filteredAircraft}
             selectedIcao24={selectedIcao24}
             sortConfig={sortConfig}
+            isLive={apiStatus.source === 'LIVE'}
             onSelectAircraft={selectAircraft}
             onSortChange={setSort}
             onResetFilters={resetFilters}
+            onSwitchToDemo={() => setDataSource('DEMO')}
           />
         </aside>
 

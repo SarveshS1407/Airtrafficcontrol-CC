@@ -3,11 +3,24 @@
  * 
  * Features:
  * - Upstream CORS handling & WGS84 bounding box validation (< 35 deg² safe area)
+ * - Strict IPv4 DNS resolution (family: 4) to avoid cloud IPv6 egress drops
+ * - Native node:https engine with Abort timeout
  * - OAuth2 Client Credentials authentication flow with in-memory token caching
  * - Cloud-hyperscaler (AWS/Vercel) IP rate limit detection & diagnostic guidance
- * - Configured timeout with graceful HTTP 504 / 429 classification
- * - Edge CDN caching (s-maxage=5) to protect OpenSky rate limits
+ * - Edge CDN caching (s-maxage=5) to preserve OpenSky rate limits
  */
+
+import https from 'node:https';
+import dns from 'node:dns';
+
+// Force IPv4 lookup precedence in Node runtime to avoid Lambda IPv6 connection blackholes
+if (dns && typeof dns.setDefaultResultOrder === 'function') {
+  try {
+    dns.setDefaultResultOrder('ipv4first');
+  } catch {
+    // Ignore if not supported in runtime
+  }
+}
 
 interface QueryParams {
   lamin?: string;
@@ -16,6 +29,12 @@ interface QueryParams {
   lomax?: string;
   time?: string;
   icao24?: string;
+}
+
+interface UpstreamResult {
+  status: number;
+  headers: Record<string, string>;
+  data: any;
 }
 
 // In-memory token cache across warm serverless invocations
@@ -36,34 +55,54 @@ async function getOpenSkyAccessToken(): Promise<string | null> {
   }
 
   try {
-    const tokenEndpoint =
-      'https://auth.opensky-network.org/auth/realms/opensky-network/protocol/openid-connect/token';
-    const bodyParams = new URLSearchParams({
+    const postData = new URLSearchParams({
       grant_type: 'client_credentials',
       client_id: clientId,
       client_secret: clientSecret,
+    }).toString();
+
+    const tokenRes = await new Promise<any>((resolve, reject) => {
+      const req = https.request(
+        {
+          hostname: 'auth.opensky-network.org',
+          port: 443,
+          path: '/auth/realms/opensky-network/protocol/openid-connect/token',
+          method: 'POST',
+          family: 4,
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Length': Buffer.byteLength(postData),
+            'User-Agent': 'Mozilla/5.0 (compatible; AirTrafficControl/1.0)',
+            Connection: 'close',
+          },
+          timeout: 6000,
+        },
+        (res) => {
+          let body = '';
+          res.on('data', (c) => (body += c));
+          res.on('end', () => {
+            try {
+              resolve({ status: res.statusCode, data: JSON.parse(body) });
+            } catch (e) {
+              resolve({ status: res.statusCode, data: body });
+            }
+          });
+        }
+      );
+
+      req.on('timeout', () => {
+        req.destroy();
+        reject(new Error('OAuth token request timed out after 6s'));
+      });
+      req.on('error', reject);
+      req.write(postData);
+      req.end();
     });
 
-    const tokenRes = await fetch(tokenEndpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'User-Agent': 'AirTrafficControl-Vercel/2.0',
-      },
-      body: bodyParams.toString(),
-    });
-
-    if (!tokenRes.ok) {
-      const errText = await tokenRes.text();
-      console.warn(`[OpenSky OAuth2] Token request failed (${tokenRes.status}):`, errText);
-      return null;
-    }
-
-    const tokenData = await tokenRes.json();
-    if (tokenData.access_token) {
-      const expiresInSec = typeof tokenData.expires_in === 'number' ? tokenData.expires_in : 1800;
+    if (tokenRes.status === 200 && tokenRes.data?.access_token) {
+      const expiresInSec = typeof tokenRes.data.expires_in === 'number' ? tokenRes.data.expires_in : 1800;
       cachedOAuthToken = {
-        token: tokenData.access_token,
+        token: tokenRes.data.access_token,
         expiresAt: now + expiresInSec * 1000,
       };
       return cachedOAuthToken.token;
@@ -73,6 +112,63 @@ async function getOpenSkyAccessToken(): Promise<string | null> {
   }
 
   return null;
+}
+
+function fetchOpenSkyViaHttps(url: string, headers: Record<string, string>, timeoutMs: number): Promise<UpstreamResult> {
+  return new Promise((resolve, reject) => {
+    const parsed = new URL(url);
+    const req = https.request(
+      {
+        hostname: parsed.hostname,
+        port: 443,
+        path: parsed.pathname + parsed.search,
+        method: 'GET',
+        family: 4, // Strict IPv4 to avoid AWS Lambda IPv6 egress dead-ends
+        headers: {
+          ...headers,
+          Host: parsed.hostname,
+          Connection: 'close',
+        },
+        timeout: timeoutMs,
+      },
+      (res) => {
+        let rawBody = '';
+        res.on('data', (chunk) => {
+          rawBody += chunk;
+        });
+        res.on('end', () => {
+          let parsedData = null;
+          try {
+            parsedData = JSON.parse(rawBody);
+          } catch {
+            parsedData = rawBody;
+          }
+          const resHeaders: Record<string, string> = {};
+          for (const [k, v] of Object.entries(res.headers)) {
+            if (typeof v === 'string') resHeaders[k.toLowerCase()] = v;
+          }
+          resolve({
+            status: res.statusCode || 500,
+            headers: resHeaders,
+            data: parsedData,
+          });
+        });
+      }
+    );
+
+    req.on('timeout', () => {
+      req.destroy();
+      const err: any = new Error(`Request timed out after ${timeoutMs}ms`);
+      err.name = 'AbortError';
+      reject(err);
+    });
+
+    req.on('error', (err) => {
+      reject(err);
+    });
+
+    req.end();
+  });
 }
 
 export default async function handler(req: any, res: any) {
@@ -145,10 +241,10 @@ export default async function handler(req: any, res: any) {
 
     const upstreamUrl = `https://opensky-network.org/api/states/all?${params.toString()}`;
 
-    // Prepare headers
+    // Standard headers
     const headers: Record<string, string> = {
       Accept: 'application/json',
-      'User-Agent': 'AirTrafficControl-Vercel/2.0',
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
     };
 
     // Authenticate via OAuth2 Bearer token if credentials available
@@ -157,38 +253,30 @@ export default async function handler(req: any, res: any) {
       headers['Authorization'] = `Bearer ${bearerToken}`;
     }
 
-    // Upstream timeout: 11 seconds (within Vercel 15s limit)
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 11000);
-
-    let upstreamResponse: Response;
+    let upstreamResult: UpstreamResult;
     try {
-      upstreamResponse = await fetch(upstreamUrl, {
-        method: 'GET',
-        headers,
-        signal: controller.signal,
-      });
+      // 10 second timeout within Vercel's 15s limit
+      upstreamResult = await fetchOpenSkyViaHttps(upstreamUrl, headers, 10000);
     } catch (fetchErr: any) {
-      clearTimeout(timeoutId);
       if (fetchErr.name === 'AbortError') {
         return res.status(504).json({
           error:
-            'Upstream OpenSky API request timed out after 11s. Note: OpenSky Network throttles or drops unauthenticated requests from public cloud datacenter IPs (AWS/Vercel). Authenticate via OPENSKY_CLIENT_ID & OPENSKY_CLIENT_SECRET, or use Demo Simulation mode.',
+            'Upstream OpenSky API request timed out after 10s. Note: OpenSky Network throttles or drops unauthenticated requests from public cloud datacenter IPs (AWS/Vercel). Authenticate via OPENSKY_CLIENT_ID & OPENSKY_CLIENT_SECRET, or use Demo Simulation mode.',
           code: 'UPSTREAM_TIMEOUT',
           isCloudBlocked: true,
         });
       }
       return res.status(502).json({
-        error: `Failed to connect to OpenSky Network: ${fetchErr.message}`,
+        error: `Failed to connect to OpenSky Network: ${fetchErr.message || 'connection failed'}`,
         code: 'NETWORK_FAILURE',
+        detail: fetchErr.code || fetchErr.name || 'UNKNOWN',
+        isCloudBlocked: true,
       });
-    } finally {
-      clearTimeout(timeoutId);
     }
 
     // Handle Rate Limiting (HTTP 429)
-    if (upstreamResponse.status === 429) {
-      const retryAfter = upstreamResponse.headers.get('retry-after') || '60';
+    if (upstreamResult.status === 429) {
+      const retryAfter = upstreamResult.headers['retry-after'] || '60';
       res.setHeader('Retry-After', retryAfter);
       return res.status(429).json({
         error: `OpenSky Network rate limit reached. Retry after ${retryAfter} seconds.`,
@@ -197,33 +285,29 @@ export default async function handler(req: any, res: any) {
     }
 
     // Handle HTTP 403 / Policy restriction
-    if (upstreamResponse.status === 403) {
-      const errorText = await upstreamResponse.text();
+    if (upstreamResult.status === 403) {
       return res.status(403).json({
-        error: `OpenSky API policy restriction: ${errorText || 'Access Forbidden'}. Note: OpenSky blocks unauthenticated requests from cloud hyperscalers. Provide OAuth2 credentials or switch to Demo Mode.`,
+        error: `OpenSky API policy restriction: ${typeof upstreamResult.data === 'string' ? upstreamResult.data : 'Access Forbidden'}. Note: OpenSky restricts unauthenticated queries from cloud hyperscalers. Provide OAuth2 credentials or switch to Demo Mode.`,
         code: 'ACCESS_FORBIDDEN',
         isCloudBlocked: true,
       });
     }
 
-    if (!upstreamResponse.ok) {
-      const errorText = await upstreamResponse.text();
-      return res.status(upstreamResponse.status).json({
-        error: `OpenSky API error (HTTP ${upstreamResponse.status}): ${errorText || upstreamResponse.statusText}`,
+    if (upstreamResult.status < 200 || upstreamResult.status >= 300) {
+      return res.status(upstreamResult.status).json({
+        error: `OpenSky API error (HTTP ${upstreamResult.status}): ${typeof upstreamResult.data === 'string' ? upstreamResult.data : 'Request failed'}`,
       });
     }
 
-    const data = await upstreamResponse.json();
-
     // Propagate rate-limit remaining header if provided by OpenSky
-    const remaining = upstreamResponse.headers.get('x-rate-limit-remaining');
+    const remaining = upstreamResult.headers['x-rate-limit-remaining'];
     if (remaining) {
       res.setHeader('X-Rate-Limit-Remaining', remaining);
     }
 
     // Cache responses at Vercel's edge CDN for 5s to preserve rate limits across concurrent viewers
     res.setHeader('Cache-Control', 'public, max-age=5, s-maxage=5, stale-while-revalidate=10');
-    return res.status(200).json(data);
+    return res.status(200).json(upstreamResult.data);
   } catch (err: any) {
     return res.status(500).json({
       error: `Internal serverless proxy error: ${err.message || 'Unknown error'}`,

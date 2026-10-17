@@ -30,28 +30,28 @@ export const ATC_CONFIG = {
 
   // Map settings and tile providers
   TILE_PROVIDERS: {
-    cartoDark: {
-      name: 'CartoDB Dark Matter (Aviation Night)',
-      url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    osmDark: {
+      name: 'OpenStreetMap (Tactical Radar Night)',
+      url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
       attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>',
+        '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
       maxZoom: 19,
-      subdomains: 'abcd',
+      className: 'atc-dark-tiles',
     },
     osmStandard: {
-      name: 'OpenStreetMap Standard',
+      name: 'OpenStreetMap (Daylight Chart)',
       url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
       attribution:
         '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
       maxZoom: 19,
     },
-    cartoPositron: {
-      name: 'CartoDB Positron (High Contrast)',
-      url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+    osmHot: {
+      name: 'OpenStreetMap (Humanitarian Transit)',
+      url: 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
       attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>',
+        '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors, style by <a href="https://www.hotosm.org/" target="_blank" rel="noopener">HOT</a>',
       maxZoom: 19,
-      subdomains: 'abcd',
+      subdomains: 'abc',
     },
   },
 

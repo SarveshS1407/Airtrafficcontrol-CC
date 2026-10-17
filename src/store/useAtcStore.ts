@@ -40,7 +40,7 @@ export interface AtcState {
   isPollingPaused: boolean;
 
   // Map Display Preferences
-  tileProviderKey: 'cartoDark' | 'osmStandard' | 'cartoPositron';
+  tileProviderKey: 'osmDark' | 'osmStandard' | 'osmHot';
   showTrail: boolean;
   showLabels: boolean;
   showBoundsRectangle: boolean;
@@ -63,7 +63,7 @@ export interface AtcState {
   setSort: (field: SortField) => void;
   setPollingInterval: (ms: number) => void;
   togglePollingPause: () => void;
-  setTileProvider: (key: 'cartoDark' | 'osmStandard' | 'cartoPositron') => void;
+  setTileProvider: (key: 'osmDark' | 'osmStandard' | 'osmHot') => void;
   toggleTrail: () => void;
   toggleLabels: () => void;
   toggleBoundsRectangle: () => void;
@@ -120,7 +120,7 @@ export const useAtcStore = create<AtcState>((set, get) => ({
   pollingIntervalMs: ATC_CONFIG.DEFAULT_POLLING_INTERVAL_MS,
   isPollingPaused: false,
 
-  tileProviderKey: 'cartoDark',
+  tileProviderKey: 'osmDark',
   showTrail: true,
   showLabels: true,
   showBoundsRectangle: true,

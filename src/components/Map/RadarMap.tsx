@@ -14,13 +14,13 @@ interface RadarMapProps {
   currentRegion: RegionPreset;
   activeBounds: BoundingBox;
   viewportSyncEnabled: boolean;
-  tileProviderKey: 'cartoDark' | 'osmStandard' | 'cartoPositron';
+  tileProviderKey: 'osmDark' | 'osmStandard' | 'osmHot';
   showTrail: boolean;
   showBoundsRectangle: boolean;
   mapCenterTarget?: [number, number] | null;
   onSelectAircraft: (icao24: string | null) => void;
   onViewportChange: (bounds: BoundingBox) => void;
-  onTileProviderChange: (key: 'cartoDark' | 'osmStandard' | 'cartoPositron') => void;
+  onTileProviderChange: (key: 'osmDark' | 'osmStandard' | 'osmHot') => void;
   onToggleTrail: () => void;
   onToggleBoundsRectangle: () => void;
   onClearCenterTarget?: () => void;
@@ -150,7 +150,7 @@ export const RadarMap: React.FC<RadarMapProps> = ({
     const map = mapInstanceRef.current;
     if (!map) return;
 
-    const providerConfig = ATC_CONFIG.TILE_PROVIDERS[tileProviderKey];
+    const providerConfig = ATC_CONFIG.TILE_PROVIDERS[tileProviderKey] || ATC_CONFIG.TILE_PROVIDERS.osmDark;
     if (tileLayerRef.current) {
       tileLayerRef.current.remove();
     }
@@ -158,7 +158,8 @@ export const RadarMap: React.FC<RadarMapProps> = ({
     const tileLayer = L.tileLayer(providerConfig.url, {
       attribution: providerConfig.attribution,
       maxZoom: providerConfig.maxZoom,
-      subdomains: 'subdomains' in providerConfig ? providerConfig.subdomains : 'abc',
+      subdomains: 'subdomains' in providerConfig ? (providerConfig as any).subdomains : 'abc',
+      className: 'className' in providerConfig ? (providerConfig as any).className : '',
     }).addTo(map);
 
     tileLayerRef.current = tileLayer;

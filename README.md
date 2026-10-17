@@ -13,11 +13,11 @@ Designed specifically as an air-traffic operations terminal rather than a generi
 │                        ATC OPERATIONS INTERFACE                        │
 ├────────────────────┬───────────────────────────────────┬───────────────┤
 │    LEFT SIDEBAR    │            CENTER MAP             │  RIGHT PANEL  │
-│  - Metrics Banner  │  - Leaflet Map (CartoDB / OSM)    │  - Flight HUD │
-│  - Sector Selector │  - Dynamic SVG Aircraft Markers   │  - Telemetry  │
-│  - Telemetry Filter│  - Range Rings (10, 25, 50 NM)    │  - Profile    │
-│  - Flight List     │  - Selected Breadcrumbs Trail     │  - Waypoints  │
-│  - Emergency Filter│  - Sector Bounds Rectangle        │  - GeoJSON    │
+│  - Targets (List)  │  - OpenStreetMap (Tactical Night) │  - Flight HUD │
+│  - Filters (HUD)   │  - Dynamic SVG Aircraft Markers   │  - Telemetry  │
+│  - Sector Selector │  - Tactical Range Rings (NM)      │  - Profile    │
+│  - Metrics Banner  │  - Selected Breadcrumbs Trail     │  - Waypoints  │
+│  - Emergency Squawk│  - Sector Bounds Rectangle        │  - GeoJSON    │
 └────────────────────┴───────────────────────────────────┴───────────────┘
                                    │
                        Zustand State Store (O(1))
@@ -26,9 +26,10 @@ Designed specifically as an air-traffic operations terminal rather than a generi
 Live OpenSky Client                                 Demo Vector Simulator
 - /api/opensky (Vercel Serverless / Vite Proxy)     - Recorded London TMA fixture
 - WGS84 Bounding Box Validation                     - Real-time kinematic motion
-- HTTP 429 Rate-Limit Backoff                       - Zero-network offline testing
-- Stale Data Snapshot Cache                         - Explicit DEMO Labeling
-- Edge CDN Caching (s-maxage=5)                     - Full offline compliance
+- OAuth2 Client Credentials Support                 - Zero-network offline testing
+- HTTP 429 Rate-Limit Backoff                       - Explicit DEMO Labeling
+- Stale Data Snapshot Cache                         - Full offline compliance
+- Edge CDN Caching (s-maxage=5)
 ```
 
 ### Core Architecture Principles:
@@ -36,7 +37,8 @@ Live OpenSky Client                                 Demo Vector Simulator
 - **Identity Preservation**: Tracks aircraft persistently across polling cycles. Retains `firstSeenAt` timestamps, increments observation counts, and accumulates movement breadcrumbs.
 - **Controlled Polling Lifecycle**: Configurable intervals (default 10s compliant with OpenSky anonymous policy). Active `AbortController` cancellation prevents duplicate/overlapping network cycles.
 - **Defensive API Resilience**: Robust parser that handles `null`, `undefined`, or out-of-range fields without crashing. Gracefully handles HTTP 429 rate limits with exponential backoff and keeps previous snapshots marked with a prominent **STALE SNAPSHOT** badge.
-- **Serverless Production Proxy**: Deploys on Vercel with an edge-ready serverless function at `/api/opensky` (`api/opensky.ts`). Injects server-side credentials without exposing secrets to client bundles, enforces geographic bounding box constraints (< 35 deg²), and caches responses at the CDN edge (`s-maxage=5, stale-while-revalidate=10`) to protect upstream OpenSky rate limits.
+- **Serverless Production Proxy with OAuth2**: Deploys on Vercel with an edge-ready serverless function at `/api/opensky` (`api/opensky.ts`). Supports OpenSky's modern OAuth2 Client Credentials flow, enforces geographic bounding box constraints (< 35 deg²), and caches responses at the CDN edge (`s-maxage=5, stale-while-revalidate=10`) to protect upstream OpenSky rate limits.
+- **First-Class Mobile Experience**: Features a dedicated mobile navigation bar (Radar, Targets, Filters, Telemetry) and touch-friendly slide-up bottom sheets that adapt seamlessly across phone and tablet screens (320px–1024px).
 
 ---
 
@@ -47,10 +49,11 @@ Live OpenSky Client                                 Demo Vector Simulator
 | **Framework** | React 18 + Vite | Blazing fast HMR, optimized production tree-shaking |
 | **Language** | TypeScript (Strict Mode) | Full type safety across state vectors, filters, and telemetry models |
 | **Mapping Engine** | Leaflet 1.9.4 | Native geospatial projection, smooth SVG marker rotation, minimal overhead |
+| **Tile Provider** | OpenStreetMap (Standard & Tactical) | 100% free, compliant, zero-watermark geospatial basemap |
 | **State Store** | Zustand 4.5.5 | Lightweight reactive store outside React lifecycle, zero selector boilerplate |
 | **Styling** | Tailwind CSS 3.4 | Custom tactical navy theme (`#060b13`, `#0b1324`, `#06b6d4`, `#10b981`) |
 | **Icons** | Lucide React | High-clarity aviation symbols (compass, radio, crosshair, layers) |
-| **Backend / Proxy** | Vercel Serverless (`api/opensky.ts`) | Server-side CORS resolution, credential protection, and edge caching |
+| **Backend / Proxy** | Vercel Serverless (`api/opensky.ts`) | Server-side CORS resolution, OAuth2 token management, and edge caching |
 | **Test Suite** | Vitest + Testing Library | Fast unit and component test runner with jsdom |
 
 ---
@@ -68,7 +71,7 @@ Live OpenSky Client                                 Demo Vector Simulator
   - **Indigo Violet**: High cruising (> 25,000 ft)
   - **Amber**: On-ground (taxiway / parking gate)
   - **Slate Grey**: Stale radar contact
-- **Tactical Range Rings**: Concentric tactical nautical-mile rings (`10 NM`, `25 NM`, `50 NM`) centered on the active sector.
+- **Tactical Range Rings**: Concentric nautical-mile rings (`10 NM`, `25 NM`, `50 NM`) centered on the active sector.
 - **Interactive Map Hover Tooltips**: Instant hover readout showing Callsign, Flight Level, Speed, and Heading without deselecting active targets.
 - **Complete Telemetry Inspection**: Callsign, ICAO24 hex, origin country, barometric altitude (ft/m), Flight Level (`FLxxx`), geometric altitude, ground speed (kts/kmh), Mach estimate, true track with compass dial, vertical rate (+/- fpm), squawk code, SPI flag, position source, and last reported timestamps.
 
@@ -94,56 +97,58 @@ Live OpenSky Client                                 Demo Vector Simulator
 - Instant filtered count indicator and one-click filter reset.
 
 ### 📈 Movement History & Breadcrumbs
-- Locally records timestamped observations `(lat, lon, altitude, velocity, heading, verticalRate, timestamp)` in a circular buffer up to 100 waypoints per aircraft.
+- Locally records timestamped observations in a circular buffer up to 100 waypoints per aircraft.
 - Draws an interactive dashed flight path trail on the map for the selected aircraft.
 - Displays an SVG **Altitude & Velocity Profile Chart** illustrating flight trajectory over time.
-- **One-Click GeoJSON Export**: Export recorded flight breadcrumbs as a standard RFC 7946 GeoJSON LineString file for external GIS analysis (QGIS, ArcGIS, Google Earth).
+- **One-Click GeoJSON Export**: Export recorded flight breadcrumbs as an RFC 7946 GeoJSON LineString file.
 - **Mandatory Aviation Disclaimer**:
   > *"Locally collected observations reflect the current monitoring session only and do not represent a complete historical flight record from origin to destination."*
 
-### 🛡️ API Reliability & Serverless Proxy
-- **Vercel Serverless Function** (`api/opensky.ts`): Resolves browser CORS restrictions, validates WGS84 bounds, injects credentials securely server-side, and enforces an 8-second timeout.
-- **Rate Limit Compliance**: Adheres to OpenSky's anonymous policy (1 request / 10s). Detects HTTP 429 responses, parses `Retry-After`, and activates an automatic backoff countdown timer.
-- **Stale Data Preservation**: If an API refresh fails (network error, rate limit, or server downtime), the dashboard preserves the last verified snapshot, displays a prominent amber **STALE SNAPSHOT** banner, and provides manual **Retry** and **Demo Mode** fallback buttons.
-- **Demo Fixtures**: High-fidelity recorded flight vectors with realistic kinematics allow complete offline evaluation and demonstration without relying on active network access. Clearly labeled as `DEMO SIMULATION`.
+### 📱 First-Class Mobile Experience
+- Dedicated tactical bottom navigation bar:
+  - 🗺️ **Radar**: Full-screen interactive map.
+  - ✈️ **Targets**: Slide-up bottom sheet with searchable target list and metrics.
+  - 🎛️ **Filters**: Slide-up bottom sheet for telemetry sliders and geographic sectors.
+  - 📡 **Telemetry**: Comprehensive flight inspector with altitude, speed, Mach, heading dial, and trail export.
+- Optimized for touch targets (≥ 44px) across 320px, 375px, 390px, 430px, 768px, and 1024px.
 
 ---
 
 ## 4. Map Tile Providers & Attribution
 
-Per geospatial provider policies, proper attribution is prominently integrated into the Leaflet control layer:
+All basemaps utilize legitimate, official **OpenStreetMap** tile endpoints without watermarks or third-party API key requirements:
 
-1. **CartoDB Dark Matter (Default)**:
-   - Tile URL: `https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png`
-   - Attribution: `© OpenStreetMap contributors © CARTO`
-2. **OpenStreetMap Standard**:
+1. **OpenStreetMap Tactical Radar Night (Default)**:
    - Tile URL: `https://tile.openstreetmap.org/{z}/{x}/{y}.png`
+   - High-contrast tactical radar styling via CSS `.atc-dark-tiles`.
    - Attribution: `© OpenStreetMap contributors`
-3. **CartoDB Positron**:
-   - Tile URL: `https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png`
-   - Attribution: `© OpenStreetMap contributors © CARTO`
+2. **OpenStreetMap Daylight Chart**:
+   - Tile URL: `https://tile.openstreetmap.org/{z}/{x}/{y}.png`
+   - Natural daylight cartographic chart.
+   - Attribution: `© OpenStreetMap contributors`
+3. **OpenStreetMap Humanitarian**:
+   - Tile URL: `https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png`
+   - High-contrast transit styling.
+   - Attribution: `© OpenStreetMap contributors, style by HOT`
 
 ---
 
-## 5. Environment Configuration
+## 5. OpenSky Network Authentication (OAuth2)
 
-To configure optional authenticated access to OpenSky Network (5s refresh rate and higher daily limits):
+OpenSky Network exclusively uses **OAuth2 Client Credentials** for authenticated REST requests. Legacy Basic Authentication (username/password) has been deprecated.
 
-1. Copy the template:
-   ```bash
-   cp .env.example .env
-   ```
-2. Set your credentials:
+### Cloud Deployment Notice
+OpenSky Network restricts unauthenticated queries originating from public cloud datacenter IP addresses (AWS, Vercel, Google Cloud) due to anti-scraping policies.
+
+To enable live data on cloud deployments:
+1. Create an API client in your [OpenSky Account](https://opensky-network.org/) under **Account > API Clients**.
+2. Configure the following environment variables (locally in `.env` or in your Vercel Dashboard):
    ```env
-   # Basic Auth (Classic)
-   OPENSKY_USERNAME=your_username
-   OPENSKY_PASSWORD=your_password
-
-   # Or OAuth2 Client Credentials
-   OPENSKY_CLIENT_ID=your_client_id
-   OPENSKY_CLIENT_SECRET=your_client_secret
+   OPENSKY_CLIENT_ID=your_client_id_here
+   OPENSKY_CLIENT_SECRET=your_client_secret_here
    ```
-> **Security Notice**: Credentials are injected solely server-side via the Vite proxy configuration (`vite.config.ts`) and Vercel serverless function (`api/opensky.ts`). They are **never** exposed in frontend client bundles.
+3. The serverless proxy (`api/opensky.ts`) will automatically exchange these credentials for a Bearer token at OpenSky's token endpoint (`https://auth.opensky-network.org/auth/realms/opensky-network/protocol/openid-connect/token`), cache the token in-memory, and attach it to upstream requests.
+4. When running locally via `npm run dev` on a non-cloud residential/developer network, anonymous access succeeds directly without credentials.
 
 ---
 
@@ -189,16 +194,16 @@ The application is pre-configured for one-click deployment to **Vercel**:
 1. **Deploy via GitHub**:
    - Push this repository to GitHub (`SarveshS1407/Airtrafficcontrol-CC`).
    - Import the repository in the [Vercel Dashboard](https://vercel.com/new).
-   - Vercel automatically detects Vite with:
+   - Vercel automatically detects Vite:
      - **Build Command**: `npm run build`
      - **Output Directory**: `dist`
      - **Framework Preset**: `Vite`
-2. **Optional Environment Variables**:
-   - In Vercel Project Settings > Environment Variables, add:
-     - `OPENSKY_USERNAME`: (Optional OpenSky account username)
-     - `OPENSKY_PASSWORD`: (Optional OpenSky account password)
+2. **Environment Variables**:
+   - In Vercel Project Settings > Environment Variables:
+     - `OPENSKY_CLIENT_ID`: (Your OpenSky OAuth2 client ID)
+     - `OPENSKY_CLIENT_SECRET`: (Your OpenSky OAuth2 client secret)
 3. **Vercel Serverless Architecture**:
-   - `vercel.json` routes `/api/opensky` and `/api/opensky/states/all` directly to `api/opensky.ts`.
+   - `vercel.json` routes `/api/opensky` and `/api/opensky/states/all` directly to `api/opensky.ts` with `maxDuration: 15`.
    - Security headers (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `X-XSS-Protection: 1; mode=block`, and `Referrer-Policy: strict-origin-when-cross-origin`) are applied automatically to all responses.
 
 ---
@@ -257,8 +262,9 @@ The application is pre-configured for one-click deployment to **Vercel**:
 
 ---
 
-## 10. Known Aviation Limitations
+## 10. Operational Runbook & Known Limitations
 
-- **OpenSky Anonymous Rate Limits**: Unauthenticated OpenSky requests are throttled to 1 request every 10 seconds. Exceeding this rate will trigger an HTTP 429 response. The application automatically detects this and enforces backoff, but users requiring 5s resolution should supply OpenSky account credentials in `.env` or Vercel environment variables.
-- **Local Movement History Scope**: In accordance with the project objective, movement history is recorded in-memory for the duration of the browser session. It accumulates breadcrumbs while the dashboard is running and does not constitute a full flight route from origin airport to destination.
-- **Transponder Coverage**: Aircraft without active ADS-B transponder position broadcast (e.g. military, gliders, or terrain masking) will appear with null coordinates and are excluded from the map view by default (`onlyWithPosition: true`).
+- **OpenSky Cloud IP Restrictions**: Unauthenticated OpenSky requests from public cloud datacenters (Vercel, AWS, GCP) are blocked or queued by OpenSky anti-abuse firewalls. The application automatically detects this and provides an instant one-click **"Explore with Demo Fixtures"** option. For live cloud data, configure `OPENSKY_CLIENT_ID` and `OPENSKY_CLIENT_SECRET`.
+- **Local Development**: When running locally (`npm run dev`), queries to `/api/opensky` originate from your local IP address and connect directly to live OpenSky radar without cloud IP restrictions.
+- **Local Movement History Scope**: Movement history is recorded in-memory for the duration of the browser session and does not constitute a full flight route from origin airport to destination.
+- **Transponder Coverage**: Aircraft without active ADS-B transponder position broadcast appear with null coordinates and are excluded from the map view by default (`onlyWithPosition: true`).

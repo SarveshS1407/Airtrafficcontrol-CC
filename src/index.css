@@ -93,3 +93,8 @@
   background: transparent !important;
   border: none !important;
 }
+
+/* Tactical Dark mode filter for standard OpenStreetMap tiles */
+.atc-dark-tiles {
+  filter: brightness(0.7) invert(1) contrast(2.2) hue-rotate(190deg) saturate(0.35);
+}

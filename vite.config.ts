@@ -11,14 +11,10 @@ export default defineConfig(({ mode }) => {
       changeOrigin: true,
       rewrite: (path: string) => path.replace(/^\/api\/opensky/, ''),
       headers: {
-        'User-Agent': 'AirTrafficControl-Frontend/1.0',
-        ...(env.OPENSKY_USERNAME && env.OPENSKY_PASSWORD
+        'User-Agent': 'AirTrafficControl-Frontend/2.0',
+        ...(env.OPENSKY_BEARER_TOKEN
           ? {
-              Authorization:
-                'Basic ' +
-                Buffer.from(
-                  `${env.OPENSKY_USERNAME}:${env.OPENSKY_PASSWORD}`
-                ).toString('base64'),
+              Authorization: `Bearer ${env.OPENSKY_BEARER_TOKEN}`,
             }
           : {}),
       },

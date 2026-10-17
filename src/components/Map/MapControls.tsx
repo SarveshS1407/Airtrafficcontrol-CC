@@ -10,12 +10,12 @@ import {
 import { ATC_CONFIG } from '../../constants/config';
 
 interface MapControlsProps {
-  tileProviderKey: 'cartoDark' | 'osmStandard' | 'cartoPositron';
+  tileProviderKey: 'osmDark' | 'osmStandard' | 'osmHot';
   showTrail: boolean;
   showBoundsRectangle: boolean;
   hasSelectedAircraft: boolean;
   aircraftCount: number;
-  onTileProviderChange: (key: 'cartoDark' | 'osmStandard' | 'cartoPositron') => void;
+  onTileProviderChange: (key: 'osmDark' | 'osmStandard' | 'osmHot') => void;
   onFitAllAircraft: () => void;
   onCenterSelected: () => void;
   onResetSectorView: () => void;
@@ -62,7 +62,7 @@ export const MapControls: React.FC<MapControlsProps> = ({
               <button
                 key={key}
                 onClick={() => {
-                  onTileProviderChange(key as 'cartoDark' | 'osmStandard' | 'cartoPositron');
+                  onTileProviderChange(key as 'osmDark' | 'osmStandard' | 'osmHot');
                   setIsLayerMenuOpen(false);
                 }}
                 className={`w-full text-left px-2 py-1.5 rounded transition ${

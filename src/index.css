@@ -76,3 +76,20 @@
   background: transparent !important;
   border: none !important;
 }
+
+/* Custom Marker Tooltip */
+.atc-marker-tooltip {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.atc-marker-tooltip::before {
+  display: none !important;
+}
+
+.atc-range-label {
+  background: transparent !important;
+  border: none !important;
+}

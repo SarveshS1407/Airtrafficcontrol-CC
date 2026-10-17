@@ -144,6 +144,7 @@ describe('UI Component Test Suite', () => {
       verticalState: 'ALL' as const,
       originCountry: '',
       onlyWithPosition: true,
+      emergencyOnly: false,
     };
 
     const handleFilterChange = vi.fn();

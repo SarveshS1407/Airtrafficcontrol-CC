@@ -93,10 +93,11 @@ export const App: React.FC = () => {
   const filteredAircraft = getFilteredAircraftList();
   const statistics = getStatistics();
   const { aircraft: selectedAircraft, history: selectedHistory } = getSelectedAircraft();
+  const { mapCenterTarget, triggerCenterOnMap, clearCenterTarget } = useAtcStore();
 
-  const handleCenterOnMap = useCallback((_lat: number, _lon: number) => {
-    // Aircraft center action handled via selected state
-  }, []);
+  const handleCenterOnMap = useCallback((lat: number, lon: number) => {
+    triggerCenterOnMap(lat, lon);
+  }, [triggerCenterOnMap]);
 
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-atc-950 text-slate-100 font-sans select-none">
@@ -116,6 +117,15 @@ export const App: React.FC = () => {
 
       {/* Main Operations Work Area */}
       <div className="relative flex-1 flex overflow-hidden">
+        {/* Mobile backdrop for drawer */}
+        {isSidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/60 z-10 md:hidden"
+            onClick={() => setIsSidebarOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+
         {/* Left Sidebar: Controls, Filters & Flight List */}
         <aside
           className={`${
@@ -167,11 +177,13 @@ export const App: React.FC = () => {
             tileProviderKey={tileProviderKey}
             showTrail={showTrail}
             showBoundsRectangle={showBoundsRectangle}
+            mapCenterTarget={mapCenterTarget}
             onSelectAircraft={selectAircraft}
             onViewportChange={updateBoundsFromViewport}
             onTileProviderChange={setTileProvider}
             onToggleTrail={toggleTrail}
             onToggleBoundsRectangle={toggleBoundsRectangle}
+            onClearCenterTarget={clearCenterTarget}
           />
         </main>
 

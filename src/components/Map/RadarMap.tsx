@@ -17,11 +17,58 @@ interface RadarMapProps {
   tileProviderKey: 'cartoDark' | 'osmStandard' | 'cartoPositron';
   showTrail: boolean;
   showBoundsRectangle: boolean;
+  mapCenterTarget?: [number, number] | null;
   onSelectAircraft: (icao24: string | null) => void;
   onViewportChange: (bounds: BoundingBox) => void;
   onTileProviderChange: (key: 'cartoDark' | 'osmStandard' | 'cartoPositron') => void;
   onToggleTrail: () => void;
   onToggleBoundsRectangle: () => void;
+  onClearCenterTarget?: () => void;
+}
+
+function getMarkerTooltipHtml(ac: Aircraft): string {
+  const alt = ac.onGround
+    ? 'ON GROUND'
+    : ac.baroAltitudeFeet !== null
+    ? `${ac.baroAltitudeFeet.toLocaleString()} ft`
+    : 'ALT --';
+  const spd = ac.velocityKnots !== null ? `${ac.velocityKnots} kts` : '-- kts';
+  const trk = ac.heading !== null ? `${ac.heading}° ${ac.headingCardinal}` : '---';
+  const vTrend =
+    ac.verticalState === 'CLIMBING'
+      ? '▲ CLIMB'
+      : ac.verticalState === 'DESCENDING'
+      ? '▼ DESC'
+      : 'LEVEL';
+  const isEmerg = ['7700', '7600', '7500'].includes(ac.squawk ?? '');
+
+  return `
+    <div class="px-2 py-1.5 rounded bg-atc-950/95 border ${
+      isEmerg ? 'border-red-500 text-red-200' : 'border-cyan-500/50 text-slate-100'
+    } shadow-xl font-mono text-[11px] leading-tight select-none">
+      <div class="flex items-center justify-between gap-3 font-bold border-b border-atc-800 pb-1 mb-1">
+        <span class="text-cyan-400 text-xs">${ac.callsign}</span>
+        <span class="text-slate-400 text-[10px] font-normal">${ac.originCountry}</span>
+      </div>
+      <div class="grid grid-cols-2 gap-x-3 gap-y-0.5 text-[10px]">
+        <span class="text-slate-400">ALT: <strong class="text-slate-100">${alt}</strong></span>
+        <span class="text-slate-400">SPD: <strong class="text-emerald-400">${spd}</strong></span>
+        <span class="text-slate-400">TRK: <strong class="text-slate-200">${trk}</strong></span>
+        <span class="text-slate-400">VSI: <strong class="${
+          ac.verticalState === 'CLIMBING'
+            ? 'text-emerald-400'
+            : ac.verticalState === 'DESCENDING'
+            ? 'text-rose-400'
+            : 'text-slate-300'
+        }">${vTrend}</strong></span>
+      </div>
+      ${
+        isEmerg
+          ? `<div class="mt-1 pt-1 border-t border-red-500/40 text-red-400 font-bold text-[9px] animate-pulse">SQUAWK ${ac.squawk} EMERGENCY</div>`
+          : ''
+      }
+    </div>
+  `;
 }
 
 export const RadarMap: React.FC<RadarMapProps> = ({
@@ -34,11 +81,13 @@ export const RadarMap: React.FC<RadarMapProps> = ({
   tileProviderKey,
   showTrail,
   showBoundsRectangle,
+  mapCenterTarget,
   onSelectAircraft,
   onViewportChange,
   onTileProviderChange,
   onToggleTrail,
   onToggleBoundsRectangle,
+  onClearCenterTarget,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -46,6 +95,7 @@ export const RadarMap: React.FC<RadarMapProps> = ({
   const markersRef = useRef<Map<string, L.Marker>>(new Map());
   const trailPolylineRef = useRef<L.Polyline | null>(null);
   const boundsRectangleRef = useRef<L.Rectangle | null>(null);
+  const rangeRingsRef = useRef<L.LayerGroup | null>(null);
 
   // Initialize Leaflet Map
   useEffect(() => {
@@ -74,7 +124,6 @@ export const RadarMap: React.FC<RadarMapProps> = ({
 
     // Deselect on map click
     map.on('click', (e) => {
-      // If clicking directly on map canvas, deselect
       if ((e.originalEvent.target as HTMLElement)?.classList.contains('leaflet-container')) {
         onSelectAircraft(null);
       }
@@ -84,7 +133,17 @@ export const RadarMap: React.FC<RadarMapProps> = ({
       map.remove();
       mapInstanceRef.current = null;
     };
-  }, []); // Run once on mount
+  }, []);
+
+  // ResizeObserver to handle sidebar / drawer toggle without map distortion
+  useEffect(() => {
+    if (!mapContainerRef.current) return;
+    const ro = new ResizeObserver(() => {
+      mapInstanceRef.current?.invalidateSize();
+    });
+    ro.observe(mapContainerRef.current);
+    return () => ro.disconnect();
+  }, []);
 
   // Sync Basemap Tile Layer
   useEffect(() => {
@@ -112,6 +171,65 @@ export const RadarMap: React.FC<RadarMapProps> = ({
 
     map.setView(currentRegion.center, currentRegion.zoom, { animate: true });
   }, [currentRegion, viewportSyncEnabled]);
+
+  // Handle imperative Map Center Target
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map || !mapCenterTarget) return;
+
+    map.panTo(mapCenterTarget, { animate: true });
+    onClearCenterTarget?.();
+  }, [mapCenterTarget, onClearCenterTarget]);
+
+  // Tactical Range Rings Overlay around Sector Center
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+
+    if (rangeRingsRef.current) {
+      rangeRingsRef.current.remove();
+    }
+
+    const layer = L.layerGroup();
+    const [cLat, cLon] = currentRegion.center;
+
+    // 10 NM (18.52 km), 25 NM (46.3 km), 50 NM (92.6 km)
+    const rings = [
+      { radiusM: 18520, label: '10 NM' },
+      { radiusM: 46300, label: '25 NM' },
+      { radiusM: 92600, label: '50 NM' },
+    ];
+
+    for (const { radiusM, label } of rings) {
+      L.circle([cLat, cLon], {
+        radius: radiusM,
+        color: '#00e5ff',
+        weight: 1,
+        dashArray: '4, 8',
+        fill: false,
+        opacity: 0.2,
+      }).addTo(layer);
+
+      // Label at north edge of ring
+      const latOffset = (radiusM / 111139);
+      L.marker([cLat + latOffset, cLon], {
+        icon: L.divIcon({
+          className: 'atc-range-label',
+          html: `<span class="text-[9px] font-mono text-cyan-400/60 bg-atc-950/80 px-1 py-0.2 rounded border border-cyan-500/20">${label}</span>`,
+          iconSize: [40, 14],
+          iconAnchor: [20, 7],
+        }),
+        interactive: false,
+      }).addTo(layer);
+    }
+
+    layer.addTo(map);
+    rangeRingsRef.current = layer;
+
+    return () => {
+      layer.remove();
+    };
+  }, [currentRegion]);
 
   // Sync Sector Bounds Rectangle Overlay
   useEffect(() => {
@@ -159,17 +277,26 @@ export const RadarMap: React.FC<RadarMapProps> = ({
       currentIcaos.add(id);
       const isSelected = selectedIcao24 === id;
       const icon = createAircraftDivIcon(ac, isSelected);
+      const tooltipHtml = getMarkerTooltipHtml(ac);
 
       const existingMarker = activeMarkers.get(id);
       if (existingMarker) {
         existingMarker.setLatLng([ac.latitude, ac.longitude]);
         existingMarker.setIcon(icon);
         existingMarker.setZIndexOffset(isSelected ? 1000 : 100);
+        existingMarker.setTooltipContent(tooltipHtml);
       } else {
         const marker = L.marker([ac.latitude, ac.longitude], {
           icon,
           zIndexOffset: isSelected ? 1000 : 100,
         }).addTo(map);
+
+        marker.bindTooltip(tooltipHtml, {
+          direction: 'top',
+          offset: [0, -18],
+          className: 'atc-marker-tooltip',
+          opacity: 0.98,
+        });
 
         marker.on('click', (e) => {
           L.DomEvent.stopPropagation(e);

@@ -31,7 +31,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     (filters.verticalState !== 'ALL' ? 1 : 0) +
     (filters.minAltitudeFt > 0 || filters.maxAltitudeFt < 55000 ? 1 : 0) +
     (filters.minVelocityKts > 0 || filters.maxVelocityKts < 700 ? 1 : 0) +
-    (filters.originCountry ? 1 : 0);
+    (filters.originCountry ? 1 : 0) +
+    (filters.emergencyOnly ? 1 : 0);
 
   return (
     <div className="bg-atc-900 border-b border-atc-800 text-xs">
@@ -140,6 +141,30 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Emergency Squawk Filter */}
+          <div>
+            <button
+              onClick={() => onFilterChange({ emergencyOnly: !filters.emergencyOnly })}
+              className={`w-full py-1.5 px-2.5 rounded border flex items-center justify-between text-[11px] font-mono transition ${
+                filters.emergencyOnly
+                  ? 'bg-rose-950/80 border-rose-500 text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.3)] font-semibold'
+                  : 'bg-atc-950/60 border-atc-800 text-slate-400 hover:text-slate-200 hover:border-atc-700'
+              }`}
+            >
+              <span className="flex items-center gap-1.5">
+                <span
+                  className={`w-2 h-2 rounded-full ${
+                    filters.emergencyOnly ? 'bg-rose-500 animate-ping' : 'bg-slate-600'
+                  }`}
+                />
+                EMERGENCY SQUAWK ONLY (7700/7600/7500)
+              </span>
+              <span className="text-[10px] uppercase font-mono font-bold">
+                {filters.emergencyOnly ? 'ACTIVE' : 'OFF'}
+              </span>
+            </button>
           </div>
 
           {/* Altitude Range Slider */}

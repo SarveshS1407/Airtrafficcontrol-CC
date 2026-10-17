@@ -20,6 +20,7 @@ export interface AircraftFilterCriteria {
   verticalState: VerticalFilter;
   originCountry: string; // "" or specific country
   onlyWithPosition: boolean; // default true
+  emergencyOnly: boolean; // default false (matches squawk 7700, 7600, 7500)
 }
 
 export interface AircraftSortConfig {

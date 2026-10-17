@@ -72,6 +72,7 @@ describe('useAtcStore Filtering & Sorting', () => {
           velocityKnots: 250,
           verticalState: 'CLIMBING',
           onGround: false,
+          squawk: '7700',
         }),
       },
       filters: {
@@ -84,6 +85,7 @@ describe('useAtcStore Filtering & Sorting', () => {
         verticalState: 'ALL',
         originCountry: '',
         onlyWithPosition: true,
+        emergencyOnly: false,
       },
       sortConfig: { field: 'altitude', direction: 'desc' },
     });
@@ -145,5 +147,13 @@ describe('useAtcStore Filtering & Sorting', () => {
     useAtcStore.getState().setSort('altitude'); // toggles to desc
     list = useAtcStore.getState().getFilteredAircraftList();
     expect(list[0].callsign).toBe('BAW101'); // 35,000 ft
+  });
+
+  it('filters aircraft by emergency squawk codes (7700, 7600, 7500)', () => {
+    useAtcStore.getState().setFilter({ emergencyOnly: true });
+    const list = useAtcStore.getState().getFilteredAircraftList();
+    expect(list).toHaveLength(1);
+    expect(list[0].callsign).toBe('EZY404');
+    expect(list[0].squawk).toBe('7700');
   });
 });

@@ -44,6 +44,7 @@ export interface AtcState {
   showTrail: boolean;
   showLabels: boolean;
   showBoundsRectangle: boolean;
+  mapCenterTarget: [number, number] | null;
 
   // Internal Request Controller
   activeAbortController: AbortController | null;
@@ -55,6 +56,8 @@ export interface AtcState {
   setViewportSync: (enabled: boolean) => void;
   updateBoundsFromViewport: (bounds: BoundingBox) => void;
   selectAircraft: (icao24: string | null) => void;
+  triggerCenterOnMap: (lat: number, lon: number) => void;
+  clearCenterTarget: () => void;
   setFilter: (partial: Partial<AircraftFilterCriteria>) => void;
   resetFilters: () => void;
   setSort: (field: SortField) => void;
@@ -85,6 +88,7 @@ const DEFAULT_FILTERS: AircraftFilterCriteria = {
   verticalState: 'ALL',
   originCountry: '',
   onlyWithPosition: true,
+  emergencyOnly: false,
 };
 
 export const useAtcStore = create<AtcState>((set, get) => ({
@@ -120,6 +124,7 @@ export const useAtcStore = create<AtcState>((set, get) => ({
   showTrail: true,
   showLabels: true,
   showBoundsRectangle: true,
+  mapCenterTarget: null,
 
   activeAbortController: null,
 
@@ -188,6 +193,14 @@ export const useAtcStore = create<AtcState>((set, get) => ({
 
   selectAircraft: (icao24: string | null) => {
     set({ selectedIcao24: icao24 });
+  },
+
+  triggerCenterOnMap: (lat: number, lon: number) => {
+    set({ mapCenterTarget: [lat, lon] });
+  },
+
+  clearCenterTarget: () => {
+    set({ mapCenterTarget: null });
   },
 
   setFilter: (partial: Partial<AircraftFilterCriteria>) => {
@@ -436,6 +449,11 @@ export const useAtcStore = create<AtcState>((set, get) => ({
         ) {
           return false;
         }
+      }
+
+      // Emergency squawk filter (7700 = General Emergency, 7600 = Radio failure, 7500 = Hijack)
+      if (filters.emergencyOnly && !['7700', '7600', '7500'].includes(ac.squawk ?? '')) {
+        return false;
       }
 
       return true;

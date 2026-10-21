@@ -2,25 +2,23 @@ import L from 'leaflet';
 import { Aircraft } from '../../types/opensky';
 
 /**
- * Gets color based on aircraft flight level / state
+ * Gets color based on aircraft flight level / state using refined aviation palette
  */
 export function getAircraftColor(aircraft: Aircraft, isSelected: boolean): string {
   if (aircraft.squawk === '7700' || aircraft.squawk === '7600' || aircraft.squawk === '7500') {
-    return '#ef4444'; // Flashing Red for emergency squawk
+    return '#C94C4C'; // Alert Red for emergency squawk
   }
-  if (isSelected) return '#00e5ff'; // Bright cyan halo for selected
-  if (aircraft.isStale) return '#64748b'; // Muted grey for stale radar contact
-  if (aircraft.onGround) return '#f59e0b'; // Amber for ground vehicles / taxi
+  if (isSelected) return '#17324D'; // Deep aviation navy for selected
+  if (aircraft.isStale) return '#94A3B8'; // Muted grey for stale radar contact
+  if (aircraft.onGround) return '#D99A32'; // Warm amber for ground vehicles / taxi
+  if (aircraft.verticalState === 'CLIMBING') return '#258568'; // Aviation green
+  if (aircraft.verticalState === 'DESCENDING') return '#D99A32'; // Warm amber
 
-  const alt = aircraft.baroAltitudeFeet ?? 0;
-  if (alt < 10000) return '#10b981'; // Emerald for approach / low sector
-  if (alt < 25000) return '#06b6d4'; // Cyan for mid transit
-  if (alt < 36000) return '#3b82f6'; // Blue for cruising
-  return '#818cf8'; // Violet for high cruising
+  return '#2563EB'; // Confident aviation blue for airborne transit
 }
 
 /**
- * Creates custom Leaflet DivIcon for aircraft with rotated SVG silhouette and callsign label
+ * Creates custom Leaflet DivIcon for aircraft with rotated SVG silhouette and clean label
  */
 export function createAircraftDivIcon(aircraft: Aircraft, isSelected: boolean): L.DivIcon {
   const isEmergency = aircraft.squawk === '7700' || aircraft.squawk === '7600' || aircraft.squawk === '7500';
@@ -28,41 +26,39 @@ export function createAircraftDivIcon(aircraft: Aircraft, isSelected: boolean): 
   const heading = aircraft.heading ?? 0;
   const isGround = aircraft.onGround;
 
-  const size = isSelected || isEmergency ? 34 : 26;
+  const size = isSelected || isEmergency ? 32 : 24;
   const halfSize = size / 2;
 
-  // Modern aviation radar aircraft symbol (rotated to true track)
+  // Clean, crisp aviation airplane marker with fine white outline for contrast over any map tile
   const svgContent = isGround
-    ? `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="${color}" style="transform: rotate(${heading}deg); transition: transform 0.4s ease;">
-         <circle cx="12" cy="12" r="5" fill="${color}" fill-opacity="0.3" stroke="${color}" stroke-width="2"/>
+    ? `<svg viewBox="0 0 24 24" width="${size}" height="${size}" style="transform: rotate(${heading}deg); transition: transform 0.3s ease; filter: drop-shadow(0 1px 3px rgba(16, 38, 60, 0.25));">
+         <circle cx="12" cy="12" r="5" fill="${color}" stroke="#FFFFFF" stroke-width="1.5"/>
          <path d="M12 4 L16 16 L12 13 L8 16 Z" fill="${color}"/>
        </svg>`
-    : `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="${color}" style="transform: rotate(${heading}deg); transition: transform 0.4s ease; filter: drop-shadow(0 0 ${isSelected || isEmergency ? '6px' : '2px'} ${color});">
-         <path d="M12 2 L14 9 L22 13 L22 15 L14 13 L14 19 L17 21 L17 22 L12 21 L7 22 L7 21 L10 19 L10 13 L2 15 L2 13 L10 9 Z"/>
+    : `<svg viewBox="0 0 24 24" width="${size}" height="${size}" style="transform: rotate(${heading}deg); transition: transform 0.3s ease; filter: drop-shadow(0 1px 3px rgba(16, 38, 60, 0.25));">
+         <path d="M12 2 L14 9 L22 13 L22 15 L14 13 L14 19 L17 21 L17 22 L12 21 L7 22 L7 21 L10 19 L10 13 L2 15 L2 13 L10 9 Z" fill="${color}" stroke="#FFFFFF" stroke-width="1.2" stroke-linejoin="round"/>
        </svg>`;
 
   const html = `
     <div class="relative flex items-center justify-center cursor-pointer group" style="width: ${size}px; height: ${size}px;">
       ${
         isEmergency
-          ? `<div class="absolute -inset-2 rounded-full border-2 border-red-500 animate-ping pointer-events-none"></div>
-             <div class="absolute -inset-1 rounded-full border border-red-400 pointer-events-none"></div>`
+          ? `<div class="absolute -inset-1.5 rounded-full border-2 border-red-500 animate-ping pointer-events-none opacity-75"></div>`
           : isSelected
-          ? `<div class="absolute -inset-1.5 rounded-full border border-cyan-400/80 animate-ping pointer-events-none"></div>
-             <div class="absolute -inset-1 rounded-full border border-cyan-400/60 pointer-events-none"></div>`
+          ? `<div class="absolute -inset-1.5 rounded-full border-2 border-aviation-navy pointer-events-none opacity-80"></div>`
           : ''
       }
       ${svgContent}
-      <div class="absolute top-full left-1/2 -translate-x-1/2 mt-1 px-1.5 py-0.5 rounded bg-atc-950/95 border ${
+      <div class="absolute top-full left-1/2 -translate-x-1/2 mt-1 px-1.5 py-0.5 rounded-md bg-white border ${
         isEmergency
-          ? 'border-red-500 text-red-300 font-bold animate-pulse'
+          ? 'border-red-400 text-red-600 font-bold'
           : isSelected
-          ? 'border-cyan-500 text-cyan-300'
-          : 'border-atc-700/80 text-slate-100 opacity-80 group-hover:opacity-100'
-      } text-[10px] font-mono whitespace-nowrap shadow-md pointer-events-none transition-opacity">
-        ${aircraft.callsign}
-        <span class="block text-[9px] font-normal ${isEmergency ? 'text-red-200' : 'text-slate-400'}">
-          ${isEmergency ? `EMERG ${aircraft.squawk}` : aircraft.onGround ? 'GND' : `${Math.round((aircraft.baroAltitudeFeet ?? 0) / 100)}FL`}
+          ? 'border-aviation-navy text-aviation-navy font-bold shadow-md'
+          : 'border-slate-200 text-slate-700 opacity-85 group-hover:opacity-100 shadow-sm'
+      } text-[10px] font-sans font-medium whitespace-nowrap pointer-events-none transition-opacity">
+        <span>${aircraft.callsign}</span>
+        <span class="block text-[9px] font-normal ${isEmergency ? 'text-red-500' : 'text-slate-500'}">
+          ${isEmergency ? `EMERG ${aircraft.squawk}` : aircraft.onGround ? 'On Ground' : `${aircraft.baroAltitudeFeet ? aircraft.baroAltitudeFeet.toLocaleString() + ' ft' : 'Alt --'}`}
         </span>
       </div>
     </div>

@@ -22,22 +22,22 @@ describe('Landing Page & Authentication Suite', () => {
         </RouterProvider>
       );
 
-      // Check required headline: "See the Skies. Understand the Movement."
+      // Check required headline: "Explore the World in Motion."
       expect(
-        screen.getByRole('heading', { level: 1, name: /See the Skies\.\s+Understand the Movement\./i })
+        screen.getByRole('heading', { level: 1, name: /Explore the World in Motion\./i })
       ).toBeInTheDocument();
 
       // Check required supporting copy
       expect(
         screen.getByText(
-          /Explore global aircraft activity through an interactive map, location-aware discovery, and real-time flight data where available\./i
+          /Discover aircraft around the globe through an interactive map\. Search locations, explore nearby air traffic, and inspect available flight information in one clear view\./i
         )
       ).toBeInTheDocument();
 
       // Check primary CTAs
-      expect(screen.getByRole('button', { name: /Explore Live Traffic/i })).toBeInTheDocument();
-      expect(screen.getByRole('link', { name: /Discover the Platform/i })).toBeInTheDocument();
-      expect(screen.getAllByText(/AIRTRAFFICCONTROL/i).length).toBeGreaterThanOrEqual(1);
+      expect(screen.getByRole('button', { name: /Explore Live Flights/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /Learn How It Works/i })).toBeInTheDocument();
+      expect(screen.getAllByText(/AirTrafficControl/i).length).toBeGreaterThanOrEqual(1);
     });
 
     it('renders the operational steps, Google Maps integration, and trust disclosures', () => {
@@ -47,11 +47,11 @@ describe('Landing Page & Authentication Suite', () => {
         </RouterProvider>
       );
 
-      expect(screen.getByText(/Google Maps Platform \+ OSM/i)).toBeInTheDocument();
-      expect(screen.getAllByText(/Location-Aware Discovery/i).length).toBeGreaterThanOrEqual(1);
-      expect(screen.getByText(/Open Global Traffic View/i)).toBeInTheDocument();
-      expect(screen.getByText(/Filter & Refine Targets/i)).toBeInTheDocument();
-      expect(screen.getByText(/Inspect Live Telemetry/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/Google Maps \+ OpenStreetMap/i).length).toBeGreaterThanOrEqual(1);
+      expect(screen.getByText(/Location-Driven Monitoring/i)).toBeInTheDocument();
+      expect(screen.getByText(/Find a location/i)).toBeInTheDocument();
+      expect(screen.getByText(/Explore nearby flights/i)).toBeInTheDocument();
+      expect(screen.getByText(/Select an aircraft/i)).toBeInTheDocument();
       expect(screen.getByText(/Trust, Data Transparency & API Policy/i)).toBeInTheDocument();
     });
   });
@@ -216,7 +216,7 @@ describe('Landing Page & Authentication Suite', () => {
       const { LocationSearchControl } = await import('../components/Location/LocationSearchControl');
       render(<LocationSearchControl onSelectLocation={() => {}} />);
 
-      const input = screen.getByPlaceholderText(/Search airport, city, or sector/i);
+      const input = screen.getByPlaceholderText(/Search a city, airport, or place\.\.\./i);
       expect(input).toBeInTheDocument();
 
       fireEvent.focus(input);

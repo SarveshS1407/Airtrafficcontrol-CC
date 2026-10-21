@@ -33,43 +33,41 @@ interface RadarMapProps {
 
 function getMarkerTooltipHtml(ac: Aircraft): string {
   const alt = ac.onGround
-    ? 'ON GROUND'
+    ? 'On Ground'
     : ac.baroAltitudeFeet !== null
     ? `${ac.baroAltitudeFeet.toLocaleString()} ft`
-    : 'ALT --';
-  const spd = ac.velocityKnots !== null ? `${ac.velocityKnots} kts` : '-- kts';
+    : 'Alt unavailable';
+  const spd = ac.velocityKnots !== null ? `${ac.velocityKnots} kt` : '-- kt';
   const trk = ac.heading !== null ? `${ac.heading}° ${ac.headingCardinal}` : '---';
   const vTrend =
     ac.verticalState === 'CLIMBING'
-      ? '▲ CLIMB'
+      ? 'Climbing'
       : ac.verticalState === 'DESCENDING'
-      ? '▼ DESC'
-      : 'LEVEL';
+      ? 'Descending'
+      : 'Level';
   const isEmerg = ['7700', '7600', '7500'].includes(ac.squawk ?? '');
 
   return `
-    <div class="px-2 py-1.5 rounded bg-atc-950/95 border ${
-      isEmerg ? 'border-red-500 text-red-200' : 'border-cyan-500/50 text-slate-100'
-    } shadow-xl font-mono text-[11px] leading-tight select-none">
-      <div class="flex items-center justify-between gap-3 font-bold border-b border-atc-800 pb-1 mb-1">
-        <span class="text-cyan-400 text-xs">${ac.callsign}</span>
-        <span class="text-slate-400 text-[10px] font-normal">${ac.originCountry}</span>
+    <div class="px-3 py-2 rounded-lg bg-white/95 border border-slate-200/90 shadow-lg font-sans text-xs leading-tight select-none backdrop-blur-sm text-slate-800">
+      <div class="flex items-center justify-between gap-3 font-semibold border-b border-slate-100 pb-1.5 mb-1.5">
+        <span class="text-aviation-navy font-bold text-sm tracking-tight">${ac.callsign}</span>
+        <span class="text-slate-500 text-xs font-normal">${ac.originCountry}</span>
       </div>
-      <div class="grid grid-cols-2 gap-x-3 gap-y-0.5 text-[10px]">
-        <span class="text-slate-400">ALT: <strong class="text-slate-100">${alt}</strong></span>
-        <span class="text-slate-400">SPD: <strong class="text-emerald-400">${spd}</strong></span>
-        <span class="text-slate-400">TRK: <strong class="text-slate-200">${trk}</strong></span>
-        <span class="text-slate-400">VSI: <strong class="${
+      <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+        <span class="text-slate-500">Altitude: <strong class="text-slate-800 font-medium">${alt}</strong></span>
+        <span class="text-slate-500">Speed: <strong class="text-aviation-green font-medium">${spd}</strong></span>
+        <span class="text-slate-500">Track: <strong class="text-slate-700 font-medium">${trk}</strong></span>
+        <span class="text-slate-500">Trend: <strong class="${
           ac.verticalState === 'CLIMBING'
-            ? 'text-emerald-400'
+            ? 'text-aviation-green'
             : ac.verticalState === 'DESCENDING'
-            ? 'text-rose-400'
-            : 'text-slate-300'
-        }">${vTrend}</strong></span>
+            ? 'text-aviation-amber'
+            : 'text-slate-700'
+        } font-medium">${vTrend}</strong></span>
       </div>
       ${
         isEmerg
-          ? `<div class="mt-1 pt-1 border-t border-red-500/40 text-red-400 font-bold text-[9px] animate-pulse">SQUAWK ${ac.squawk} EMERGENCY</div>`
+          ? `<div class="mt-1.5 pt-1 border-t border-red-100 text-red-600 font-semibold text-[11px]">⚠️ Squawk ${ac.squawk} Emergency</div>`
           : ''
       }
     </div>
@@ -162,11 +160,11 @@ export const RadarMap: React.FC<RadarMapProps> = ({
 
     const circle = L.circle([monitoringTarget.lat, monitoringTarget.lng], {
       radius: monitoringTarget.radiusKm * 1000,
-      color: '#00e5ff',
+      color: '#2563EB',
       weight: 2,
       dashArray: '6, 6',
-      fillColor: '#00e5ff',
-      fillOpacity: 0.12,
+      fillColor: '#5B9BD5',
+      fillOpacity: 0.1,
     }).addTo(map);
 
     monitorCircleRef.current = circle;
@@ -245,11 +243,11 @@ export const RadarMap: React.FC<RadarMapProps> = ({
     for (const { radiusM, label } of rings) {
       L.circle([cLat, cLon], {
         radius: radiusM,
-        color: '#00e5ff',
+        color: '#17324D',
         weight: 1,
         dashArray: '4, 8',
         fill: false,
-        opacity: 0.2,
+        opacity: 0.15,
       }).addTo(layer);
 
       // Label at north edge of ring
@@ -257,7 +255,7 @@ export const RadarMap: React.FC<RadarMapProps> = ({
       L.marker([cLat + latOffset, cLon], {
         icon: L.divIcon({
           className: 'atc-range-label',
-          html: `<span class="text-[9px] font-mono text-cyan-400/60 bg-atc-950/80 px-1 py-0.2 rounded border border-cyan-500/20">${label}</span>`,
+          html: `<span class="text-[9px] font-sans font-medium text-aviation-navy bg-white/90 px-1 py-0.5 rounded border border-slate-200 shadow-sm">${label}</span>`,
           iconSize: [40, 14],
           iconAnchor: [20, 7],
         }),
@@ -295,11 +293,11 @@ export const RadarMap: React.FC<RadarMapProps> = ({
       boundsRectangleRef.current.setBounds(boundsCorner);
     } else {
       boundsRectangleRef.current = L.rectangle(boundsCorner, {
-        color: '#06b6d4',
+        color: '#2563EB',
         weight: 1.5,
         dashArray: '6, 6',
-        fillColor: '#06b6d4',
-        fillOpacity: 0.03,
+        fillColor: '#5B9BD5',
+        fillOpacity: 0.05,
       }).addTo(map);
     }
   }, [activeBounds, showBoundsRectangle]);

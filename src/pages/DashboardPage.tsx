@@ -146,42 +146,40 @@ export const DashboardPage: React.FC = () => {
   }, [setRegion]);
 
   return (
-    <div className="flex flex-col h-screen w-screen overflow-hidden bg-atc-950 text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className="flex flex-col h-screen w-screen overflow-hidden bg-aviation-cloud text-aviation-slate font-sans">
       {/* 1. Universal Top Navigation Bar */}
-      <header className="bg-slate-950/95 border-b border-slate-800 px-3 sm:px-4 py-2 flex items-center justify-between gap-3 text-slate-100 z-30 select-none backdrop-blur-md">
+      <header className="bg-aviation-navy border-b border-aviation-midnight px-3 sm:px-5 py-2.5 flex items-center justify-between gap-3 text-white z-30 select-none shadow-sm">
         {/* Left: Branding & Return to Landing */}
         <div className="flex items-center gap-3">
           <Link
             to="/"
-            className="flex items-center gap-2 group text-slate-400 hover:text-white transition"
+            className="flex items-center gap-2.5 group text-slate-200 hover:text-white transition"
             title="Return to Landing Page"
           >
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 p-0.5 shadow-md shadow-cyan-500/20 group-hover:shadow-cyan-500/40">
-              <div className="w-full h-full bg-slate-950 rounded-[6px] flex items-center justify-center">
-                <Radio className="w-4 h-4 text-cyan-400 animate-spin" style={{ animationDuration: '6s' }} />
-              </div>
+            <div className="w-8 h-8 rounded-xl bg-aviation-sky flex items-center justify-center shadow-xs">
+              <Radio className="w-4 h-4 text-aviation-navy animate-pulse" />
             </div>
-            <div className="hidden sm:block">
-              <div className="flex items-center gap-1.5 font-mono font-bold text-xs text-white">
-                <span>ATC-CC</span>
-                <span className="text-[9px] px-1 py-0.2 rounded bg-cyan-950 border border-cyan-500/40 text-cyan-400">
-                  GLOBAL
+            <div>
+              <div className="flex items-center gap-1.5 font-bold text-sm tracking-tight text-white">
+                <span>AirTrafficControl</span>
+                <span className="text-[10px] px-1.5 py-0.2 rounded bg-white/20 text-blue-100 font-semibold">
+                  CC
                 </span>
               </div>
-              <span className="text-[9px] font-mono text-slate-500 block">Surveillance Console</span>
+              <span className="text-[10px] text-blue-200/70 block font-normal">Global Flight Monitoring</span>
             </div>
           </Link>
 
-          <span className="h-5 w-px bg-slate-800 hidden md:block" />
+          <span className="h-5 w-px bg-white/20 hidden md:block" />
 
           {/* Sub-view Navigation Tabs */}
-          <nav className="flex items-center gap-1 bg-slate-900/90 p-1 rounded-lg border border-slate-800 font-mono text-xs">
+          <nav className="flex items-center gap-1 bg-aviation-midnight/60 p-1 rounded-xl border border-white/10 text-xs">
             <button
               onClick={() => setActiveView('radar')}
-              className={`px-2.5 py-1 rounded transition flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 font-medium ${
                 activeView === 'radar'
-                  ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-white text-aviation-navy font-semibold shadow-xs'
+                  : 'text-blue-100/80 hover:text-white hover:bg-white/10'
               }`}
             >
               <Compass className="w-3.5 h-3.5" />
@@ -189,10 +187,10 @@ export const DashboardPage: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveView('analytics')}
-              className={`px-2.5 py-1 rounded transition flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 font-medium ${
                 activeView === 'analytics'
-                  ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-white text-aviation-navy font-semibold shadow-xs'
+                  : 'text-blue-100/80 hover:text-white hover:bg-white/10'
               }`}
             >
               <BarChart3 className="w-3.5 h-3.5" />
@@ -200,10 +198,10 @@ export const DashboardPage: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveView('settings')}
-              className={`px-2.5 py-1 rounded transition flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 font-medium ${
                 activeView === 'settings'
-                  ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-white text-aviation-navy font-semibold shadow-xs'
+                  : 'text-blue-100/80 hover:text-white hover:bg-white/10'
               }`}
             >
               <Settings className="w-3.5 h-3.5" />
@@ -213,16 +211,16 @@ export const DashboardPage: React.FC = () => {
         </div>
 
         {/* Center: Global/Sector Quick Switcher & Reset */}
-        <div className="hidden lg:flex items-center gap-3 font-mono text-xs">
-          <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1">
-            <Globe2 className="w-3.5 h-3.5 text-cyan-400" />
+        <div className="hidden lg:flex items-center gap-3 text-xs">
+          <div className="flex items-center gap-2 bg-aviation-midnight/60 border border-white/15 rounded-xl px-3 py-1.5 text-white">
+            <Globe2 className="w-3.5 h-3.5 text-aviation-sky" />
             <select
               value={currentRegion.id}
               onChange={(e) => setRegion(e.target.value)}
-              className="bg-transparent text-slate-200 font-mono text-xs focus:outline-none cursor-pointer"
+              className="bg-transparent text-white text-xs focus:outline-none cursor-pointer font-medium"
             >
               {PRESET_REGIONS.map((r) => (
-                <option key={r.id} value={r.id} className="bg-slate-900 text-slate-200">
+                <option key={r.id} value={r.id} className="bg-aviation-midnight text-white">
                   {r.name}
                 </option>
               ))}
@@ -232,10 +230,10 @@ export const DashboardPage: React.FC = () => {
           {currentRegion.id !== 'global' && (
             <button
               onClick={handleResetGlobalView}
-              className="px-2.5 py-1 rounded-lg bg-cyan-950/70 border border-cyan-500/40 text-cyan-300 hover:bg-cyan-900/80 transition flex items-center gap-1 text-xs"
+              className="px-3 py-1.5 rounded-xl bg-aviation-sky/20 border border-aviation-sky/40 text-blue-100 hover:bg-aviation-sky/30 transition flex items-center gap-1.5 text-xs font-medium"
               title="Reset to Worldwide Global View"
             >
-              <Globe2 className="w-3 h-3" />
+              <Globe2 className="w-3.5 h-3.5 text-aviation-sky" />
               <span>Reset Global</span>
             </button>
           )}
@@ -244,20 +242,20 @@ export const DashboardPage: React.FC = () => {
         {/* Right: Auth Profile / Sign In */}
         <div className="flex items-center gap-3">
           {isAuthenticated && currentUser ? (
-            <div className="flex items-center gap-2 font-mono text-xs">
-              <div className="hidden sm:flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1">
-                <UserCheck className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-slate-200 font-bold">{currentUser.callsign}</span>
+            <div className="flex items-center gap-2 text-xs">
+              <div className="hidden sm:flex items-center gap-2 bg-aviation-midnight/60 border border-white/15 rounded-xl px-3 py-1.5">
+                <UserCheck className="w-3.5 h-3.5 text-aviation-green" />
+                <span className="text-white font-medium">{currentUser.callsign}</span>
                 {currentUser.watchlist.length > 0 && (
-                  <span className="text-[10px] px-1 py-0.2 rounded bg-amber-950 border border-amber-600/50 text-amber-300 font-bold flex items-center gap-0.5">
-                    <Star className="w-2.5 h-2.5 fill-amber-300" />
+                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-400 text-aviation-navy font-bold flex items-center gap-0.5">
+                    <Star className="w-2.5 h-2.5 fill-aviation-navy" />
                     {currentUser.watchlist.length}
                   </span>
                 )}
               </div>
               <button
                 onClick={signOut}
-                className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-rose-400 transition"
+                className="p-2 rounded-xl bg-aviation-midnight/60 hover:bg-red-900/60 border border-white/15 text-slate-300 hover:text-white transition"
                 title="Sign Out"
                 aria-label="Sign Out"
               >
@@ -265,10 +263,10 @@ export const DashboardPage: React.FC = () => {
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-2 font-mono text-xs">
+            <div className="flex items-center gap-2 text-xs">
               <Link
                 to="/signin"
-                className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 hover:text-white transition"
+                className="px-3.5 py-1.5 rounded-xl bg-white text-aviation-navy font-semibold hover:bg-blue-50 transition shadow-xs"
               >
                 Sign In
               </Link>
@@ -292,13 +290,13 @@ export const DashboardPage: React.FC = () => {
       ) : (
         /* Radar Surveillance View */
         <div className="flex-1 flex flex-col min-h-0 relative">
-          {/* ATC Header controls (Zulu clock, sweep, pause) */}
+          {/* ATC Header controls */}
           <AtcHeader
             onToggleSidebar={() => setIsDesktopSidebarOpen(!isDesktopSidebarOpen)}
             isSidebarOpen={isDesktopSidebarOpen}
           />
 
-          {/* Floating Stale Data / Cloud Egress Alert Pill */}
+          {/* Stale Data / Cloud Egress Alert Banner */}
           <StaleDataAlert
             apiStatus={apiStatus}
             aircraftCount={allFilteredAircraft.length}
@@ -312,56 +310,56 @@ export const DashboardPage: React.FC = () => {
             <aside
               className={`${
                 isDesktopSidebarOpen ? 'w-80 lg:w-96' : 'w-0'
-              } hidden md:flex flex-col border-r border-atc-700/80 bg-atc-950 transition-all duration-200 z-20 shrink-0 overflow-hidden`}
+              } hidden md:flex flex-col border-r border-aviation-border bg-white transition-all duration-200 z-20 shrink-0 overflow-hidden shadow-xs`}
             >
               {/* Metrics Banner */}
-              <MetricsBanner stats={stats} />
+              <MetricsBanner stats={stats} lastUpdated={apiStatus.lastSuccessfulFetch} />
 
               {/* Sidebar Tabs */}
-              <div className="flex items-center border-b border-atc-800 bg-atc-900/90 text-xs font-mono font-semibold">
+              <div className="flex items-center border-b border-aviation-border bg-aviation-cloud/50 text-xs font-medium">
                 <button
                   onClick={() => setActiveTab('flights')}
-                  className={`flex-1 py-2 px-2 text-center transition flex items-center justify-center gap-1.5 border-b-2 ${
+                  className={`flex-1 py-2.5 px-2 text-center transition flex items-center justify-center gap-1.5 border-b-2 ${
                     activeTab === 'flights'
-                      ? 'border-cyan-400 text-cyan-300 bg-atc-950/80'
-                      : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-atc-850'
+                      ? 'border-aviation-navy text-aviation-navy bg-white font-semibold'
+                      : 'border-transparent text-aviation-muted hover:text-aviation-navy hover:bg-white/50'
                   }`}
                 >
                   <Plane className="w-3.5 h-3.5" />
-                  <span>TARGETS ({allFilteredAircraft.length})</span>
+                  <span>Targets ({allFilteredAircraft.length})</span>
                 </button>
 
                 <button
                   onClick={() => setActiveTab('filters')}
-                  className={`flex-1 py-2 px-2 text-center transition flex items-center justify-center gap-1.5 border-b-2 ${
+                  className={`flex-1 py-2.5 px-2 text-center transition flex items-center justify-center gap-1.5 border-b-2 ${
                     activeTab === 'filters'
-                      ? 'border-cyan-400 text-cyan-300 bg-atc-950/80'
-                      : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-atc-850'
+                      ? 'border-aviation-navy text-aviation-navy bg-white font-semibold'
+                      : 'border-transparent text-aviation-muted hover:text-aviation-navy hover:bg-white/50'
                   }`}
                 >
                   <Filter className="w-3.5 h-3.5" />
-                  <span>FILTERS</span>
+                  <span>Filters</span>
                 </button>
 
                 <button
                   onClick={() => setActiveTab('sectors')}
-                  className={`flex-1 py-2 px-2 text-center transition flex items-center justify-center gap-1.5 border-b-2 ${
+                  className={`flex-1 py-2.5 px-2 text-center transition flex items-center justify-center gap-1.5 border-b-2 ${
                     activeTab === 'sectors'
-                      ? 'border-cyan-400 text-cyan-300 bg-atc-950/80'
-                      : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-atc-850'
+                      ? 'border-aviation-navy text-aviation-navy bg-white font-semibold'
+                      : 'border-transparent text-aviation-muted hover:text-aviation-navy hover:bg-white/50'
                   }`}
                 >
                   <MapPin className="w-3.5 h-3.5" />
-                  <span>SECTORS</span>
+                  <span>Sectors</span>
                 </button>
 
                 {currentUser && (
                   <button
                     onClick={() => setActiveTab('watchlist')}
-                    className={`py-2 px-3 text-center transition flex items-center justify-center gap-1 border-b-2 ${
+                    className={`py-2.5 px-3 text-center transition flex items-center justify-center gap-1 border-b-2 ${
                       activeTab === 'watchlist'
-                        ? 'border-amber-400 text-amber-300 bg-atc-950/80'
-                        : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-atc-850'
+                        ? 'border-aviation-amber text-aviation-amber bg-white font-semibold'
+                        : 'border-transparent text-aviation-muted hover:text-aviation-navy hover:bg-white/50'
                     }`}
                     title="Watchlist Flights"
                   >
@@ -396,20 +394,20 @@ export const DashboardPage: React.FC = () => {
                 )}
 
                 {activeTab === 'watchlist' && (
-                  <div className="flex-1 flex flex-col min-h-0">
-                    <div className="p-3 bg-slate-900 border-b border-slate-800 text-xs font-mono text-slate-400">
-                      <span className="font-bold text-amber-300 flex items-center gap-1.5 mb-1">
-                        <Star className="w-3.5 h-3.5 fill-amber-400" />
-                        CONTROLLER WATCHLIST ({watchlistAircraft.length})
+                  <div className="flex-1 flex flex-col min-h-0 bg-aviation-cloud/30">
+                    <div className="p-3 bg-white border-b border-aviation-border text-xs text-aviation-muted">
+                      <span className="font-semibold text-aviation-navy flex items-center gap-1.5 mb-0.5">
+                        <Star className="w-3.5 h-3.5 text-aviation-amber fill-aviation-amber" />
+                        Watchlist ({watchlistAircraft.length})
                       </span>
-                      <span>Aircraft pinned to your active observation list.</span>
+                      <span>Aircraft pinned to your observation list.</span>
                     </div>
                     {watchlistAircraft.length === 0 ? (
-                      <div className="p-8 text-center text-xs font-mono text-slate-500 space-y-2">
-                        <Star className="w-8 h-8 text-slate-700 mx-auto" />
-                        <p>No flights currently pinned.</p>
-                        <p className="text-[11px] text-slate-600">
-                          Click the star icon next to any aircraft in the TARGETS list to pin it.
+                      <div className="p-8 text-center text-xs text-aviation-muted space-y-2">
+                        <Star className="w-8 h-8 text-slate-300 mx-auto" />
+                        <p className="font-medium text-aviation-navy">No flights currently pinned.</p>
+                        <p className="text-xs text-aviation-muted">
+                          Click the star icon next to any aircraft in the Targets list to pin it.
                         </p>
                       </div>
                     ) : (
@@ -444,7 +442,7 @@ export const DashboardPage: React.FC = () => {
                 )}
 
                 {activeTab === 'sectors' && (
-                  <div className="flex-1 p-2 space-y-3 font-mono text-xs">
+                  <div className="flex-1 p-3 space-y-3 text-xs bg-aviation-cloud/30">
                     <RegionSelector
                       currentRegionId={currentRegion.id}
                       activeBounds={activeBounds}
@@ -455,25 +453,25 @@ export const DashboardPage: React.FC = () => {
                     />
 
                     {/* Sector Teleport Cards */}
-                    <div className="p-2 space-y-1.5">
-                      <span className="text-[10px] text-slate-500 uppercase font-bold px-1 block">
-                        Quick Airspace Teleport
+                    <div className="p-2 space-y-2">
+                      <span className="text-[11px] text-aviation-muted uppercase font-bold px-1 block">
+                        Quick Airspace Selection
                       </span>
                       {PRESET_REGIONS.map((r) => (
                         <button
                           key={r.id}
                           onClick={() => setRegion(r.id)}
-                          className={`w-full p-2 rounded-lg text-left transition border ${
+                          className={`w-full p-2.5 rounded-xl text-left transition border shadow-2xs ${
                             currentRegion.id === r.id
-                              ? 'bg-cyan-950/60 border-cyan-500/60 text-cyan-200'
-                              : 'bg-atc-900 border-atc-800 text-slate-400 hover:text-slate-200 hover:border-atc-700'
+                              ? 'bg-aviation-lightSky border-aviation-sky text-aviation-navy font-semibold ring-1 ring-aviation-sky/30'
+                              : 'bg-white border-aviation-border text-aviation-slate hover:border-slate-300'
                           }`}
                         >
-                          <div className="flex items-center justify-between font-bold text-xs">
+                          <div className="flex items-center justify-between font-medium text-xs text-aviation-navy">
                             <span>{r.name}</span>
-                            <span className="text-[10px] font-normal text-slate-500">{r.country}</span>
+                            <span className="text-[11px] font-normal text-aviation-muted">{r.country}</span>
                           </div>
-                          <span className="text-[10px] text-slate-500 block truncate mt-0.5">
+                          <span className="text-[11px] text-aviation-muted block truncate mt-0.5">
                             {r.description}
                           </span>
                         </button>
@@ -487,9 +485,9 @@ export const DashboardPage: React.FC = () => {
             {/* Desktop Sidebar Toggle Button */}
             <button
               onClick={() => setIsDesktopSidebarOpen(!isDesktopSidebarOpen)}
-              className="hidden md:flex absolute top-1/2 left-0 -translate-y-1/2 z-30 p-1.5 rounded-r bg-atc-950/90 hover:bg-atc-900 border border-l-0 border-atc-700 text-slate-400 hover:text-white shadow-xl transition"
+              className="hidden md:flex absolute top-1/2 left-0 -translate-y-1/2 z-30 p-2 rounded-r-xl bg-white hover:bg-slate-50 border border-l-0 border-aviation-border text-aviation-navy shadow-md transition"
               style={{ left: isDesktopSidebarOpen ? (window.innerWidth >= 1024 ? '384px' : '320px') : '0px' }}
-              title={isDesktopSidebarOpen ? 'Collapse Surveillance Dock' : 'Expand Surveillance Dock'}
+              title={isDesktopSidebarOpen ? 'Collapse Sidebar' : 'Expand Sidebar'}
             >
               {isDesktopSidebarOpen ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
             </button>
@@ -530,11 +528,11 @@ export const DashboardPage: React.FC = () => {
           </div>
 
           {/* 3. Mobile Navigation Bottom Bar */}
-          <div className="md:hidden bg-atc-950/95 border-t border-atc-800 p-1 flex items-center justify-around z-30 font-mono text-[10px]">
+          <div className="md:hidden bg-white/95 border-t border-aviation-border p-1 flex items-center justify-around z-30 text-xs shadow-md backdrop-blur-md">
             <button
               onClick={() => setMobileSheet('none')}
-              className={`flex-1 py-1.5 flex flex-col items-center gap-1 ${
-                mobileSheet === 'none' ? 'text-cyan-400 font-bold' : 'text-slate-400'
+              className={`flex-1 py-2 flex flex-col items-center gap-1 ${
+                mobileSheet === 'none' ? 'text-aviation-navy font-bold' : 'text-aviation-muted'
               }`}
             >
               <Compass className="w-4 h-4" />
@@ -543,8 +541,8 @@ export const DashboardPage: React.FC = () => {
 
             <button
               onClick={() => setMobileSheet('flights')}
-              className={`flex-1 py-1.5 flex flex-col items-center gap-1 ${
-                mobileSheet === 'flights' ? 'text-cyan-400 font-bold' : 'text-slate-400'
+              className={`flex-1 py-2 flex flex-col items-center gap-1 ${
+                mobileSheet === 'flights' ? 'text-aviation-navy font-bold' : 'text-aviation-muted'
               }`}
             >
               <Plane className="w-4 h-4" />
@@ -553,8 +551,8 @@ export const DashboardPage: React.FC = () => {
 
             <button
               onClick={() => setMobileSheet('filters')}
-              className={`flex-1 py-1.5 flex flex-col items-center gap-1 ${
-                mobileSheet === 'filters' ? 'text-cyan-400 font-bold' : 'text-slate-400'
+              className={`flex-1 py-2 flex flex-col items-center gap-1 ${
+                mobileSheet === 'filters' ? 'text-aviation-navy font-bold' : 'text-aviation-muted'
               }`}
             >
               <Filter className="w-4 h-4" />
@@ -564,11 +562,11 @@ export const DashboardPage: React.FC = () => {
             {selectedAircraft && (
               <button
                 onClick={() => setMobileSheet('telemetry')}
-                className={`flex-1 py-1.5 flex flex-col items-center gap-1 ${
-                  mobileSheet === 'telemetry' ? 'text-cyan-400 font-bold' : 'text-slate-400'
+                className={`flex-1 py-2 flex flex-col items-center gap-1 ${
+                  mobileSheet === 'telemetry' ? 'text-aviation-navy font-bold' : 'text-aviation-muted'
                 }`}
               >
-                <Radio className="w-4 h-4 text-cyan-400 animate-pulse" />
+                <Radio className="w-4 h-4 text-aviation-sky animate-pulse" />
                 <span>Flight</span>
               </button>
             )}
@@ -576,12 +574,12 @@ export const DashboardPage: React.FC = () => {
 
           {/* Mobile Bottom Sheets */}
           {mobileSheet === 'flights' && (
-            <div className="md:hidden fixed inset-x-0 bottom-12 top-24 bg-atc-950 border-t border-atc-700 z-40 flex flex-col shadow-2xl rounded-t-2xl overflow-hidden animate-slideUp">
-              <div className="p-3 bg-atc-900 border-b border-atc-800 flex items-center justify-between font-mono text-xs">
-                <span className="font-bold text-slate-200">ACTIVE TARGETS ({allFilteredAircraft.length})</span>
+            <div className="md:hidden fixed inset-x-0 bottom-12 top-24 bg-white border-t border-aviation-border z-40 flex flex-col shadow-2xl rounded-t-2xl overflow-hidden animate-slideUp">
+              <div className="p-3 bg-aviation-cloud border-b border-aviation-border flex items-center justify-between text-xs font-semibold text-aviation-navy">
+                <span>Active Targets ({allFilteredAircraft.length})</span>
                 <button
                   onClick={() => setMobileSheet('none')}
-                  className="p-1 text-slate-400 hover:text-white"
+                  className="p-1 text-aviation-muted hover:text-aviation-navy"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -609,12 +607,12 @@ export const DashboardPage: React.FC = () => {
           )}
 
           {mobileSheet === 'filters' && (
-            <div className="md:hidden fixed inset-x-0 bottom-12 top-24 bg-atc-950 border-t border-atc-700 z-40 flex flex-col shadow-2xl rounded-t-2xl overflow-hidden animate-slideUp">
-              <div className="p-3 bg-atc-900 border-b border-atc-800 flex items-center justify-between font-mono text-xs">
-                <span className="font-bold text-slate-200">TELEMETRY & SECTOR FILTERS</span>
+            <div className="md:hidden fixed inset-x-0 bottom-12 top-24 bg-white border-t border-aviation-border z-40 flex flex-col shadow-2xl rounded-t-2xl overflow-hidden animate-slideUp">
+              <div className="p-3 bg-aviation-cloud border-b border-aviation-border flex items-center justify-between text-xs font-semibold text-aviation-navy">
+                <span>Flight & Sector Filters</span>
                 <button
                   onClick={() => setMobileSheet('none')}
-                  className="p-1 text-slate-400 hover:text-white"
+                  className="p-1 text-aviation-muted hover:text-aviation-navy"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -638,12 +636,12 @@ export const DashboardPage: React.FC = () => {
           )}
 
           {mobileSheet === 'telemetry' && selectedAircraft && (
-            <div className="md:hidden fixed inset-x-0 bottom-12 top-20 bg-atc-950 border-t border-atc-700 z-40 flex flex-col shadow-2xl rounded-t-2xl overflow-hidden animate-slideUp">
-              <div className="p-3 bg-atc-900 border-b border-atc-800 flex items-center justify-between font-mono text-xs">
-                <span className="font-bold text-cyan-300">TELEMETRY: {selectedAircraft.callsign}</span>
+            <div className="md:hidden fixed inset-x-0 bottom-12 top-20 bg-white border-t border-aviation-border z-40 flex flex-col shadow-2xl rounded-t-2xl overflow-hidden animate-slideUp">
+              <div className="p-3 bg-aviation-cloud border-b border-aviation-border flex items-center justify-between text-xs font-semibold text-aviation-navy">
+                <span>Flight Telemetry: {selectedAircraft.callsign}</span>
                 <button
                   onClick={() => setMobileSheet('none')}
-                  className="p-1 text-slate-400 hover:text-white"
+                  className="p-1 text-aviation-muted hover:text-aviation-navy"
                 >
                   <X className="w-5 h-5" />
                 </button>

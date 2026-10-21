@@ -194,24 +194,24 @@ export const GoogleRadarMap: React.FC<GoogleRadarMapProps> = ({
       const isSelected = selectedIcao24 === icao;
       const isEmergency = ['7700', '7600', '7500'].includes(ac.squawk ?? '');
 
-      let fillColor = '#00e5ff'; // cyan for cruise/level
+      let fillColor = '#2563EB'; // Aviation blue for cruise/level
       if (isEmergency) {
-        fillColor = '#ef4444'; // red for emergency
+        fillColor = '#C94C4C'; // Alert red for emergency
       } else if (isSelected) {
-        fillColor = '#fbbf24'; // amber for selected
+        fillColor = '#10263C'; // Deep midnight blue for selected
       } else if (ac.verticalState === 'CLIMBING') {
-        fillColor = '#10b981'; // green for climb
+        fillColor = '#258568'; // Aviation green for climb
       } else if (ac.verticalState === 'DESCENDING') {
-        fillColor = '#f43f5e'; // rose for descent
+        fillColor = '#D99A32'; // Warm amber for descent
       }
 
       const icon: google.maps.Symbol = {
         path: AIRPLANE_SVG_PATH,
         fillColor,
         fillOpacity: 1,
-        strokeColor: isSelected ? '#ffffff' : '#040810',
-        strokeWeight: isSelected ? 2 : 1,
-        scale: isSelected ? 1.4 : 1.0,
+        strokeColor: '#FFFFFF',
+        strokeWeight: 1.5,
+        scale: isSelected ? 1.3 : 1.0,
         rotation: ac.heading ?? 0,
         anchor: new gmaps.Point(12, 12),
       };
@@ -235,26 +235,26 @@ export const GoogleRadarMap: React.FC<GoogleRadarMapProps> = ({
         marker.addListener('mouseover', () => {
           if (!infoWindowRef.current) return;
           const altStr = ac.onGround
-            ? 'ON GROUND'
+            ? 'On Ground'
             : ac.baroAltitudeFeet !== null
             ? `${ac.baroAltitudeFeet.toLocaleString()} ft`
-            : 'ALT --';
-          const spdStr = ac.velocityKnots !== null ? `${ac.velocityKnots} kts` : '-- kts';
+            : 'Alt unavailable';
+          const spdStr = ac.velocityKnots !== null ? `${ac.velocityKnots} kt` : '-- kt';
           const trkStr = ac.heading !== null ? `${ac.heading}° ${ac.headingCardinal}` : '---';
 
           infoWindowRef.current.setContent(`
-            <div style="background:#060b13;color:#f8fafc;padding:8px;border-radius:8px;border:1px solid #00e5ff;font-family:monospace;font-size:11px;min-width:180px;">
-              <div style="font-weight:bold;color:#00e5ff;font-size:13px;display:flex;justify-content:space-between;border-bottom:1px solid #1e293b;padding-bottom:4px;margin-bottom:4px;">
+            <div style="background:#FFFFFF;color:#35465A;padding:10px;border-radius:10px;border:1px solid #D1DCE5;font-family:Inter,system-ui,sans-serif;font-size:12px;min-width:190px;box-shadow:0 4px 12px rgba(16,38,60,0.12);">
+              <div style="font-weight:700;color:#17324D;font-size:14px;display:flex;justify-content:space-between;border-bottom:1px solid #E2E8F0;padding-bottom:6px;margin-bottom:6px;">
                 <span>${ac.callsign}</span>
-                <span style="font-size:10px;color:#94a3b8;font-weight:normal;">${ac.originCountry}</span>
+                <span style="font-size:11px;color:#708096;font-weight:normal;">${ac.originCountry}</span>
               </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;color:#cbd5e1;font-size:10px;">
-                <div>ALT: <strong>${altStr}</strong></div>
-                <div>SPD: <strong style="color:#10b981;">${spdStr}</strong></div>
-                <div>TRK: <strong>${trkStr}</strong></div>
-                <div>VSI: <strong>${ac.verticalState}</strong></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;color:#475569;">
+                <div>Altitude: <strong style="color:#0F172A;">${altStr}</strong></div>
+                <div>Speed: <strong style="color:#258568;">${spdStr}</strong></div>
+                <div>Heading: <strong style="color:#334155;">${trkStr}</strong></div>
+                <div>Trend: <strong style="color:#334155;">${ac.verticalState === 'CLIMBING' ? 'Climbing' : ac.verticalState === 'DESCENDING' ? 'Descending' : 'Level'}</strong></div>
               </div>
-              ${isEmergency ? `<div style="margin-top:6px;color:#ef4444;font-weight:bold;font-size:10px;">⚠️ SQUAWK ${ac.squawk} EMERGENCY</div>` : ''}
+              ${isEmergency ? `<div style="margin-top:8px;color:#C94C4C;font-weight:600;font-size:11px;">⚠️ Squawk ${ac.squawk} Emergency</div>` : ''}
             </div>
           `);
           infoWindowRef.current.open(map, marker);
@@ -303,7 +303,7 @@ export const GoogleRadarMap: React.FC<GoogleRadarMapProps> = ({
       trailPolylineRef.current = new window.google.maps.Polyline({
         path,
         geodesic: true,
-        strokeColor: '#00e5ff',
+        strokeColor: '#2563EB',
         strokeOpacity: 0.85,
         strokeWeight: 3,
         map,
@@ -324,10 +324,10 @@ export const GoogleRadarMap: React.FC<GoogleRadarMapProps> = ({
     if (!monitoringTarget) return;
 
     monitorCircleRef.current = new window.google.maps.Circle({
-      strokeColor: '#00e5ff',
+      strokeColor: '#2563EB',
       strokeOpacity: 0.8,
       strokeWeight: 2,
-      fillColor: '#00e5ff',
+      fillColor: '#5B9BD5',
       fillOpacity: 0.1,
       map,
       center: { lat: monitoringTarget.lat, lng: monitoringTarget.lng },
@@ -343,28 +343,28 @@ export const GoogleRadarMap: React.FC<GoogleRadarMapProps> = ({
   };
 
   return (
-    <div className="relative w-full h-full bg-[#060b13] overflow-hidden">
+    <div className="relative w-full h-full bg-[#EBF3FA] overflow-hidden">
       {/* Map DOM Target */}
       <div ref={mapContainerRef} className="w-full h-full" />
 
       {/* Floating Tactical Layer Switcher */}
       {mapLoaded && (
-        <div className="absolute top-3 right-3 z-20 flex items-center gap-1 bg-slate-950/85 backdrop-blur-md p-1 rounded-xl border border-slate-700/80 shadow-2xl font-mono text-[11px]">
-          <div className="px-2 py-1 text-slate-400 flex items-center gap-1 font-bold">
-            <Layers className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="hidden sm:inline">LAYER:</span>
+        <div className="absolute top-3 right-3 z-20 flex items-center gap-1 bg-white/95 backdrop-blur-md p-1 rounded-xl border border-slate-200 shadow-md font-sans text-xs">
+          <div className="px-2 py-1 text-slate-500 flex items-center gap-1 font-medium">
+            <Layers className="w-3.5 h-3.5 text-aviation-navy" />
+            <span className="hidden sm:inline">Layer:</span>
           </div>
           {(['roadmap', 'satellite', 'hybrid', 'terrain'] as const).map((type) => (
             <button
               key={type}
               onClick={() => handleMapTypeChange(type)}
-              className={`px-2 py-1 rounded-lg capitalize transition font-bold ${
+              className={`px-2.5 py-1 rounded-lg capitalize transition font-medium ${
                 mapTypeId === type
-                  ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/25'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-900'
+                  ? 'bg-aviation-navy text-white shadow-sm'
+                  : 'text-slate-600 hover:text-aviation-navy hover:bg-slate-100'
               }`}
             >
-              {type === 'roadmap' ? 'Tactical' : type}
+              {type === 'roadmap' ? 'Standard' : type}
             </button>
           ))}
         </div>
@@ -372,32 +372,32 @@ export const GoogleRadarMap: React.FC<GoogleRadarMapProps> = ({
 
       {/* Google Maps Configuration / Key Setup Prompt (if missing or error) */}
       {loadError && (
-        <div className="absolute inset-0 z-30 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md">
-          <div className="max-w-md w-full bg-slate-900 border border-slate-700 rounded-2xl p-6 shadow-2xl font-mono text-xs text-slate-200 space-y-4">
+        <div className="absolute inset-0 z-30 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+          <div className="max-w-md w-full bg-white border border-slate-200 rounded-2xl p-6 shadow-2xl font-sans text-xs text-slate-700 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400">
+              <div className="p-2.5 rounded-xl bg-aviation-sky/15 text-aviation-navy border border-aviation-sky/30">
                 <Globe2 className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-white uppercase tracking-tight">
-                  Google Maps Platform
+                <h3 className="text-sm font-bold text-aviation-navy tracking-tight">
+                  Google Maps Platform Engine
                 </h3>
-                <p className="text-[11px] text-slate-400">
+                <p className="text-[11px] text-slate-500">
                   {loadError === 'KEY_MISSING'
-                    ? 'API Key required for Google Maps Platform engine'
+                    ? 'An API key is required to use Google Maps cartography'
                     : 'Unable to load Google Maps with current key'}
                 </p>
               </div>
             </div>
 
-            <p className="text-slate-300 text-xs leading-relaxed">
+            <p className="text-slate-600 text-xs leading-relaxed">
               AirTrafficControl-CC supports both <strong>Google Maps Platform</strong> and <strong>OpenStreetMap</strong>.
-              You can instantly use OpenStreetMap without any setup, or paste your Google Maps API key below.
+              You can explore immediately with OpenStreetMap, or enter your personal Google Maps API key below.
             </p>
 
             <div className="space-y-2">
-              <label className="text-[10px] text-slate-400 uppercase font-bold flex items-center gap-1">
-                <Key className="w-3 h-3 text-cyan-400" />
+              <label className="text-[11px] text-slate-600 font-medium flex items-center gap-1.5">
+                <Key className="w-3.5 h-3.5 text-aviation-navy" />
                 Google Maps API Key (Optional)
               </label>
               <div className="flex gap-2">
@@ -405,27 +405,27 @@ export const GoogleRadarMap: React.FC<GoogleRadarMapProps> = ({
                   type="password"
                   value={apiKeyInput}
                   onChange={(e) => setApiKeyInput(e.target.value)}
-                  placeholder="AIzaSy..."
-                  className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400 font-mono"
+                  placeholder="Paste AIzaSy... key"
+                  className="flex-1 bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-aviation-navy"
                 />
                 <button
                   onClick={handleSaveApiKey}
-                  className="px-3.5 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-lg transition"
+                  className="px-4 py-2 bg-aviation-navy hover:bg-aviation-midnight text-white font-medium rounded-lg transition"
                 >
                   Save &amp; Load
                 </button>
               </div>
-              <p className="text-[10px] text-slate-500">
-                Keys can also be configured in <code>.env.local</code> via <code>VITE_GOOGLE_MAPS_API_KEY</code>.
+              <p className="text-[10px] text-slate-400">
+                API keys are stored locally in your browser.
               </p>
             </div>
 
-            <div className="pt-3 border-t border-slate-800 flex items-center justify-between gap-3">
+            <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
               <button
                 onClick={onSwitchToLeaflet}
-                className="w-full py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-cyan-300 font-bold text-xs transition flex items-center justify-center gap-2"
+                className="w-full py-2.5 rounded-lg bg-aviation-sky/10 hover:bg-aviation-sky/20 border border-aviation-sky/30 text-aviation-navy font-semibold text-xs transition flex items-center justify-center gap-2"
               >
-                <Compass className="w-4 h-4" />
+                <Compass className="w-4 h-4 text-aviation-navy" />
                 Switch to OpenStreetMap Engine (Free)
               </button>
             </div>

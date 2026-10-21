@@ -22,63 +22,63 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
     : 0;
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 font-sans">
       {/* Source Toggle */}
-      <div className="inline-flex rounded-md p-0.5 bg-atc-950 border border-atc-700 text-xs">
+      <div className="inline-flex rounded-lg p-0.5 bg-aviation-cloud border border-aviation-border text-xs">
         <button
           onClick={() => onToggleSource('LIVE')}
-          className={`px-2.5 py-1 rounded font-mono font-medium transition-colors ${
+          className={`px-2.5 py-1 rounded-md font-medium text-xs transition-colors ${
             source === 'LIVE'
-              ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 shadow-sm'
-              : 'text-slate-400 hover:text-slate-200'
+              ? 'bg-white text-aviation-navy shadow-xs font-semibold'
+              : 'text-aviation-muted hover:text-aviation-navy'
           }`}
           title="Connect to OpenSky Network live REST API"
         >
-          LIVE OPENSKY
+          Live OpenSky
         </button>
         <button
           onClick={() => onToggleSource('DEMO')}
-          className={`px-2.5 py-1 rounded font-mono font-medium transition-colors ${
+          className={`px-2.5 py-1 rounded-md font-medium text-xs transition-colors ${
             source === 'DEMO'
-              ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40 shadow-sm'
-              : 'text-slate-400 hover:text-slate-200'
+              ? 'bg-amber-100 text-aviation-amber shadow-xs font-semibold'
+              : 'text-aviation-muted hover:text-aviation-navy'
           }`}
           title="Recorded flight vectors with physics simulation (offline friendly)"
         >
-          DEMO FIXTURES
+          Demo Fixtures
         </button>
       </div>
 
       {/* Freshness / Polling status indicator */}
       {source === 'DEMO' ? (
-        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-mono bg-amber-950/60 border border-amber-600/40 text-amber-300">
-          <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-          DEMO SIMULATION
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs bg-amber-50 border border-amber-200 text-aviation-amber font-medium">
+          <span className="w-2 h-2 rounded-full bg-aviation-amber animate-pulse"></span>
+          Demo Mode
         </span>
       ) : isBackoff ? (
-        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-mono bg-rose-950/60 border border-rose-600/40 text-rose-300">
-          <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
-          429 RATE LIMIT ({backoffRemainingSec}s)
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs bg-red-50 border border-red-200 text-aviation-red font-medium">
+          <span className="w-2 h-2 rounded-full bg-aviation-red animate-ping"></span>
+          Rate Limited ({backoffRemainingSec}s)
         </span>
       ) : status === 'FETCHING' ? (
-        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-mono bg-cyan-950/60 border border-cyan-600/40 text-cyan-300">
-          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-          RADAR SCANNING...
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs bg-blue-50 border border-blue-200 text-aviation-sky font-medium">
+          <span className="w-2 h-2 rounded-full bg-aviation-sky animate-pulse"></span>
+          Scanning...
         </span>
       ) : freshness === 'STALE' ? (
-        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-mono bg-amber-950/60 border border-amber-600/40 text-amber-300">
-          <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-          STALE SNAPSHOT
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs bg-amber-50 border border-amber-200 text-aviation-amber font-medium">
+          <span className="w-2 h-2 rounded-full bg-aviation-amber"></span>
+          Stale Data
         </span>
       ) : isPaused ? (
-        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-mono bg-slate-800 border border-slate-600 text-slate-300">
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs bg-slate-100 border border-slate-200 text-aviation-muted font-medium">
           <span className="w-2 h-2 rounded-full bg-slate-400"></span>
-          PAUSED
+          Paused
         </span>
       ) : (
-        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-mono bg-emerald-950/60 border border-emerald-600/40 text-emerald-300">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          LIVE RADAR ACTIVE
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs bg-emerald-50 border border-emerald-200 text-aviation-green font-medium">
+          <span className="w-2 h-2 rounded-full bg-aviation-green animate-pulse"></span>
+          Live Feed Active
         </span>
       )}
     </div>

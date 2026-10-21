@@ -51,15 +51,15 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({
   };
 
   return (
-    <div className="p-3 bg-atc-900 border-b border-atc-800 text-xs">
-      <div className="flex items-center justify-between mb-1.5">
-        <label className="font-mono text-[11px] text-slate-400 uppercase tracking-wider flex items-center gap-1.5 font-semibold">
-          <MapPin className="w-3.5 h-3.5 text-cyan-400" />
-          GEOGRAPHIC SECTOR
+    <div className="p-3 bg-white border-b border-aviation-border text-xs font-sans">
+      <div className="flex items-center justify-between mb-2">
+        <label className="text-xs text-aviation-slate uppercase tracking-wider flex items-center gap-1.5 font-semibold">
+          <MapPin className="w-3.5 h-3.5 text-aviation-sky" />
+          Geographic Sector
         </label>
         {validationError && (
-          <span className="text-[10px] text-rose-400 flex items-center gap-1">
-            <AlertCircle className="w-3 h-3" /> Error
+          <span className="text-[11px] text-aviation-red flex items-center gap-1 font-medium">
+            <AlertCircle className="w-3.5 h-3.5" /> Error
           </span>
         )}
       </div>
@@ -68,36 +68,36 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({
       <select
         value={currentRegionId}
         onChange={handleRegionChange}
-        className="w-full bg-atc-950 border border-atc-700 rounded px-2.5 py-1.5 text-slate-200 font-mono text-xs focus:outline-none focus:border-cyan-500 transition"
+        className="w-full bg-aviation-cloud/60 border border-aviation-border hover:border-slate-300 focus:border-aviation-sky rounded-xl px-3 py-2 text-aviation-navy text-xs font-medium focus:outline-none transition shadow-2xs cursor-pointer"
       >
         {PRESET_REGIONS.map((region) => (
-          <option key={region.id} value={region.id} className="bg-atc-900">
+          <option key={region.id} value={region.id} className="bg-white text-aviation-navy">
             {region.name} — {region.country}
           </option>
         ))}
       </select>
 
       {/* Viewport Sync Checkbox */}
-      <div className="mt-2 flex items-center justify-between text-[11px] text-slate-300">
+      <div className="mt-2.5 flex items-center justify-between text-xs text-aviation-slate">
         <label
           htmlFor="viewportSyncToggle"
-          className="flex items-center gap-2 cursor-pointer select-none text-slate-400 hover:text-slate-200"
+          className="flex items-center gap-2 cursor-pointer select-none text-aviation-muted hover:text-aviation-navy"
         >
           <input
             id="viewportSyncToggle"
             type="checkbox"
             checked={viewportSyncEnabled}
             onChange={(e) => onToggleViewportSync(e.target.checked)}
-            className="rounded bg-atc-950 border-atc-700 text-cyan-500 focus:ring-0 focus:ring-offset-0 cursor-pointer"
+            className="rounded border-aviation-border text-aviation-navy focus:ring-0 focus:ring-offset-0 cursor-pointer accent-aviation-navy"
           />
-          <span className="flex items-center gap-1">
-            <Eye className="w-3 h-3 text-cyan-400" />
+          <span className="flex items-center gap-1 font-medium">
+            <Eye className="w-3.5 h-3.5 text-aviation-sky" />
             Sync sector to map viewport
           </span>
         </label>
         <button
           onClick={() => setIsCustomExpanded(!isCustomExpanded)}
-          className="text-cyan-400 hover:text-cyan-300 underline font-mono text-[10px]"
+          className="text-aviation-sky hover:text-blue-700 font-medium text-xs underline"
         >
           {isCustomExpanded ? 'Hide Bounds' : 'Edit Bounds'}
         </button>
@@ -105,17 +105,17 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({
 
       {/* Custom Coordinates Editor */}
       {isCustomExpanded && (
-        <div className="mt-2.5 p-2 rounded bg-atc-950/70 border border-atc-800 space-y-2">
-          <div className="text-[10px] font-mono text-slate-400 uppercase tracking-wider flex items-center justify-between">
-            <span>Bounding Box (WGS84 Degrees)</span>
-            <span className="text-slate-500">
+        <div className="mt-3 p-3 rounded-xl bg-aviation-cloud/70 border border-aviation-border space-y-2.5">
+          <div className="text-[11px] text-aviation-muted uppercase tracking-wider flex items-center justify-between font-medium">
+            <span>Coordinates (WGS84 Degrees)</span>
+            <span>
               Area: {((formBounds.lamax - formBounds.lamin) * (formBounds.lomax - formBounds.lomin)).toFixed(2)}°²
             </span>
           </div>
 
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <span className="text-[10px] font-mono text-slate-500 block">South Lat (lamin)</span>
+              <span className="text-[11px] text-aviation-muted block mb-0.5">South Lat</span>
               <input
                 type="number"
                 step="0.01"
@@ -123,11 +123,11 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({
                 onChange={(e) =>
                   setFormBounds({ ...formBounds, lamin: parseFloat(e.target.value) || 0 })
                 }
-                className="w-full bg-atc-900 border border-atc-700 rounded px-2 py-1 text-xs font-mono text-slate-200 focus:outline-none focus:border-cyan-500"
+                className="w-full bg-white border border-aviation-border rounded-lg px-2.5 py-1 text-xs text-aviation-navy font-mono focus:outline-none focus:border-aviation-sky"
               />
             </div>
             <div>
-              <span className="text-[10px] font-mono text-slate-500 block">North Lat (lamax)</span>
+              <span className="text-[11px] text-aviation-muted block mb-0.5">North Lat</span>
               <input
                 type="number"
                 step="0.01"
@@ -135,11 +135,11 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({
                 onChange={(e) =>
                   setFormBounds({ ...formBounds, lamax: parseFloat(e.target.value) || 0 })
                 }
-                className="w-full bg-atc-900 border border-atc-700 rounded px-2 py-1 text-xs font-mono text-slate-200 focus:outline-none focus:border-cyan-500"
+                className="w-full bg-white border border-aviation-border rounded-lg px-2.5 py-1 text-xs text-aviation-navy font-mono focus:outline-none focus:border-aviation-sky"
               />
             </div>
             <div>
-              <span className="text-[10px] font-mono text-slate-500 block">West Lon (lomin)</span>
+              <span className="text-[11px] text-aviation-muted block mb-0.5">West Lon</span>
               <input
                 type="number"
                 step="0.01"
@@ -147,11 +147,11 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({
                 onChange={(e) =>
                   setFormBounds({ ...formBounds, lomin: parseFloat(e.target.value) || 0 })
                 }
-                className="w-full bg-atc-900 border border-atc-700 rounded px-2 py-1 text-xs font-mono text-slate-200 focus:outline-none focus:border-cyan-500"
+                className="w-full bg-white border border-aviation-border rounded-lg px-2.5 py-1 text-xs text-aviation-navy font-mono focus:outline-none focus:border-aviation-sky"
               />
             </div>
             <div>
-              <span className="text-[10px] font-mono text-slate-500 block">East Lon (lomax)</span>
+              <span className="text-[11px] text-aviation-muted block mb-0.5">East Lon</span>
               <input
                 type="number"
                 step="0.01"
@@ -159,22 +159,22 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({
                 onChange={(e) =>
                   setFormBounds({ ...formBounds, lomax: parseFloat(e.target.value) || 0 })
                 }
-                className="w-full bg-atc-900 border border-atc-700 rounded px-2 py-1 text-xs font-mono text-slate-200 focus:outline-none focus:border-cyan-500"
+                className="w-full bg-white border border-aviation-border rounded-lg px-2.5 py-1 text-xs text-aviation-navy font-mono focus:outline-none focus:border-aviation-sky"
               />
             </div>
           </div>
 
           {validationError && (
-            <div className="text-[11px] text-rose-400 bg-rose-950/40 border border-rose-800/60 p-1.5 rounded">
+            <div className="text-xs text-aviation-red bg-red-50 border border-red-200 p-2 rounded-lg font-medium">
               {validationError}
             </div>
           )}
 
           <button
             onClick={handleApplyCustom}
-            className="w-full mt-1 py-1 rounded bg-cyan-600/30 hover:bg-cyan-600/50 border border-cyan-500/50 text-cyan-200 font-mono text-xs font-semibold flex items-center justify-center gap-1.5 transition"
+            className="w-full mt-2 py-1.5 rounded-lg bg-aviation-navy hover:bg-aviation-midnight text-white font-medium text-xs flex items-center justify-center gap-1.5 transition shadow-xs"
           >
-            <Check className="w-3.5 h-3.5" />
+            <Check className="w-3.5 h-3.5 text-aviation-sky" />
             Apply Sector Coordinates
           </button>
         </div>

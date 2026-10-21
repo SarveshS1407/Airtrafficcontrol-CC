@@ -20,15 +20,14 @@ describe('UI Component Test Suite', () => {
       fastestSpeedKts: 490,
     };
 
-    render(<MetricsBanner stats={stats} />);
+    render(<MetricsBanner stats={stats} lastUpdated={Date.now()} />);
 
-    expect(screen.getByText('TOTAL')).toBeInTheDocument();
+    expect(screen.getByText(/In View/i)).toBeInTheDocument();
     expect(screen.getByText('20')).toBeInTheDocument();
-    expect(screen.getByText('/42')).toBeInTheDocument();
-    expect(screen.getByText('AIRBORNE')).toBeInTheDocument();
+    expect(screen.getByText(/42/)).toBeInTheDocument();
+    expect(screen.getByText(/Airborne/i)).toBeInTheDocument();
     expect(screen.getByText('35')).toBeInTheDocument();
-    expect(screen.getByText('GROUND')).toBeInTheDocument();
-    expect(screen.getByText('7')).toBeInTheDocument();
+    expect(screen.getByText(/Updated/i)).toBeInTheDocument();
   });
 
   it('renders MovementHistoryLog with mandatory session disclaimer', () => {
@@ -89,15 +88,14 @@ describe('UI Component Test Suite', () => {
       />
     );
 
-    expect(screen.getByText(/Telemetry Refresh Interrupted/i)).toBeInTheDocument();
-    expect(screen.getByText(/OpenSky API 503 Server Error/i)).toBeInTheDocument();
-    expect(screen.getByText(/Preserving last verified snapshot/i)).toBeInTheDocument();
+    expect(screen.getByText(/Live flight data is temporarily unavailable/i)).toBeInTheDocument();
+    expect(screen.getByText(/demonstration flights/i)).toBeInTheDocument();
 
-    const retryBtn = screen.getByRole('button', { name: /Retry/i });
+    const retryBtn = screen.getByRole('button', { name: /Try Again/i });
     fireEvent.click(retryBtn);
     expect(handleRetry).toHaveBeenCalledTimes(1);
 
-    const demoBtn = screen.getByRole('button', { name: /Switch to Demo Fixtures/i });
+    const demoBtn = screen.getByRole('button', { name: /Use Demonstration Data/i });
     fireEvent.click(demoBtn);
     expect(handleSwitchDemo).toHaveBeenCalledTimes(1);
   });
@@ -126,10 +124,10 @@ describe('UI Component Test Suite', () => {
       />
     );
 
-    expect(screen.getByText('LIVE OPENSKY')).toBeInTheDocument();
-    expect(screen.getByText('DEMO FIXTURES')).toBeInTheDocument();
+    expect(screen.getByText(/Live OpenSky/i)).toBeInTheDocument();
+    expect(screen.getByText(/Demo Fixtures/i)).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText('DEMO FIXTURES'));
+    fireEvent.click(screen.getByText(/Demo Fixtures/i));
     expect(handleToggle).toHaveBeenCalledWith('DEMO');
   });
 
@@ -162,7 +160,7 @@ describe('UI Component Test Suite', () => {
     fireEvent.change(searchInput, { target: { value: 'DLH' } });
     expect(handleFilterChange).toHaveBeenCalledWith({ searchQuery: 'DLH' });
 
-    const groundBtn = screen.getByRole('button', { name: 'GROUND' });
+    const groundBtn = screen.getByRole('button', { name: /On Ground/i });
     fireEvent.click(groundBtn);
     expect(handleFilterChange).toHaveBeenCalledWith({ groundState: 'ON_GROUND' });
   });

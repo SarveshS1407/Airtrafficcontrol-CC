@@ -62,7 +62,7 @@ export const UnifiedMap: React.FC<UnifiedMapProps> = (props) => {
   };
 
   return (
-    <div className="relative w-full h-full min-w-0 min-h-0 overflow-hidden bg-atc-950">
+    <div className="relative w-full h-full min-w-0 min-h-0 overflow-hidden bg-[#EBF3FA]">
       {/* 1. Master Map Engine Rendering */}
       {mapEngine === 'google' ? (
         <GoogleRadarMap
@@ -110,38 +110,39 @@ export const UnifiedMap: React.FC<UnifiedMapProps> = (props) => {
         <LocationSearchControl onSelectLocation={handleSelectLocation} />
       </div>
 
-      {/* 3. Top-Right / Center-Right Engine Switcher Dock */}
-      <div className="absolute top-3 right-14 sm:right-16 z-20 flex items-center gap-1.5 bg-slate-950/85 backdrop-blur-md p-1 rounded-xl border border-slate-700/80 shadow-2xl font-mono text-[11px]">
-        <span className="text-[10px] text-slate-400 uppercase font-bold pl-1.5 pr-1 hidden lg:inline">
-          ENGINE:
-        </span>
+      {/* 3. Top-Right Secondary Map Controls */}
+      <div className="absolute top-3 right-14 sm:right-16 z-20 flex items-center gap-1.5 bg-white/95 backdrop-blur-md p-1 rounded-xl border border-slate-200 shadow-md font-sans text-xs">
+        {props.currentRegion.id !== 'global' && (
+          <button
+            onClick={props.onResetGlobalView}
+            className="px-2.5 py-1.5 rounded-lg text-slate-700 hover:text-aviation-navy hover:bg-slate-100 font-medium transition flex items-center gap-1.5"
+            title="Reset to global view"
+          >
+            <Globe2 className="w-3.5 h-3.5 text-aviation-navy" />
+            <span className="hidden sm:inline">World View</span>
+          </button>
+        )}
+        <div className="h-4 w-px bg-slate-200 hidden sm:block" />
         <button
-          onClick={() => setMapEngine('google')}
-          className={`px-2.5 py-1 rounded-lg transition flex items-center gap-1 font-bold ${
-            mapEngine === 'google'
-              ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/30'
-              : 'text-slate-300 hover:text-white hover:bg-slate-900'
-          }`}
-          title="Switch to Google Maps Platform Engine"
+          onClick={() => setMapEngine(mapEngine === 'google' ? 'leaflet' : 'google')}
+          className="px-2.5 py-1.5 rounded-lg text-slate-600 hover:text-aviation-navy hover:bg-slate-100 transition flex items-center gap-1.5 font-medium text-[11px]"
+          title="Toggle map cartography engine"
         >
-          <Globe2 className="w-3.5 h-3.5" />
-          <span>Google Maps</span>
-        </button>
-        <button
-          onClick={() => setMapEngine('leaflet')}
-          className={`px-2.5 py-1 rounded-lg transition flex items-center gap-1 font-bold ${
-            mapEngine === 'leaflet'
-              ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/30'
-              : 'text-slate-300 hover:text-white hover:bg-slate-900'
-          }`}
-          title="Switch to OpenStreetMap / Leaflet Engine"
-        >
-          <MapIcon className="w-3.5 h-3.5" />
-          <span>OSM / Leaflet</span>
+          {mapEngine === 'google' ? (
+            <>
+              <Globe2 className="w-3.5 h-3.5 text-aviation-navy" />
+              <span>Google Maps</span>
+            </>
+          ) : (
+            <>
+              <MapIcon className="w-3.5 h-3.5 text-aviation-navy" />
+              <span>OpenStreetMap</span>
+            </>
+          )}
         </button>
       </div>
 
-      {/* 4. Floating Location Monitor HUD Card (Top Center / Dynamic) */}
+      {/* 4. Floating Location Monitor HUD Card */}
       {monitoringTarget && (
         <div className="absolute top-16 left-3 sm:left-auto sm:right-3 z-20 animate-slideDown">
           <LocationMonitorPanel
@@ -154,11 +155,11 @@ export const UnifiedMap: React.FC<UnifiedMapProps> = (props) => {
         </div>
       )}
 
-      {/* 5. Click-to-Monitor Instruction Prompt Hint (Fades out gently) */}
+      {/* 5. Click-to-Monitor Instruction Prompt Hint */}
       {!monitoringTarget && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 pointer-events-none hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-950/80 border border-slate-800 text-slate-400 text-[11px] font-mono backdrop-blur-md shadow-lg">
-          <Crosshair className="w-3.5 h-3.5 text-cyan-400" />
-          <span>Click anywhere on the map to anchor a localized surveillance radius</span>
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 pointer-events-none hidden md:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 border border-slate-200 text-slate-600 text-xs font-sans backdrop-blur-md shadow-sm">
+          <Crosshair className="w-3.5 h-3.5 text-aviation-navy" />
+          <span>Click anywhere on the map to explore nearby flights</span>
         </div>
       )}
     </div>

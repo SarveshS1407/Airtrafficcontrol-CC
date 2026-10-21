@@ -1,6 +1,123 @@
 import { RegionPreset } from '../types/geo';
 
 export const PRESET_REGIONS: RegionPreset[] = [
+  // 1. Worldwide Global Surveillance (Mandatory Default)
+  {
+    id: 'global',
+    name: 'Global View (Worldwide)',
+    description: 'Unrestricted worldwide air traffic surveillance and intercontinental corridors',
+    country: 'Worldwide',
+    bounds: {
+      lamin: -85.0,
+      lomin: -180.0,
+      lamax: 85.0,
+      lomax: 180.0,
+    },
+    center: [20.0, 0.0],
+    zoom: 2,
+  },
+
+  // Continental Sectors
+  {
+    id: 'north-america',
+    name: 'North America (US & Canada)',
+    description: 'Continental United States, Canada, and transcontinental transit corridors',
+    country: 'North America',
+    bounds: {
+      lamin: 15.0,
+      lomin: -168.0,
+      lamax: 72.0,
+      lomax: -52.0,
+    },
+    center: [39.5, -98.3],
+    zoom: 3,
+  },
+  {
+    id: 'europe',
+    name: 'Europe (ECAC Airspace)',
+    description: 'Pan-European flight information regions and high-density airway network',
+    country: 'Europe',
+    bounds: {
+      lamin: 34.0,
+      lomin: -25.0,
+      lamax: 71.0,
+      lomax: 45.0,
+    },
+    center: [50.0, 10.0],
+    zoom: 4,
+  },
+  {
+    id: 'asia-pacific',
+    name: 'Asia-Pacific Airspace',
+    description: 'East Asia, South Asia, and Southeast Asian high-traffic corridors',
+    country: 'Asia-Pacific',
+    bounds: {
+      lamin: -12.0,
+      lomin: 60.0,
+      lamax: 55.0,
+      lomax: 150.0,
+    },
+    center: [25.0, 105.0],
+    zoom: 3,
+  },
+  {
+    id: 'middle-east',
+    name: 'Middle East & Gulf',
+    description: 'Gulf transit hub connecting Europe, Asia, and Africa (Dubai, Doha, Riyadh)',
+    country: 'Middle East',
+    bounds: {
+      lamin: 12.0,
+      lomin: 25.0,
+      lamax: 42.0,
+      lomax: 65.0,
+    },
+    center: [26.0, 48.0],
+    zoom: 4,
+  },
+  {
+    id: 'latin-america',
+    name: 'Latin America & Caribbean',
+    description: 'Central America, Caribbean islands, and South American transits',
+    country: 'South America',
+    bounds: {
+      lamin: -56.0,
+      lomin: -90.0,
+      lamax: 15.0,
+      lomax: -30.0,
+    },
+    center: [-18.0, -60.0],
+    zoom: 3,
+  },
+  {
+    id: 'africa',
+    name: 'Africa (Pan-African)',
+    description: 'Northern trans-Sahara, Central Africa, and Southern African airspace',
+    country: 'Africa',
+    bounds: {
+      lamin: -35.0,
+      lomin: -20.0,
+      lamax: 38.0,
+      lomax: 55.0,
+    },
+    center: [4.0, 21.0],
+    zoom: 3,
+  },
+  {
+    id: 'oceania',
+    name: 'Oceania & Pacific',
+    description: 'Australia, New Zealand, and trans-Tasman / Pacific island routes',
+    country: 'Oceania',
+    bounds: {
+      lamin: -50.0,
+      lomin: 110.0,
+      lamax: -5.0,
+      lomax: 180.0,
+    },
+    center: [-25.0, 135.0],
+    zoom: 3,
+  },
+
+  // High-Density Metropolitan Terminal Areas
   {
     id: 'london-tma',
     name: 'London TMA (UK)',
@@ -44,20 +161,6 @@ export const PRESET_REGIONS: RegionPreset[] = [
     zoom: 9,
   },
   {
-    id: 'switzerland-alps',
-    name: 'Switzerland Airspace (CH)',
-    description: 'Zurich, Geneva, Basel, and Swiss Alpine crossing routes',
-    country: 'Switzerland',
-    bounds: {
-      lamin: 45.818,
-      lomin: 5.956,
-      lamax: 47.808,
-      lomax: 10.492,
-    },
-    center: [46.8182, 8.2275],
-    zoom: 8,
-  },
-  {
     id: 'tokyo-bay',
     name: 'Tokyo Metro (JP)',
     description: 'Haneda (RJTT), Narita (RJAA), and Tokyo Bay approach airspace',
@@ -86,10 +189,24 @@ export const PRESET_REGIONS: RegionPreset[] = [
     zoom: 10,
   },
   {
+    id: 'switzerland-alps',
+    name: 'Switzerland Airspace (CH)',
+    description: 'Zurich, Geneva, Basel, and Swiss Alpine crossing routes',
+    country: 'Switzerland',
+    bounds: {
+      lamin: 45.818,
+      lomin: 5.956,
+      lamax: 47.808,
+      lomax: 10.492,
+    },
+    center: [46.8182, 8.2275],
+    zoom: 8,
+  },
+  {
     id: 'custom',
     name: 'Custom Region / Bounds',
     description: 'User-defined geographic bounding box coordinates or map viewport',
-    country: 'Global',
+    country: 'Custom',
     bounds: {
       lamin: 45.8,
       lomin: 5.9,
@@ -101,4 +218,5 @@ export const PRESET_REGIONS: RegionPreset[] = [
   },
 ];
 
-export const DEFAULT_REGION = PRESET_REGIONS[0]; // London TMA
+// Default region is the global overview
+export const DEFAULT_REGION = PRESET_REGIONS[0];

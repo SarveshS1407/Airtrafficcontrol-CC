@@ -23,6 +23,7 @@ interface RadarMapProps {
   onTileProviderChange: (key: 'osmDark' | 'osmStandard' | 'osmHot') => void;
   onToggleTrail: () => void;
   onToggleBoundsRectangle: () => void;
+  onResetGlobalView?: () => void;
   onClearCenterTarget?: () => void;
 }
 
@@ -87,6 +88,7 @@ export const RadarMap: React.FC<RadarMapProps> = ({
   onTileProviderChange,
   onToggleTrail,
   onToggleBoundsRectangle,
+  onResetGlobalView,
   onClearCenterTarget,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
@@ -182,13 +184,17 @@ export const RadarMap: React.FC<RadarMapProps> = ({
     onClearCenterTarget?.();
   }, [mapCenterTarget, onClearCenterTarget]);
 
-  // Tactical Range Rings Overlay around Sector Center
+  // Tactical Range Rings Overlay around Sector Center (Suppressed in Global Mode)
   useEffect(() => {
     const map = mapInstanceRef.current;
     if (!map) return;
 
     if (rangeRingsRef.current) {
       rangeRingsRef.current.remove();
+    }
+
+    if (currentRegion.id === 'global') {
+      return;
     }
 
     const layer = L.layerGroup();
@@ -232,12 +238,12 @@ export const RadarMap: React.FC<RadarMapProps> = ({
     };
   }, [currentRegion]);
 
-  // Sync Sector Bounds Rectangle Overlay
+  // Sync Sector Bounds Rectangle Overlay (Suppressed in Global Mode)
   useEffect(() => {
     const map = mapInstanceRef.current;
     if (!map) return;
 
-    if (!showBoundsRectangle) {
+    if (!showBoundsRectangle || currentRegion.id === 'global') {
       if (boundsRectangleRef.current) {
         boundsRectangleRef.current.remove();
         boundsRectangleRef.current = null;
@@ -377,6 +383,17 @@ export const RadarMap: React.FC<RadarMapProps> = ({
     map.setView(currentRegion.center, currentRegion.zoom, { animate: true });
   };
 
+  const handleResetGlobalView = () => {
+    if (onResetGlobalView) {
+      onResetGlobalView();
+    } else {
+      const map = mapInstanceRef.current;
+      if (map) {
+        map.setView([20, 0], 2, { animate: true });
+      }
+    }
+  };
+
   return (
     <div className="relative flex-1 w-full h-full bg-atc-950 overflow-hidden">
       {/* Leaflet Map DOM Element */}
@@ -393,6 +410,7 @@ export const RadarMap: React.FC<RadarMapProps> = ({
         onFitAllAircraft={handleFitAll}
         onCenterSelected={handleCenterSelected}
         onResetSectorView={handleResetSectorView}
+        onResetGlobalView={handleResetGlobalView}
         onToggleTrail={onToggleTrail}
         onToggleBoundsRectangle={onToggleBoundsRectangle}
       />

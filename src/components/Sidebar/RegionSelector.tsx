@@ -41,7 +41,7 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({
   };
 
   const handleApplyCustom = () => {
-    const res = validateBoundingBox(formBounds);
+    const res = validateBoundingBox(formBounds, true);
     if (!res.isValid) {
       setValidationError(res.error ?? 'Invalid bounds');
       return;

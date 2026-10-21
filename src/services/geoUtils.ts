@@ -5,7 +5,7 @@ import { ATC_CONFIG } from '../constants/config';
  * Validates whether a bounding box is within standard WGS84 geographic limits
  * and does not exceed the maximum allowable area.
  */
-export function validateBoundingBox(bounds: BoundingBox): BoundsValidationResult {
+export function validateBoundingBox(bounds: BoundingBox, allowLargeSector: boolean = false): BoundsValidationResult {
   const { lamin, lomin, lamax, lomax } = bounds;
 
   if (
@@ -48,7 +48,7 @@ export function validateBoundingBox(bounds: BoundingBox): BoundsValidationResult
   }
 
   const areaDegreesSq = latSpan * lonSpan;
-  if (areaDegreesSq > ATC_CONFIG.MAX_BOUNDS_AREA_DEG_SQ) {
+  if (!allowLargeSector && areaDegreesSq > ATC_CONFIG.MAX_BOUNDS_AREA_DEG_SQ) {
     return {
       isValid: false,
       error: `Requested sector area (${areaDegreesSq.toFixed(1)}°²) exceeds max safe limit (${ATC_CONFIG.MAX_BOUNDS_AREA_DEG_SQ}°²). Please zoom in or constrain bounds.`,
@@ -63,6 +63,13 @@ export function validateBoundingBox(bounds: BoundingBox): BoundsValidationResult
  * Determines whether a given coordinate point falls inside a bounding box
  */
 export function isWithinBounds(lat: number, lon: number, bounds: BoundingBox): boolean {
+  if (lat === null || lon === null || Number.isNaN(lat) || Number.isNaN(lon)) {
+    return false;
+  }
+  // If bounds encompass the whole globe
+  if (bounds.lamin <= -80 && bounds.lamax >= 80 && bounds.lomin <= -170 && bounds.lomax >= 170) {
+    return true;
+  }
   return (
     lat >= bounds.lamin &&
     lat <= bounds.lamax &&

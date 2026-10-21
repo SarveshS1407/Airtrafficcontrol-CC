@@ -9,6 +9,7 @@ import {
   Search,
   Flame,
   X,
+  Star,
 } from 'lucide-react';
 import { Aircraft } from '../../types/opensky';
 import { AircraftSortConfig, SortField } from '../../types/filter';
@@ -30,6 +31,8 @@ interface FlightListProps {
   emergencyOnly?: boolean;
   onToggleEmergency?: () => void;
   apiStatus?: ApiStatus;
+  watchlist?: string[];
+  onToggleWatchlist?: (icao24: string) => void;
 }
 
 export const FlightList: React.FC<FlightListProps> = ({
@@ -48,6 +51,8 @@ export const FlightList: React.FC<FlightListProps> = ({
   emergencyOnly,
   onToggleEmergency,
   apiStatus,
+  watchlist,
+  onToggleWatchlist,
 }) => {
   const isApiError = apiStatus?.status === 'ERROR' || apiStatus?.status === 'RATE_LIMITED';
 
@@ -255,35 +260,63 @@ export const FlightList: React.FC<FlightListProps> = ({
                     </div>
                   </div>
 
-                  {/* Flight state & altitude */}
-                  <div className="text-right flex flex-col items-end">
-                    {ac.isStale && (
-                      <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-amber-950 text-amber-400 border border-amber-800">
-                        STALE
-                      </span>
+                  {/* Flight state & altitude with Watchlist Action */}
+                  <div className="text-right flex items-center gap-2">
+                    {onToggleWatchlist && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onToggleWatchlist(ac.icao24);
+                        }}
+                        className={`p-1 rounded hover:bg-atc-800 transition ${
+                          watchlist?.includes(ac.icao24.toLowerCase())
+                            ? 'text-amber-400'
+                            : 'text-slate-600 hover:text-slate-300'
+                        }`}
+                        title={
+                          watchlist?.includes(ac.icao24.toLowerCase())
+                            ? 'Remove from Watchlist'
+                            : 'Pin to Watchlist'
+                        }
+                        aria-label="Toggle Watchlist"
+                      >
+                        <Star
+                          className={`w-3.5 h-3.5 ${
+                            watchlist?.includes(ac.icao24.toLowerCase()) ? 'fill-amber-400' : ''
+                          }`}
+                        />
+                      </button>
                     )}
-                    {ac.onGround ? (
-                      <span className="text-[10px] font-mono font-semibold text-amber-400">
-                        ON GROUND
-                      </span>
-                    ) : (
-                      <div className="flex items-center gap-1 text-[11px] font-mono font-semibold text-emerald-400">
-                        {ac.verticalState === 'CLIMBING' && (
-                          <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400" />
-                        )}
-                        {ac.verticalState === 'DESCENDING' && (
-                          <ArrowDownRight className="w-3.5 h-3.5 text-rose-400" />
-                        )}
-                        {ac.verticalState === 'LEVEL' && (
-                          <Minus className="w-3 h-3 text-cyan-400" />
-                        )}
-                        <span>
-                          {ac.baroAltitudeFeet !== null
-                            ? `${ac.baroAltitudeFeet.toLocaleString()} ft`
-                            : 'FL --'}
+                    <div className="flex flex-col items-end">
+                      {ac.isStale && (
+                        <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-amber-950 text-amber-400 border border-amber-800">
+                          STALE
                         </span>
-                      </div>
-                    )}
+                      )}
+                      {ac.onGround ? (
+                        <span className="text-[10px] font-mono font-semibold text-amber-400">
+                          ON GROUND
+                        </span>
+                      ) : (
+                        <div className="flex items-center gap-1 text-[11px] font-mono font-semibold text-emerald-400">
+                          {ac.verticalState === 'CLIMBING' && (
+                            <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400" />
+                          )}
+                          {ac.verticalState === 'DESCENDING' && (
+                            <ArrowDownRight className="w-3.5 h-3.5 text-rose-400" />
+                          )}
+                          {ac.verticalState === 'LEVEL' && (
+                            <Minus className="w-3 h-3 text-cyan-400" />
+                          )}
+                          <span>
+                            {ac.baroAltitudeFeet !== null
+                              ? `${ac.baroAltitudeFeet.toLocaleString()} ft`
+                              : 'FL --'}
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 

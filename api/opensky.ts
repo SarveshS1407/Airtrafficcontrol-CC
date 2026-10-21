@@ -221,25 +221,30 @@ export default async function handler(req: any, res: any) {
       if (wLon >= eLon) {
         return res.status(400).json({ error: 'West longitude (lomin) must be strictly less than East longitude (lomax)' });
       }
-
-      const area = (nLat - sLat) * (eLon - wLon);
-      if (area > 35) {
-        return res.status(400).json({
-          error: `Sector area (${area.toFixed(1)}°²) exceeds max safe limit of 35°². Please zoom in.`,
-        });
-      }
     }
 
     // Build upstream OpenSky REST URL
     const params = new URLSearchParams();
-    if (lamin) params.set('lamin', lamin);
-    if (lomin) params.set('lomin', lomin);
-    if (lamax) params.set('lamax', lamax);
-    if (lomax) params.set('lomax', lomax);
+    // Only pass bounding box parameters if not global/world-scale
+    if (lamin && lomin && lamax && lomax) {
+      const sLat = parseFloat(lamin);
+      const wLon = parseFloat(lomin);
+      const nLat = parseFloat(lamax);
+      const eLon = parseFloat(lomax);
+      const isWorldwide = (nLat - sLat) > 100 || (eLon - wLon) > 200 || sLat <= -70 || nLat >= 70;
+      if (!isWorldwide) {
+        params.set('lamin', lamin);
+        params.set('lomin', lomin);
+        params.set('lamax', lamax);
+        params.set('lomax', lomax);
+      }
+    }
     if (time) params.set('time', time);
     if (icao24) params.set('icao24', icao24);
 
-    const upstreamUrl = `https://opensky-network.org/api/states/all?${params.toString()}`;
+    const upstreamUrl = params.toString().length > 0
+      ? `https://opensky-network.org/api/states/all?${params.toString()}`
+      : 'https://opensky-network.org/api/states/all';
 
     // Standard headers
     const headers: Record<string, string> = {

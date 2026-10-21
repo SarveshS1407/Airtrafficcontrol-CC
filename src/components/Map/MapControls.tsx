@@ -6,6 +6,7 @@ import {
   RotateCcw,
   Square,
   Spline,
+  Globe,
 } from 'lucide-react';
 import { ATC_CONFIG } from '../../constants/config';
 
@@ -19,6 +20,7 @@ interface MapControlsProps {
   onFitAllAircraft: () => void;
   onCenterSelected: () => void;
   onResetSectorView: () => void;
+  onResetGlobalView?: () => void;
   onToggleTrail: () => void;
   onToggleBoundsRectangle: () => void;
 }
@@ -33,6 +35,7 @@ export const MapControls: React.FC<MapControlsProps> = ({
   onFitAllAircraft,
   onCenterSelected,
   onResetSectorView,
+  onResetGlobalView,
   onToggleTrail,
   onToggleBoundsRectangle,
 }) => {
@@ -40,6 +43,18 @@ export const MapControls: React.FC<MapControlsProps> = ({
 
   return (
     <div className="absolute top-4 right-4 flex flex-col gap-2 z-[1000] select-none">
+      {/* Global View Button */}
+      {onResetGlobalView && (
+        <button
+          onClick={onResetGlobalView}
+          className="p-2 rounded bg-cyan-950/90 hover:bg-cyan-900 border border-cyan-500/60 text-cyan-300 hover:text-white shadow-lg backdrop-blur-md transition flex items-center justify-center"
+          title="Reset to Global World View"
+          aria-label="Reset to Global World View"
+        >
+          <Globe className="w-4 h-4" />
+        </button>
+      )}
+
       {/* Layer selector button */}
       <div className="relative">
         <button

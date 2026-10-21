@@ -229,26 +229,36 @@ export function fetchDemoAircraftSnapshot(): { time: number; aircraft: Aircraft[
 }
 
 /**
- * Fetches live aircraft from OpenSky Network REST API within specified geographic bounds
+ * Fetches live aircraft from OpenSky Network REST API within specified geographic bounds,
+ * or globally across all flight regions if bounds are omitted or set to world-scale.
  */
 export async function fetchLiveAircraftFromOpenSky(
-  bounds: BoundingBox,
+  bounds?: BoundingBox | null,
   signal?: AbortSignal
 ): Promise<{ time: number; aircraft: Aircraft[] }> {
-  // Validate bounds before network request
-  const validation = validateBoundingBox(bounds);
-  if (!validation.isValid) {
-    throw new Error(`Invalid bounding box: ${validation.error}`);
+  const isWorldwide = bounds
+    ? bounds.lamin <= -70 && bounds.lamax >= 70 && bounds.lomin <= -160 && bounds.lomax >= 160
+    : true;
+
+  if (bounds && !isWorldwide) {
+    // Validate bounds before network request
+    const validation = validateBoundingBox(bounds, true);
+    if (!validation.isValid) {
+      throw new Error(`Invalid bounding box: ${validation.error}`);
+    }
   }
 
-  const params = new URLSearchParams({
-    lamin: bounds.lamin.toFixed(4),
-    lomin: bounds.lomin.toFixed(4),
-    lamax: bounds.lamax.toFixed(4),
-    lomax: bounds.lomax.toFixed(4),
-  });
+  const params = new URLSearchParams();
+  if (bounds && !isWorldwide) {
+    params.set('lamin', bounds.lamin.toFixed(4));
+    params.set('lomin', bounds.lomin.toFixed(4));
+    params.set('lamax', bounds.lamax.toFixed(4));
+    params.set('lomax', bounds.lomax.toFixed(4));
+  }
 
-  const requestUrl = `/api/opensky/states/all?${params.toString()}`;
+  const requestUrl = params.toString().length > 0
+    ? `/api/opensky/states/all?${params.toString()}`
+    : '/api/opensky/states/all';
 
   let response: Response;
   try {

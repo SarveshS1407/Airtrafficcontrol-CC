@@ -149,6 +149,7 @@ export const useAtcStore = create<AtcState>((set, get) => ({
       currentRegion: region,
       activeBounds: { ...region.bounds },
       viewportSyncEnabled: false,
+      mapCenterTarget: [...region.center] as [number, number],
     });
     get().fetchAircraftSnapshot(true);
   },

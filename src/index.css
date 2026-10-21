@@ -4,8 +4,13 @@
 
 @layer base {
   body {
-    @apply bg-aviation-paper text-aviation-ink font-sans antialiased min-h-screen;
+    @apply bg-aviation-paper text-aviation-ink font-sans antialiased min-h-screen transition-colors duration-200;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  .dark body {
+    background-color: #101E2B;
+    color: #E3ECF3;
   }
 }
 
@@ -19,13 +24,25 @@
   background: #F4F0E7;
 }
 
+.dark ::-webkit-scrollbar-track {
+  background: #101E2B;
+}
+
 ::-webkit-scrollbar-thumb {
   background: #D6E0E7;
   border-radius: 4px;
 }
 
+.dark ::-webkit-scrollbar-thumb {
+  background: #2D4B63;
+}
+
 ::-webkit-scrollbar-thumb:hover {
   background: #82909B;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #456D8B;
 }
 
 /* Aviation Field Journal Graphic Utilities */
@@ -41,9 +58,17 @@
   background-size: 24px 24px;
 }
 
+.dark .blueprint-grid {
+  background-image: radial-gradient(#20394D 1.5px, transparent 1.5px);
+}
+
 .blueprint-grid-dense {
   background-image: radial-gradient(#D6E0E7 1px, transparent 1px);
   background-size: 16px 16px;
+}
+
+.dark .blueprint-grid-dense {
+  background-image: radial-gradient(#20394D 1px, transparent 1px);
 }
 
 .tech-stamp {

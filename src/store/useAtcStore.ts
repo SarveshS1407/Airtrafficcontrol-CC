@@ -58,6 +58,10 @@ export interface AtcState {
   showBoundsRectangle: boolean;
   mapCenterTarget: [number, number] | null;
 
+  // Theme Management
+  themeMode: 'light' | 'dark' | 'system';
+  setThemeMode: (mode: 'light' | 'dark' | 'system') => void;
+
   // Internal Request Controller
   activeAbortController: AbortController | null;
 
@@ -148,6 +152,31 @@ export const useAtcStore = create<AtcState>((set, get) => ({
   showLabels: true,
   showBoundsRectangle: true,
   mapCenterTarget: null,
+
+  themeMode:
+    typeof window !== 'undefined' &&
+    (localStorage.getItem('atc_theme_pref') === 'dark' ||
+      localStorage.getItem('atc_theme_pref') === 'light' ||
+      localStorage.getItem('atc_theme_pref') === 'system')
+      ? (localStorage.getItem('atc_theme_pref') as 'light' | 'dark' | 'system')
+      : 'light',
+
+  setThemeMode: (mode: 'light' | 'dark' | 'system') => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('atc_theme_pref', mode);
+      const isDark =
+        mode === 'dark' ||
+        (mode === 'system' &&
+          typeof window.matchMedia === 'function' &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches);
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+    set({ themeMode: mode });
+  },
 
   activeAbortController: null,
 

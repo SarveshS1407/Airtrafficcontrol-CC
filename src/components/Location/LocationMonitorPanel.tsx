@@ -1,8 +1,12 @@
 import React from 'react';
-import { MapPin, X, Globe2, ArrowUpRight, Compass } from 'lucide-react';
+import { X, ArrowUpRight } from 'lucide-react';
 import { MonitoringTarget } from '../../store/useAtcStore';
 import { Aircraft } from '../../types/opensky';
 import { calculateDistanceKm } from '../../services/geoUtils';
+import {
+  AirportPinIcon,
+  GlobeNavigationIcon,
+} from '../AviationDesignSystem';
 
 interface LocationMonitorPanelProps {
   target: MonitoringTarget | null;
@@ -45,19 +49,19 @@ export const LocationMonitorPanel: React.FC<LocationMonitorPanelProps> = ({
   };
 
   return (
-    <div className="bg-[#FCFAF5]/95 border border-[#D6E0E7] rounded-2xl p-4 shadow-xl backdrop-blur-md font-sans text-xs text-[#172D40] max-w-sm w-full select-none animate-fadeIn">
+    <div className="bg-[#FCFAF5]/95 dark:bg-[#101E2B]/95 border border-[#D6E0E7] dark:border-[#2D4B63] rounded-2xl p-4 shadow-xl backdrop-blur-md font-sans text-xs text-[#172D40] dark:text-[#E3ECF3] max-w-sm w-full select-none animate-fadeIn">
       {/* Header */}
-      <div className="flex items-start justify-between gap-3 border-b border-[#D6E0E7] pb-3 mb-3">
+      <div className="flex items-start justify-between gap-3 border-b border-[#D6E0E7] dark:border-[#2D4B63] pb-3 mb-3">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-8 h-8 rounded-xl bg-[#20394D] flex items-center justify-center text-white shrink-0 shadow-xs">
-            <Compass className="w-4 h-4 text-[#8DB7D5]" />
+          <div className="w-8 h-8 rounded-xl bg-[#20394D] dark:bg-[#172D40] flex items-center justify-center text-white shrink-0 shadow-xs border border-[#172D40] dark:border-[#2D4B63]">
+            <AirportPinIcon size={16} color="#D87C43" />
           </div>
           <div className="min-w-0">
             <span className="text-[10px] text-[#D87C43] uppercase tracking-wider font-bold block tech-stamp">
               Explore traffic around here
             </span>
-            <h4 className="font-bold text-[#172D40] text-sm truncate">{target.name}</h4>
-            <span className="text-[10px] text-[#82909B] font-mono block">
+            <h4 className="font-bold text-[#172D40] dark:text-[#E3ECF3] text-sm truncate">{target.name}</h4>
+            <span className="text-[10px] text-[#82909B] dark:text-[#8DB7D5] font-mono block">
               LAT {formatCoord(target.lat, true)} • LON {formatCoord(target.lng, false)}
             </span>
           </div>
@@ -65,7 +69,7 @@ export const LocationMonitorPanel: React.FC<LocationMonitorPanelProps> = ({
 
         <button
           onClick={onClear}
-          className="text-[#82909B] hover:text-[#172D40] p-1.5 rounded-lg hover:bg-[#F4F0E7] transition shrink-0"
+          className="text-[#82909B] hover:text-[#172D40] dark:text-[#8DB7D5] dark:hover:text-white p-1.5 rounded-lg hover:bg-[#F4F0E7] dark:hover:bg-[#172D40] transition shrink-0"
           title="Return to global view"
           aria-label="Close location monitoring"
         >
@@ -126,14 +130,14 @@ export const LocationMonitorPanel: React.FC<LocationMonitorPanelProps> = ({
       {/* Quick Action Footer */}
       <div className="flex items-center justify-between text-xs pt-1">
         <span className="text-[#82909B] text-[11px] flex items-center gap-1">
-          <MapPin className="w-3 h-3 text-[#D87C43]" />
+          <AirportPinIcon size={12} color="#D87C43" />
           Click map to relocate
         </span>
         <button
           onClick={onClear}
           className="text-[#D87C43] hover:text-[#20394D] font-semibold flex items-center gap-1.5 text-xs transition"
         >
-          <Globe2 className="w-3.5 h-3.5" />
+          <GlobeNavigationIcon size={14} />
           <span>Back to global view</span>
         </button>
       </div>

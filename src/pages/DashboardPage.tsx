@@ -1,8 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
-  Plane,
   Filter,
-  MapPin,
   Radio,
   Compass,
   X,
@@ -10,7 +8,6 @@ import {
   Settings,
   Star,
   Globe2,
-  UserCheck,
   LogOut,
   ChevronLeft,
   ChevronRight,
@@ -29,6 +26,12 @@ import { FlightDetailPanel } from '../components/Telemetry/FlightDetailPanel';
 import { FleetAnalyticsView } from '../components/Analytics/FleetAnalyticsView';
 import { AirspaceSettingsView } from '../components/Settings/AirspaceSettingsView';
 import { PRESET_REGIONS } from '../constants/regions';
+import {
+  AviationEmblem,
+  CommercialAircraftIcon,
+  AirportPinIcon,
+  PilotWingsIcon,
+} from '../components/AviationDesignSystem';
 
 type DashboardView = 'radar' | 'analytics' | 'settings';
 type SidebarTab = 'flights' | 'filters' | 'sectors' | 'watchlist';
@@ -146,9 +149,9 @@ export const DashboardPage: React.FC = () => {
   }, [setRegion]);
 
   return (
-    <div className="flex flex-col h-screen w-screen overflow-hidden bg-[#F4F0E7] text-[#172D40] font-sans">
+    <div className="flex flex-col h-screen w-screen overflow-hidden bg-[#F4F0E7] dark:bg-[#101E2B] text-[#172D40] dark:text-[#E3ECF3] font-sans transition-colors duration-200">
       {/* 1. Universal Top Navigation Bar (Deep Cockpit Navy with Aviation Emblem) */}
-      <header className="bg-[#20394D] border-b border-[#172D40] px-3 sm:px-5 py-2.5 flex items-center justify-between gap-3 text-white z-30 select-none shadow-sm">
+      <header className="bg-[#20394D] dark:bg-[#0C1722] border-b border-[#172D40] dark:border-[#2D4B63] px-3 sm:px-5 py-2.5 flex items-center justify-between gap-3 text-white z-30 select-none shadow-sm transition-colors">
         {/* Left: Branding & Return to Landing */}
         <div className="flex items-center gap-3">
           <Link
@@ -156,9 +159,7 @@ export const DashboardPage: React.FC = () => {
             className="flex items-center gap-2.5 group text-slate-200 hover:text-white transition"
             title="Return to Landing Page"
           >
-            <div className="w-8 h-8 rounded-xl bg-[#D87C43] flex items-center justify-center shadow-xs">
-              <Plane className="w-4 h-4 text-white transform -rotate-45" />
-            </div>
+            <AviationEmblem size="sm" variant="badge" />
             <div>
               <div className="flex items-center gap-1.5 font-black text-sm tracking-tight text-white font-sans">
                 <span>AirTrafficControl</span>
@@ -244,7 +245,7 @@ export const DashboardPage: React.FC = () => {
           {isAuthenticated && currentUser ? (
             <div className="flex items-center gap-2 text-xs">
               <div className="hidden sm:flex items-center gap-2 bg-[#172D40]/80 border border-white/15 rounded-xl px-3 py-1.5">
-                <UserCheck className="w-3.5 h-3.5 text-[#467A67]" />
+                <PilotWingsIcon size={16} color="#467A67" />
                 <span className="text-white font-mono font-bold">{currentUser.callsign}</span>
                 {currentUser.watchlist.length > 0 && (
                   <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-[#C99B45] text-[#172D40] font-bold font-mono flex items-center gap-0.5">
@@ -310,22 +311,22 @@ export const DashboardPage: React.FC = () => {
             <aside
               className={`${
                 isDesktopSidebarOpen ? 'w-80 lg:w-96' : 'w-0'
-              } hidden md:flex flex-col border-r border-[#D6E0E7] bg-[#FCFAF5] transition-all duration-200 z-20 shrink-0 overflow-hidden shadow-xs`}
+              } hidden md:flex flex-col border-r border-[#D6E0E7] dark:border-[#2D4B63] bg-[#FCFAF5] dark:bg-[#172D40] transition-all duration-200 z-20 shrink-0 overflow-hidden shadow-xs`}
             >
               {/* Metrics Banner */}
               <MetricsBanner stats={stats} lastUpdated={apiStatus.lastSuccessfulFetch} />
 
               {/* Sidebar Tabs */}
-              <div className="flex items-center border-b border-[#D6E0E7] bg-[#F4F0E7] text-xs font-semibold">
+              <div className="flex items-center border-b border-[#D6E0E7] dark:border-[#2D4B63] bg-[#F4F0E7] dark:bg-[#101E2B] text-xs font-semibold">
                 <button
                   onClick={() => setActiveTab('flights')}
                   className={`flex-1 py-2.5 px-2 text-center transition flex items-center justify-center gap-1.5 border-b-2 ${
                     activeTab === 'flights'
-                      ? 'border-[#20394D] text-[#172D40] bg-[#FCFAF5] font-bold'
-                      : 'border-transparent text-[#82909B] hover:text-[#172D40] hover:bg-[#FCFAF5]/50'
+                      ? 'border-[#20394D] dark:border-[#D87C43] text-[#172D40] dark:text-[#E3ECF3] bg-[#FCFAF5] dark:bg-[#172D40] font-bold'
+                      : 'border-transparent text-[#82909B] dark:text-[#8DB7D5] hover:text-[#172D40] dark:hover:text-white hover:bg-[#FCFAF5]/50'
                   }`}
                 >
-                  <Plane className="w-3.5 h-3.5 text-[#D87C43]" />
+                  <CommercialAircraftIcon size={14} color="#D87C43" className="transform -rotate-45" />
                   <span>Targets ({allFilteredAircraft.length})</span>
                 </button>
 
@@ -333,8 +334,8 @@ export const DashboardPage: React.FC = () => {
                   onClick={() => setActiveTab('filters')}
                   className={`flex-1 py-2.5 px-2 text-center transition flex items-center justify-center gap-1.5 border-b-2 ${
                     activeTab === 'filters'
-                      ? 'border-[#20394D] text-[#172D40] bg-[#FCFAF5] font-bold'
-                      : 'border-transparent text-[#82909B] hover:text-[#172D40] hover:bg-[#FCFAF5]/50'
+                      ? 'border-[#20394D] dark:border-[#D87C43] text-[#172D40] dark:text-[#E3ECF3] bg-[#FCFAF5] dark:bg-[#172D40] font-bold'
+                      : 'border-transparent text-[#82909B] dark:text-[#8DB7D5] hover:text-[#172D40] dark:hover:text-white hover:bg-[#FCFAF5]/50'
                   }`}
                 >
                   <Filter className="w-3.5 h-3.5 text-[#456D8B]" />
@@ -345,11 +346,11 @@ export const DashboardPage: React.FC = () => {
                   onClick={() => setActiveTab('sectors')}
                   className={`flex-1 py-2.5 px-2 text-center transition flex items-center justify-center gap-1.5 border-b-2 ${
                     activeTab === 'sectors'
-                      ? 'border-[#20394D] text-[#172D40] bg-[#FCFAF5] font-bold'
-                      : 'border-transparent text-[#82909B] hover:text-[#172D40] hover:bg-[#FCFAF5]/50'
+                      ? 'border-[#20394D] dark:border-[#D87C43] text-[#172D40] dark:text-[#E3ECF3] bg-[#FCFAF5] dark:bg-[#172D40] font-bold'
+                      : 'border-transparent text-[#82909B] dark:text-[#8DB7D5] hover:text-[#172D40] dark:hover:text-white hover:bg-[#FCFAF5]/50'
                   }`}
                 >
-                  <MapPin className="w-3.5 h-3.5 text-[#467A67]" />
+                  <AirportPinIcon size={14} color="#467A67" />
                   <span>Sectors</span>
                 </button>
 
@@ -542,10 +543,10 @@ export const DashboardPage: React.FC = () => {
             <button
               onClick={() => setMobileSheet('flights')}
               className={`flex-1 py-2 flex flex-col items-center gap-1 ${
-                mobileSheet === 'flights' ? 'text-[#172D40] font-bold' : 'text-[#82909B]'
+                mobileSheet === 'flights' ? 'text-[#172D40] dark:text-white font-bold' : 'text-[#82909B] dark:text-[#8DB7D5]'
               }`}
             >
-              <Plane className="w-4 h-4 text-[#456D8B]" />
+              <CommercialAircraftIcon size={16} color="#456D8B" className="transform -rotate-45" />
               <span>Targets ({allFilteredAircraft.length})</span>
             </button>
 

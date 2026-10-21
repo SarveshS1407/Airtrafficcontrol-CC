@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   Play,
   Pause,
-  RotateCw,
   Clock,
   Menu,
   SlidersHorizontal,
@@ -15,6 +14,13 @@ import {
 import { useAtcStore } from '../../store/useAtcStore';
 import { StatusBadge } from '../Common/StatusBadge';
 import { ATC_CONFIG } from '../../constants/config';
+import {
+  AviationEmblem,
+  AviationRefreshIcon,
+  ThemeDayIcon,
+  ThemeNightIcon,
+  ThemeAutoIcon,
+} from '../AviationDesignSystem';
 
 interface AtcHeaderProps {
   onToggleSidebar: () => void;
@@ -31,6 +37,8 @@ export const AtcHeader: React.FC<AtcHeaderProps> = ({
     isPollingPaused,
     currentRegion,
     activeBounds,
+    themeMode,
+    setThemeMode,
     setDataSource,
     setPollingInterval,
     togglePollingPause,
@@ -96,36 +104,40 @@ export const AtcHeader: React.FC<AtcHeaderProps> = ({
 
   return (
     <>
-      <header className="bg-[#FCFAF5] border-b border-[#D6E0E7] px-3 sm:px-5 py-2.5 flex items-center justify-between gap-3 text-[#172D40] z-20 select-none shadow-2xs">
-        {/* Left: Editorial Header with Compass & Technical Stamp */}
+      <header className="bg-[#FCFAF5] dark:bg-[#101E2B] border-b border-[#D6E0E7] dark:border-[#2D4B63] px-3 sm:px-5 py-2.5 flex items-center justify-between gap-3 text-[#172D40] dark:text-[#E3ECF3] z-20 select-none shadow-2xs transition-colors">
+        {/* Left: Editorial Header with Aviation Emblem & Technical Stamp */}
         <div className="flex items-center gap-3">
           <button
             onClick={onToggleSidebar}
-            className="md:hidden p-2 rounded-xl bg-[#F4F0E7] hover:bg-[#EBF3FA] text-[#172D40] border border-[#D6E0E7] transition shadow-2xs"
+            className="md:hidden p-2 rounded-xl bg-[#F4F0E7] dark:bg-[#172D40] hover:bg-[#EBF3FA] dark:hover:bg-[#20394D] text-[#172D40] dark:text-[#E3ECF3] border border-[#D6E0E7] dark:border-[#2D4B63] transition shadow-2xs"
             aria-label="Toggle Navigation Sidebar"
           >
             {isSidebarOpen ? <SlidersHorizontal className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
           </button>
+
+          <div className="hidden sm:block">
+            <AviationEmblem size="sm" variant="badge" />
+          </div>
 
           <div>
             <div className="flex items-center gap-2">
               <span className="text-[10px] text-[#D87C43] font-mono font-bold uppercase tracking-wider tech-stamp">
                 FLIGHT OPERATIONS / {currentRegion.id === 'global' ? 'GLOBAL VIEW' : currentRegion.name.toUpperCase()}
               </span>
-              <span className="hidden sm:inline-block text-[#D6E0E7]">•</span>
-              <span className="hidden sm:inline-block text-[10px] font-mono text-[#82909B]">
+              <span className="hidden sm:inline-block text-[#D6E0E7] dark:text-[#2D4B63]">•</span>
+              <span className="hidden sm:inline-block text-[10px] font-mono text-[#82909B] dark:text-[#8DB7D5]">
                 DOC-ATC-001
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <h1 className="text-base sm:text-lg font-black text-[#172D40] tracking-tight font-sans">
+              <h1 className="text-base sm:text-lg font-black text-[#172D40] dark:text-white tracking-tight font-sans">
                 Air Traffic Explorer
               </h1>
-              <span className="hidden sm:inline-flex px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#EBF3FA] border border-[#D6E0E7] text-[#20394D]">
+              <span className="hidden sm:inline-flex px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#EBF3FA] dark:bg-[#172D40] border border-[#D6E0E7] dark:border-[#2D4B63] text-[#20394D] dark:text-[#8DB7D5]">
                 {currentRegion.name}
               </span>
             </div>
-            <p className="text-xs text-[#82909B] hidden sm:block">
+            <p className="text-xs text-[#82909B] dark:text-[#8DB7D5] hidden sm:block">
               Explore aircraft positions across the world and inspect available flight information.
             </p>
           </div>
@@ -134,14 +146,14 @@ export const AtcHeader: React.FC<AtcHeaderProps> = ({
         {/* Middle: UTC Zulu & Local Dual Clock + Status */}
         <div className="hidden lg:flex items-center gap-3">
           {/* Dual Clock */}
-          <div className="flex items-center gap-3 px-3 py-1.5 rounded-xl bg-[#F4F0E7] border border-[#D6E0E7] font-mono text-xs text-[#172D40]">
+          <div className="flex items-center gap-3 px-3 py-1.5 rounded-xl bg-[#F4F0E7] dark:bg-[#172D40] border border-[#D6E0E7] dark:border-[#2D4B63] font-mono text-xs text-[#172D40] dark:text-[#E3ECF3]">
             <div className="flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5 text-[#D87C43]" />
-              <span className="tracking-wide font-bold text-[#172D40]">{utcTime || '00:00:00 Z'}</span>
-              <span className="text-[10px] text-[#82909B]">UTC</span>
+              <span className="tracking-wide font-bold">{utcTime || '00:00:00 Z'}</span>
+              <span className="text-[10px] text-[#82909B] dark:text-[#8DB7D5]">UTC</span>
             </div>
-            <span className="text-[#D6E0E7]">|</span>
-            <div className="flex items-center gap-1 text-[#82909B]">
+            <span className="text-[#D6E0E7] dark:text-[#2D4B63]">|</span>
+            <div className="flex items-center gap-1 text-[#82909B] dark:text-[#8DB7D5]">
               <span className="tracking-wide">{localTime || '00:00:00'}</span>
               <span className="text-[10px]">LOC</span>
             </div>
@@ -165,17 +177,57 @@ export const AtcHeader: React.FC<AtcHeaderProps> = ({
             />
           </div>
 
+          {/* Theme Mode Toggle (Light / Dark / System) */}
+          <div className="flex items-center rounded-xl bg-[#F4F0E7] dark:bg-[#172D40] border border-[#D6E0E7] dark:border-[#2D4B63] p-0.5 shadow-2xs">
+            <button
+              onClick={() => setThemeMode('light')}
+              className={`p-1.5 rounded-lg transition-all ${
+                themeMode === 'light'
+                  ? 'bg-white dark:bg-[#20394D] text-[#D87C43] shadow-xs'
+                  : 'text-[#82909B] hover:text-[#172D40] dark:text-[#8DB7D5] dark:hover:text-white'
+              }`}
+              title="Daylight Field Journal Theme"
+              aria-label="Daylight Field Journal Theme"
+            >
+              <ThemeDayIcon size={14} />
+            </button>
+            <button
+              onClick={() => setThemeMode('dark')}
+              className={`p-1.5 rounded-lg transition-all ${
+                themeMode === 'dark'
+                  ? 'bg-[#101E2B] text-[#D87C43] shadow-xs'
+                  : 'text-[#82909B] hover:text-[#172D40] dark:text-[#8DB7D5] dark:hover:text-white'
+              }`}
+              title="Night Radar Operations Theme"
+              aria-label="Night Radar Operations Theme"
+            >
+              <ThemeNightIcon size={14} />
+            </button>
+            <button
+              onClick={() => setThemeMode('system')}
+              className={`p-1.5 rounded-lg transition-all ${
+                themeMode === 'system'
+                  ? 'bg-white dark:bg-[#101E2B] text-[#D87C43] shadow-xs'
+                  : 'text-[#82909B] hover:text-[#172D40] dark:text-[#8DB7D5] dark:hover:text-white'
+              }`}
+              title="System Auto Sensor"
+              aria-label="System Auto Sensor"
+            >
+              <ThemeAutoIcon size={14} />
+            </button>
+          </div>
+
           {/* Polling Interval Selector */}
-          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#F4F0E7] border border-[#D6E0E7] text-xs">
-            <span className="text-[11px] text-[#82909B] font-mono">RATE:</span>
+          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#F4F0E7] dark:bg-[#172D40] border border-[#D6E0E7] dark:border-[#2D4B63] text-xs">
+            <span className="text-[11px] text-[#82909B] dark:text-[#8DB7D5] font-mono">RATE:</span>
             <select
               value={pollingIntervalMs}
               onChange={(e) => setPollingInterval(Number(e.target.value))}
-              className="bg-transparent text-[#172D40] font-bold font-mono focus:outline-none cursor-pointer text-xs"
+              className="bg-transparent text-[#172D40] dark:text-[#E3ECF3] font-bold font-mono focus:outline-none cursor-pointer text-xs"
               title="OpenSky Network rate limit allows 10s for anonymous, 5s for auth"
             >
               {ATC_CONFIG.POLLING_INTERVAL_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value} className="bg-[#FCFAF5] text-[#172D40]">
+                <option key={opt.value} value={opt.value} className="bg-[#FCFAF5] dark:bg-[#172D40] text-[#172D40] dark:text-[#E3ECF3]">
                   {opt.label}
                 </option>
               ))}
@@ -188,7 +240,7 @@ export const AtcHeader: React.FC<AtcHeaderProps> = ({
             className={`p-2 rounded-xl border transition-colors shadow-2xs ${
               isPollingPaused
                 ? 'bg-amber-100 border-[#C99B45] text-[#C99B45] hover:bg-amber-200/70'
-                : 'bg-[#F4F0E7] border-[#D6E0E7] text-[#172D40] hover:bg-[#EBF3FA]'
+                : 'bg-[#F4F0E7] dark:bg-[#172D40] border-[#D6E0E7] dark:border-[#2D4B63] text-[#172D40] dark:text-[#E3ECF3] hover:bg-[#EBF3FA] dark:hover:bg-[#20394D]'
             }`}
             title={isPollingPaused ? 'Resume auto-refresh (Space)' : 'Pause auto-refresh (Space)'}
             aria-label={isPollingPaused ? 'Resume auto-refresh' : 'Pause auto-refresh'}
@@ -196,21 +248,20 @@ export const AtcHeader: React.FC<AtcHeaderProps> = ({
             {isPollingPaused ? <Play className="w-3.5 h-3.5" /> : <Pause className="w-3.5 h-3.5" />}
           </button>
 
-          {/* Manual Refresh Button */}
+          {/* Manual Refresh Button with Custom AviationRefreshIcon */}
           <button
             onClick={() => fetchAircraftSnapshot(true)}
             disabled={apiStatus.status === 'FETCHING'}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#20394D] hover:bg-[#172D40] text-white text-xs font-semibold transition shadow-xs disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#20394D] dark:bg-[#D87C43] hover:bg-[#172D40] dark:hover:bg-[#C26B34] text-white text-xs font-semibold transition shadow-xs disabled:opacity-50"
             title="Manual sweep (R)"
           >
-            <RotateCw
-              className={`w-3.5 h-3.5 ${
-                apiStatus.status === 'FETCHING' ? 'animate-spin' : ''
-              }`}
+            <AviationRefreshIcon
+              size={14}
+              className={apiStatus.status === 'FETCHING' ? 'animate-spin' : ''}
             />
             <span className="hidden sm:inline">Sweep</span>
             {!isPollingPaused && pollingIntervalMs > 0 && nextPollCountdown > 0 && (
-              <span className="text-[10px] text-[#8DB7D5] font-mono">
+              <span className="text-[10px] text-[#8DB7D5] dark:text-white/80 font-mono">
                 ({nextPollCountdown}s)
               </span>
             )}
@@ -219,7 +270,7 @@ export const AtcHeader: React.FC<AtcHeaderProps> = ({
           {/* Help / Shortcuts Dialog Toggle */}
           <button
             onClick={() => setIsHelpModalOpen(true)}
-            className="p-2 rounded-xl bg-[#F4F0E7] hover:bg-[#EBF3FA] border border-[#D6E0E7] text-[#82909B] hover:text-[#172D40] transition shadow-2xs"
+            className="p-2 rounded-xl bg-[#F4F0E7] dark:bg-[#172D40] hover:bg-[#EBF3FA] dark:hover:bg-[#20394D] border border-[#D6E0E7] dark:border-[#2D4B63] text-[#82909B] dark:text-[#8DB7D5] hover:text-[#172D40] dark:hover:text-white transition shadow-2xs"
             title="Help & Diagnostics (?)"
             aria-label="Help & Diagnostics"
           >

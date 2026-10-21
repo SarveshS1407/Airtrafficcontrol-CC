@@ -2,16 +2,12 @@ import React, { useState } from 'react';
 import {
   X,
   Crosshair,
-  Compass,
   ArrowUpRight,
   ArrowDownRight,
   Minus,
   Activity,
-  Gauge,
   Layers,
-  MapPin,
   Clock,
-  Radio,
   Download,
   Flame,
   ShieldCheck,
@@ -20,6 +16,15 @@ import { Aircraft, AircraftObservation } from '../../types/opensky';
 import { AltitudeSpeedGraph } from './AltitudeSpeedGraph';
 import { MovementHistoryLog } from './MovementHistoryLog';
 import { formatCoordinates } from '../../services/geoUtils';
+import {
+  AltimeterIcon,
+  AirspeedIcon,
+  CompassHeadingIcon,
+  CoordinatesIcon,
+  BoardingPassTag,
+  RunwayFlightDivider,
+  RadarBeaconIcon,
+} from '../AviationDesignSystem';
 
 interface FlightDetailPanelProps {
   aircraft: Aircraft | null;
@@ -128,6 +133,14 @@ export const FlightDetailPanel: React.FC<FlightDetailPanelProps> = ({
               {aircraft.positionSource}
             </span>
           </div>
+
+          <div className="mt-2.5">
+            <BoardingPassTag
+              callsign={aircraft.callsign.trim() || aircraft.icao24}
+              origin={aircraft.originCountry.slice(0, 3).toUpperCase()}
+              destination="AIRSPACE"
+            />
+          </div>
         </div>
 
         <div className="flex items-center gap-1.5">
@@ -228,61 +241,64 @@ export const FlightDetailPanel: React.FC<FlightDetailPanelProps> = ({
             {/* Primary Metrics Grid */}
             <div className="grid grid-cols-2 gap-3">
               {/* Altitude Card */}
-              <div className="p-3.5 rounded-xl bg-[#F4F0E7] border border-[#D6E0E7] shadow-2xs">
-                <span className="text-[10px] text-[#82909B] font-bold uppercase tracking-wider block tech-stamp">
-                  Altitude (Baro)
-                </span>
-                <div className="text-lg font-bold text-[#172D40] font-mono mt-0.5">
+              <div className="p-3.5 rounded-xl bg-[#F4F0E7] dark:bg-[#101E2B] border border-[#D6E0E7] dark:border-[#2D4B63] shadow-2xs">
+                <div className="flex items-center justify-between text-[#82909B] dark:text-[#8DB7D5]">
+                  <span className="text-[10px] font-bold uppercase tracking-wider tech-stamp">
+                    Altitude (Baro)
+                  </span>
+                  <AltimeterIcon size={14} color="#D87C43" />
+                </div>
+                <div className="text-lg font-bold text-[#172D40] dark:text-[#E3ECF3] font-mono mt-0.5">
                   {aircraft.baroAltitudeFeet !== null
                     ? `${aircraft.baroAltitudeFeet.toLocaleString()} ft`
                     : 'Unavailable'}
                 </div>
-                <div className="text-[11px] text-[#82909B] font-mono mt-1 flex justify-between">
+                <div className="text-[11px] text-[#82909B] dark:text-[#8DB7D5] font-mono mt-1 flex justify-between">
                   <span>{aircraft.baroAltitudeMeters !== null ? `${aircraft.baroAltitudeMeters.toLocaleString()} m` : '---'}</span>
                   {flightLevel && <span className="text-[#D87C43] font-bold">{flightLevel}</span>}
                 </div>
               </div>
 
               {/* Speed Card */}
-              <div className="p-3.5 rounded-xl bg-[#F4F0E7] border border-[#D6E0E7] shadow-2xs">
-                <span className="text-[10px] text-[#82909B] font-bold uppercase tracking-wider block tech-stamp">
-                  Ground Speed
-                </span>
+              <div className="p-3.5 rounded-xl bg-[#F4F0E7] dark:bg-[#101E2B] border border-[#D6E0E7] dark:border-[#2D4B63] shadow-2xs">
+                <div className="flex items-center justify-between text-[#82909B] dark:text-[#8DB7D5]">
+                  <span className="text-[10px] font-bold uppercase tracking-wider tech-stamp">
+                    Ground Speed
+                  </span>
+                  <AirspeedIcon size={14} color="#467A67" />
+                </div>
                 <div className="text-lg font-bold text-[#467A67] font-mono mt-0.5">
                   {aircraft.velocityKnots !== null
                     ? `${aircraft.velocityKnots} kt`
                     : 'Unavailable'}
                 </div>
-                <div className="text-[11px] text-[#82909B] font-mono mt-1 flex justify-between">
+                <div className="text-[11px] text-[#82909B] dark:text-[#8DB7D5] font-mono mt-1 flex justify-between">
                   <span>{aircraft.velocityMps !== null ? `${Math.round(aircraft.velocityMps * 3.6)} km/h` : '---'}</span>
-                  {machEstimate && <span className="text-[#20394D] font-bold">{machEstimate}</span>}
+                  {machEstimate && <span className="text-[#20394D] dark:text-[#8DB7D5] font-bold">{machEstimate}</span>}
                 </div>
               </div>
 
-              {/* Heading Card with Compass Indicator */}
-              <div className="p-3.5 rounded-xl bg-[#F4F0E7] border border-[#D6E0E7] shadow-2xs">
-                <span className="text-[10px] text-[#82909B] font-bold uppercase tracking-wider block tech-stamp">
-                  Heading / Track
-                </span>
-                <div className="text-lg font-bold text-[#172D40] font-mono mt-0.5 flex items-center gap-1.5">
-                  <Compass
-                    className="w-4 h-4 text-[#D87C43] transition-transform duration-300"
-                    style={{
-                      transform: `rotate(${aircraft.heading ?? 0}deg)`,
-                    }}
-                  />
+              {/* Heading Card with Dynamic Compass Indicator */}
+              <div className="p-3.5 rounded-xl bg-[#F4F0E7] dark:bg-[#101E2B] border border-[#D6E0E7] dark:border-[#2D4B63] shadow-2xs">
+                <div className="flex items-center justify-between text-[#82909B] dark:text-[#8DB7D5]">
+                  <span className="text-[10px] font-bold uppercase tracking-wider tech-stamp">
+                    Heading / Track
+                  </span>
+                  <CompassHeadingIcon size={15} heading={aircraft.heading ?? 0} color="#D87C43" />
+                </div>
+                <div className="text-lg font-bold text-[#172D40] dark:text-[#E3ECF3] font-mono mt-0.5">
                   {aircraft.heading !== null
                     ? `${aircraft.heading}° ${aircraft.headingCardinal}`
                     : '---'}
                 </div>
-                <div className="text-[11px] text-[#82909B] font-mono mt-1">
+                <div className="text-[11px] text-[#82909B] dark:text-[#8DB7D5] font-mono mt-1">
                   True Bearing
                 </div>
               </div>
 
               {/* Vertical Rate Card with Indicator */}
-              <div className="p-3.5 rounded-xl bg-[#F4F0E7] border border-[#D6E0E7] shadow-2xs">
-                <span className="text-[10px] text-[#82909B] font-bold uppercase tracking-wider block tech-stamp">
+              <div className="p-3.5 rounded-xl bg-[#F4F0E7] dark:bg-[#101E2B] border border-[#D6E0E7] dark:border-[#2D4B63] shadow-2xs">
+                <span className="text-[10px] text-[#82909B] dark:text-[#8DB7D5] font-bold uppercase tracking-wider block tech-stamp">
                   Vertical Trend
                 </span>
                 <div className="text-lg font-bold font-mono mt-0.5 flex items-center gap-1">
@@ -301,7 +317,7 @@ export const FlightDetailPanel: React.FC<FlightDetailPanelProps> = ({
                         ? 'text-[#467A67]'
                         : aircraft.verticalState === 'DESCENDING'
                         ? 'text-[#C99B45]'
-                        : 'text-[#172D40]'
+                        : 'text-[#172D40] dark:text-[#E3ECF3]'
                     }
                   >
                     {aircraft.verticalRateFpm !== null
@@ -309,30 +325,33 @@ export const FlightDetailPanel: React.FC<FlightDetailPanelProps> = ({
                       : '0 fpm'}
                   </span>
                 </div>
-                <div className="text-[11px] text-[#82909B] font-mono mt-1 capitalize">
+                <div className="text-[11px] text-[#82909B] dark:text-[#8DB7D5] font-mono mt-1 capitalize">
                   {aircraft.verticalState.toLowerCase()}
                 </div>
               </div>
             </div>
 
+            {/* Runway Section Divider */}
+            <RunwayFlightDivider showAircraft={true} className="my-2" />
+
             {/* Position & Technical Coordinate Readouts */}
-            <div className="p-3.5 rounded-xl bg-[#FCFAF5] border border-[#D6E0E7] space-y-2.5 text-xs shadow-2xs">
-              <div className="flex items-center justify-between text-[#82909B]">
+            <div className="p-3.5 rounded-xl bg-[#FCFAF5] dark:bg-[#101E2B] border border-[#D6E0E7] dark:border-[#2D4B63] space-y-2.5 text-xs shadow-2xs">
+              <div className="flex items-center justify-between text-[#82909B] dark:text-[#8DB7D5]">
                 <span className="flex items-center gap-1.5 font-medium">
-                  <MapPin className="w-3.5 h-3.5 text-[#20394D]" />
+                  <CoordinatesIcon size={14} color="#D87C43" />
                   Coordinates
                 </span>
-                <span className="text-[#172D40] font-mono font-bold">
+                <span className="text-[#172D40] dark:text-[#E3ECF3] font-mono font-bold">
                   {formatCoordinates(aircraft.latitude, aircraft.longitude)}
                 </span>
               </div>
 
-              <div className="flex items-center justify-between text-[#82909B] border-t border-[#D6E0E7] pt-2">
+              <div className="flex items-center justify-between text-[#82909B] dark:text-[#8DB7D5] border-t border-[#D6E0E7] dark:border-[#2D4B63] pt-2">
                 <span className="flex items-center gap-1.5 font-medium">
-                  <Gauge className="w-3.5 h-3.5 text-[#82909B]" />
+                  <AltimeterIcon size={14} color="#82909B" />
                   Geometric Altitude
                 </span>
-                <span className="text-[#172D40] font-mono font-medium">
+                <span className="text-[#172D40] dark:text-[#E3ECF3] font-mono font-medium">
                   {aircraft.geoAltitudeFeet !== null
                     ? `${aircraft.geoAltitudeFeet.toLocaleString()} ft`
                     : '---'}
@@ -349,7 +368,7 @@ export const FlightDetailPanel: React.FC<FlightDetailPanelProps> = ({
 
               <div className="flex items-center justify-between text-[#82909B] border-t border-[#D6E0E7] pt-2">
                 <span className="flex items-center gap-1.5 font-medium">
-                  <Radio className="w-3.5 h-3.5 text-[#82909B]" />
+                  <RadarBeaconIcon size={14} className="text-[#82909B]" />
                   Signal Contact
                 </span>
                 <span className="text-[#172D40] font-mono font-medium">{lastContactTimeStr}</span>

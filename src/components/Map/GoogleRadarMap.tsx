@@ -194,15 +194,15 @@ export const GoogleRadarMap: React.FC<GoogleRadarMapProps> = ({
       const isSelected = selectedIcao24 === icao;
       const isEmergency = ['7700', '7600', '7500'].includes(ac.squawk ?? '');
 
-      let fillColor = '#2563EB'; // Aviation blue for cruise/level
+      let fillColor = '#20394D'; // Deep cockpit navy for cruise
       if (isEmergency) {
         fillColor = '#C94C4C'; // Alert red for emergency
       } else if (isSelected) {
-        fillColor = '#10263C'; // Deep midnight blue for selected
+        fillColor = '#D87C43'; // Flight-path orange for selected target
       } else if (ac.verticalState === 'CLIMBING') {
-        fillColor = '#258568'; // Aviation green for climb
+        fillColor = '#467A67'; // Runway green for climb
       } else if (ac.verticalState === 'DESCENDING') {
-        fillColor = '#D99A32'; // Warm amber for descent
+        fillColor = '#C99B45'; // Warning amber for descent
       }
 
       const icon: google.maps.Symbol = {
@@ -243,16 +243,16 @@ export const GoogleRadarMap: React.FC<GoogleRadarMapProps> = ({
           const trkStr = ac.heading !== null ? `${ac.heading}° ${ac.headingCardinal}` : '---';
 
           infoWindowRef.current.setContent(`
-            <div style="background:#FFFFFF;color:#35465A;padding:10px;border-radius:10px;border:1px solid #D1DCE5;font-family:Inter,system-ui,sans-serif;font-size:12px;min-width:190px;box-shadow:0 4px 12px rgba(16,38,60,0.12);">
-              <div style="font-weight:700;color:#17324D;font-size:14px;display:flex;justify-content:space-between;border-bottom:1px solid #E2E8F0;padding-bottom:6px;margin-bottom:6px;">
+            <div style="background:#FCFAF5;color:#172D40;padding:12px;border-radius:10px;border:1px solid #D6E0E7;font-family:Inter,system-ui,sans-serif;font-size:12px;min-width:200px;box-shadow:0 4px 12px rgba(23,45,64,0.12);">
+              <div style="font-weight:700;color:#172D40;font-size:14px;display:flex;justify-content:space-between;border-bottom:1px solid #D6E0E7;padding-bottom:6px;margin-bottom:6px;">
                 <span>${ac.callsign}</span>
-                <span style="font-size:11px;color:#708096;font-weight:normal;">${ac.originCountry}</span>
+                <span style="font-size:11px;color:#82909B;font-weight:normal;">${ac.originCountry}</span>
               </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;color:#475569;">
-                <div>Altitude: <strong style="color:#0F172A;">${altStr}</strong></div>
-                <div>Speed: <strong style="color:#258568;">${spdStr}</strong></div>
-                <div>Heading: <strong style="color:#334155;">${trkStr}</strong></div>
-                <div>Trend: <strong style="color:#334155;">${ac.verticalState === 'CLIMBING' ? 'Climbing' : ac.verticalState === 'DESCENDING' ? 'Descending' : 'Level'}</strong></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;color:#172D40;">
+                <div>Altitude: <strong style="color:#172D40;">${altStr}</strong></div>
+                <div>Speed: <strong style="color:#467A67;">${spdStr}</strong></div>
+                <div>Heading: <strong style="color:#172D40;">${trkStr}</strong></div>
+                <div>Trend: <strong style="color:#172D40;">${ac.verticalState === 'CLIMBING' ? 'Climbing' : ac.verticalState === 'DESCENDING' ? 'Descending' : 'Level'}</strong></div>
               </div>
               ${isEmergency ? `<div style="margin-top:8px;color:#C94C4C;font-weight:600;font-size:11px;">⚠️ Squawk ${ac.squawk} Emergency</div>` : ''}
             </div>
@@ -303,7 +303,7 @@ export const GoogleRadarMap: React.FC<GoogleRadarMapProps> = ({
       trailPolylineRef.current = new window.google.maps.Polyline({
         path,
         geodesic: true,
-        strokeColor: '#2563EB',
+        strokeColor: '#D87C43',
         strokeOpacity: 0.85,
         strokeWeight: 3,
         map,

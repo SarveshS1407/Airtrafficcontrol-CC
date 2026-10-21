@@ -14,6 +14,7 @@ import {
   Radio,
   Download,
   Flame,
+  ShieldCheck,
 } from 'lucide-react';
 import { Aircraft, AircraftObservation } from '../../types/opensky';
 import { AltitudeSpeedGraph } from './AltitudeSpeedGraph';
@@ -102,28 +103,28 @@ export const FlightDetailPanel: React.FC<FlightDetailPanelProps> = ({
   };
 
   return (
-    <div className="bg-white border-l border-slate-200/90 flex flex-col w-full md:w-96 h-full max-h-screen overflow-y-auto text-slate-800 shadow-xl z-20 font-sans">
-      {/* Flight Detail Header */}
-      <div className="p-4 bg-aviation-navy text-white flex items-start justify-between">
+    <div className="bg-[#FCFAF5] border-l border-[#D6E0E7] flex flex-col w-full md:w-96 h-full max-h-screen overflow-y-auto text-[#172D40] shadow-xl z-20 font-sans">
+      {/* Flight Detail Header (Styled like a flight-plan document header) */}
+      <div className="p-4 bg-[#20394D] text-white flex items-start justify-between shadow-xs">
         <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-xl font-bold tracking-tight text-white">
+          <span className="text-[10px] text-[#8DB7D5] font-mono tracking-wider uppercase block tech-stamp">
+            AIRCRAFT DOSSIER // ICAO {aircraft.icao24}
+          </span>
+          <div className="flex items-center gap-2 mt-0.5">
+            <h2 className="text-xl font-black tracking-tight text-white font-mono">
               {aircraft.callsign}
             </h2>
-            <span className="text-xs px-2 py-0.5 rounded bg-white/15 text-slate-200 font-mono">
-              {aircraft.icao24}
-            </span>
             {flightLevel && (
-              <span className="text-xs px-1.5 py-0.5 rounded bg-aviation-sky text-white font-semibold">
+              <span className="text-xs px-2 py-0.5 rounded bg-[#D87C43] text-white font-bold font-mono">
                 {flightLevel}
               </span>
             )}
           </div>
 
-          <div className="text-xs text-slate-300 mt-1 flex items-center gap-2 font-medium">
-            <span>{aircraft.originCountry}</span>
-            <span>•</span>
-            <span className="text-slate-400">
+          <div className="text-xs text-[#8DB7D5] mt-1 flex items-center gap-2 font-medium">
+            <span className="text-slate-200">{aircraft.originCountry}</span>
+            <span className="text-[#456D8B]">•</span>
+            <span className="text-slate-300 font-mono text-[11px]">
               {aircraft.positionSource}
             </span>
           </div>
@@ -134,17 +135,17 @@ export const FlightDetailPanel: React.FC<FlightDetailPanelProps> = ({
             <button
               onClick={() => onCenterOnMap(aircraft.latitude!, aircraft.longitude!)}
               className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition"
-              title="Center map on flight"
-              aria-label="Center map on flight"
+              title="Center map on aircraft"
+              aria-label="Center map on aircraft"
             >
-              <Crosshair className="w-4 h-4" />
+              <Crosshair className="w-4 h-4 text-[#8DB7D5]" />
             </button>
           )}
           <button
             onClick={onClose}
             className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition"
-            title="Close flight details"
-            aria-label="Close flight details"
+            title="Close flight report"
+            aria-label="Close flight report"
           >
             <X className="w-4 h-4" />
           </button>
@@ -153,24 +154,24 @@ export const FlightDetailPanel: React.FC<FlightDetailPanelProps> = ({
 
       {/* Emergency Alert Banner if Active */}
       {isEmergency && (
-        <div className="bg-red-50 border-b border-red-200 px-4 py-2.5 flex items-center gap-2 text-xs text-red-800">
-          <Flame className="w-4 h-4 text-red-600 shrink-0" />
+        <div className="bg-red-50 border-b border-red-200 px-4 py-2.5 flex items-center gap-2 text-xs text-[#C94C4C]">
+          <Flame className="w-4 h-4 text-[#C94C4C] shrink-0" />
           <div>
-            <strong className="font-semibold text-red-900">Alert Squawk {aircraft.squawk}:</strong> {emergencyLabel}
+            <strong className="font-bold text-red-900">Alert Squawk {aircraft.squawk}:</strong> {emergencyLabel}
           </div>
         </div>
       )}
 
       {/* Flight State Status Strip */}
-      <div className="px-4 py-2.5 bg-aviation-cloud/70 border-b border-slate-200/80 flex items-center justify-between text-xs">
+      <div className="px-4 py-2.5 bg-[#F4F0E7] border-b border-[#D6E0E7] flex items-center justify-between text-xs">
         <div className="flex items-center gap-2">
           <span
             className={`w-2.5 h-2.5 rounded-full ${
-              aircraft.onGround ? 'bg-aviation-amber' : 'bg-aviation-green'
+              aircraft.onGround ? 'bg-[#82909B]' : 'bg-[#467A67]'
             }`}
           />
-          <span className="font-semibold text-slate-700">
-            {aircraft.onGround ? 'On Ground (Taxi / Gate)' : 'Airborne in Flight'}
+          <span className="font-semibold text-[#172D40]">
+            {aircraft.onGround ? 'On Ground (Taxi / Apron)' : 'Airborne in Flight'}
           </span>
         </div>
 
@@ -179,44 +180,44 @@ export const FlightDetailPanel: React.FC<FlightDetailPanelProps> = ({
             <span
               className={`px-2 py-0.5 rounded text-[11px] font-mono ${
                 isEmergency
-                  ? 'bg-red-100 text-red-800 font-bold border border-red-200'
-                  : 'bg-white text-slate-600 border border-slate-200 shadow-sm'
+                  ? 'bg-red-100 text-[#C94C4C] font-bold border border-red-300'
+                  : 'bg-[#FCFAF5] text-[#172D40] border border-[#D6E0E7] shadow-2xs'
               }`}
             >
-              Squawk: {aircraft.squawk}
+              SQ: {aircraft.squawk}
             </span>
           )}
           {aircraft.isStale && (
-            <span className="px-2 py-0.5 rounded text-[11px] bg-amber-50 text-amber-800 border border-amber-200">
+            <span className="px-2 py-0.5 rounded text-[11px] bg-amber-50 text-[#C99B45] border border-amber-200 font-mono">
               Stale Data
             </span>
           )}
         </div>
       </div>
 
-      {/* Tabs: Flight Data vs History Log */}
-      <div className="flex border-b border-slate-200 bg-slate-50 text-xs font-medium">
+      {/* Navigation Tabs: Telemetry vs Flight Trail */}
+      <div className="flex border-b border-[#D6E0E7] bg-[#F4F0E7] text-xs font-semibold">
         <button
           onClick={() => setActiveTab('telemetry')}
           className={`flex-1 py-2.5 flex items-center justify-center gap-1.5 border-b-2 transition ${
             activeTab === 'telemetry'
-              ? 'border-aviation-navy text-aviation-navy bg-white font-semibold'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
+              ? 'border-[#20394D] text-[#172D40] bg-[#FCFAF5]'
+              : 'border-transparent text-[#82909B] hover:text-[#172D40]'
           }`}
         >
-          <Activity className="w-3.5 h-3.5" />
-          Flight Information
+          <Activity className="w-3.5 h-3.5 text-[#D87C43]" />
+          Flight Dynamics
         </button>
         <button
           onClick={() => setActiveTab('history')}
           className={`flex-1 py-2.5 flex items-center justify-center gap-1.5 border-b-2 transition ${
             activeTab === 'history'
-              ? 'border-aviation-navy text-aviation-navy bg-white font-semibold'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
+              ? 'border-[#20394D] text-[#172D40] bg-[#FCFAF5]'
+              : 'border-transparent text-[#82909B] hover:text-[#172D40]'
           }`}
         >
-          <Layers className="w-3.5 h-3.5" />
-          Recent Trail ({history.length})
+          <Layers className="w-3.5 h-3.5 text-[#456D8B]" />
+          Waypoints ({history.length})
         </button>
       </div>
 
@@ -227,45 +228,45 @@ export const FlightDetailPanel: React.FC<FlightDetailPanelProps> = ({
             {/* Primary Metrics Grid */}
             <div className="grid grid-cols-2 gap-3">
               {/* Altitude Card */}
-              <div className="p-3 rounded-xl bg-aviation-cloud/80 border border-slate-200">
-                <span className="text-[11px] text-slate-500 font-medium block">
-                  Current Altitude
+              <div className="p-3.5 rounded-xl bg-[#F4F0E7] border border-[#D6E0E7] shadow-2xs">
+                <span className="text-[10px] text-[#82909B] font-bold uppercase tracking-wider block tech-stamp">
+                  Altitude (Baro)
                 </span>
-                <div className="text-lg font-bold text-slate-900 mt-0.5">
+                <div className="text-lg font-bold text-[#172D40] font-mono mt-0.5">
                   {aircraft.baroAltitudeFeet !== null
                     ? `${aircraft.baroAltitudeFeet.toLocaleString()} ft`
                     : 'Unavailable'}
                 </div>
-                <div className="text-[11px] text-slate-500 mt-1 flex justify-between">
+                <div className="text-[11px] text-[#82909B] font-mono mt-1 flex justify-between">
                   <span>{aircraft.baroAltitudeMeters !== null ? `${aircraft.baroAltitudeMeters.toLocaleString()} m` : '---'}</span>
-                  {flightLevel && <span className="text-aviation-navy font-semibold">{flightLevel}</span>}
+                  {flightLevel && <span className="text-[#D87C43] font-bold">{flightLevel}</span>}
                 </div>
               </div>
 
               {/* Speed Card */}
-              <div className="p-3 rounded-xl bg-aviation-cloud/80 border border-slate-200">
-                <span className="text-[11px] text-slate-500 font-medium block">
+              <div className="p-3.5 rounded-xl bg-[#F4F0E7] border border-[#D6E0E7] shadow-2xs">
+                <span className="text-[10px] text-[#82909B] font-bold uppercase tracking-wider block tech-stamp">
                   Ground Speed
                 </span>
-                <div className="text-lg font-bold text-aviation-green mt-0.5">
+                <div className="text-lg font-bold text-[#467A67] font-mono mt-0.5">
                   {aircraft.velocityKnots !== null
                     ? `${aircraft.velocityKnots} kt`
                     : 'Unavailable'}
                 </div>
-                <div className="text-[11px] text-slate-500 mt-1 flex justify-between">
+                <div className="text-[11px] text-[#82909B] font-mono mt-1 flex justify-between">
                   <span>{aircraft.velocityMps !== null ? `${Math.round(aircraft.velocityMps * 3.6)} km/h` : '---'}</span>
-                  {machEstimate && <span className="text-aviation-navy font-semibold">{machEstimate}</span>}
+                  {machEstimate && <span className="text-[#20394D] font-bold">{machEstimate}</span>}
                 </div>
               </div>
 
               {/* Heading Card with Compass Indicator */}
-              <div className="p-3 rounded-xl bg-aviation-cloud/80 border border-slate-200">
-                <span className="text-[11px] text-slate-500 font-medium block">
-                  Direction / Heading
+              <div className="p-3.5 rounded-xl bg-[#F4F0E7] border border-[#D6E0E7] shadow-2xs">
+                <span className="text-[10px] text-[#82909B] font-bold uppercase tracking-wider block tech-stamp">
+                  Heading / Track
                 </span>
-                <div className="text-lg font-bold text-slate-900 mt-0.5 flex items-center gap-1.5">
+                <div className="text-lg font-bold text-[#172D40] font-mono mt-0.5 flex items-center gap-1.5">
                   <Compass
-                    className="w-4 h-4 text-aviation-navy transition-transform duration-300"
+                    className="w-4 h-4 text-[#D87C43] transition-transform duration-300"
                     style={{
                       transform: `rotate(${aircraft.heading ?? 0}deg)`,
                     }}
@@ -274,104 +275,107 @@ export const FlightDetailPanel: React.FC<FlightDetailPanelProps> = ({
                     ? `${aircraft.heading}° ${aircraft.headingCardinal}`
                     : '---'}
                 </div>
-                <div className="text-[11px] text-slate-500 mt-1">
-                  Compass Bearing
+                <div className="text-[11px] text-[#82909B] font-mono mt-1">
+                  True Bearing
                 </div>
               </div>
 
               {/* Vertical Rate Card with Indicator */}
-              <div className="p-3 rounded-xl bg-aviation-cloud/80 border border-slate-200">
-                <span className="text-[11px] text-slate-500 font-medium block">
+              <div className="p-3.5 rounded-xl bg-[#F4F0E7] border border-[#D6E0E7] shadow-2xs">
+                <span className="text-[10px] text-[#82909B] font-bold uppercase tracking-wider block tech-stamp">
                   Vertical Trend
                 </span>
-                <div className="text-lg font-bold mt-0.5 flex items-center gap-1">
+                <div className="text-lg font-bold font-mono mt-0.5 flex items-center gap-1">
                   {aircraft.verticalState === 'CLIMBING' && (
-                    <ArrowUpRight className="w-4 h-4 text-aviation-green" />
+                    <ArrowUpRight className="w-4 h-4 text-[#467A67]" />
                   )}
                   {aircraft.verticalState === 'DESCENDING' && (
-                    <ArrowDownRight className="w-4 h-4 text-aviation-amber" />
+                    <ArrowDownRight className="w-4 h-4 text-[#C99B45]" />
                   )}
                   {aircraft.verticalState === 'LEVEL' && (
-                    <Minus className="w-4 h-4 text-slate-400" />
+                    <Minus className="w-4 h-4 text-[#82909B]" />
                   )}
                   <span
                     className={
                       aircraft.verticalState === 'CLIMBING'
-                        ? 'text-aviation-green'
+                        ? 'text-[#467A67]'
                         : aircraft.verticalState === 'DESCENDING'
-                        ? 'text-aviation-amber'
-                        : 'text-slate-800'
+                        ? 'text-[#C99B45]'
+                        : 'text-[#172D40]'
                     }
                   >
                     {aircraft.verticalRateFpm !== null
-                      ? `${aircraft.verticalRateFpm > 0 ? '+' : ''}${aircraft.verticalRateFpm} ft/min`
-                      : 'Level (0 ft/min)'}
+                      ? `${aircraft.verticalRateFpm > 0 ? '+' : ''}${aircraft.verticalRateFpm} fpm`
+                      : '0 fpm'}
                   </span>
                 </div>
-                <div className="text-[11px] text-slate-500 mt-1 capitalize">
+                <div className="text-[11px] text-[#82909B] font-mono mt-1 capitalize">
                   {aircraft.verticalState.toLowerCase()}
                 </div>
               </div>
             </div>
 
-            {/* Position & Coordinate readouts */}
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2.5 text-xs">
-              <div className="flex items-center justify-between text-slate-600">
-                <span className="flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5 text-aviation-navy" />
+            {/* Position & Technical Coordinate Readouts */}
+            <div className="p-3.5 rounded-xl bg-[#FCFAF5] border border-[#D6E0E7] space-y-2.5 text-xs shadow-2xs">
+              <div className="flex items-center justify-between text-[#82909B]">
+                <span className="flex items-center gap-1.5 font-medium">
+                  <MapPin className="w-3.5 h-3.5 text-[#20394D]" />
                   Coordinates
                 </span>
-                <span className="text-slate-900 font-mono font-medium">
+                <span className="text-[#172D40] font-mono font-bold">
                   {formatCoordinates(aircraft.latitude, aircraft.longitude)}
                 </span>
               </div>
 
-              <div className="flex items-center justify-between text-slate-600 border-t border-slate-200/80 pt-2">
-                <span className="flex items-center gap-1.5">
-                  <Gauge className="w-3.5 h-3.5 text-slate-400" />
+              <div className="flex items-center justify-between text-[#82909B] border-t border-[#D6E0E7] pt-2">
+                <span className="flex items-center gap-1.5 font-medium">
+                  <Gauge className="w-3.5 h-3.5 text-[#82909B]" />
                   Geometric Altitude
                 </span>
-                <span className="text-slate-800 font-medium">
+                <span className="text-[#172D40] font-mono font-medium">
                   {aircraft.geoAltitudeFeet !== null
                     ? `${aircraft.geoAltitudeFeet.toLocaleString()} ft`
                     : '---'}
                 </span>
               </div>
 
-              <div className="flex items-center justify-between text-slate-600 border-t border-slate-200/80 pt-2">
-                <span className="flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-slate-400" />
-                  Last Position Reported
+              <div className="flex items-center justify-between text-[#82909B] border-t border-[#D6E0E7] pt-2">
+                <span className="flex items-center gap-1.5 font-medium">
+                  <Clock className="w-3.5 h-3.5 text-[#82909B]" />
+                  Position Timestamp
                 </span>
-                <span className="text-slate-800 font-medium">{lastPositionTimeStr}</span>
+                <span className="text-[#172D40] font-mono font-medium">{lastPositionTimeStr}</span>
               </div>
 
-              <div className="flex items-center justify-between text-slate-600 border-t border-slate-200/80 pt-2">
-                <span className="flex items-center gap-1.5">
-                  <Radio className="w-3.5 h-3.5 text-slate-400" />
+              <div className="flex items-center justify-between text-[#82909B] border-t border-[#D6E0E7] pt-2">
+                <span className="flex items-center gap-1.5 font-medium">
+                  <Radio className="w-3.5 h-3.5 text-[#82909B]" />
                   Signal Contact
                 </span>
-                <span className="text-slate-800 font-medium">{lastContactTimeStr}</span>
+                <span className="text-[#172D40] font-mono font-medium">{lastContactTimeStr}</span>
               </div>
 
-              <div className="flex items-center justify-between text-slate-600 border-t border-slate-200/80 pt-2">
-                <span>Session Observations</span>
-                <span className="text-aviation-navy font-semibold">
-                  {aircraft.observationCount} points
+              <div className="flex items-center justify-between text-[#82909B] border-t border-[#D6E0E7] pt-2">
+                <span className="flex items-center gap-1.5 font-medium">
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#467A67]" />
+                  Telemetry Source
+                </span>
+                <span className="text-[#20394D] font-mono font-bold text-[11px]">
+                  OpenSky Network ADS-B
                 </span>
               </div>
             </div>
 
-            {/* Movement Profile Chart */}
+            {/* Altitude & Speed Profile Graph */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-slate-700 font-bold">
-                  Altitude &amp; Speed Profile
+                <span className="text-xs text-[#172D40] font-bold uppercase tracking-wider tech-stamp">
+                  Altitude &amp; Airspeed Profile
                 </span>
                 {history.length > 1 && (
                   <button
                     onClick={handleExportGeoJSON}
-                    className="inline-flex items-center gap-1 text-xs text-aviation-navy hover:text-aviation-sky font-semibold transition"
+                    className="inline-flex items-center gap-1 text-xs text-[#D87C43] hover:text-[#20394D] font-semibold transition font-mono"
                     title="Export waypoint path as GeoJSON"
                   >
                     <Download className="w-3 h-3" />
@@ -381,6 +385,16 @@ export const FlightDetailPanel: React.FC<FlightDetailPanelProps> = ({
               </div>
               <AltitudeSpeedGraph observations={history} />
             </div>
+
+            {/* Return to Flight Log Action */}
+            <div className="pt-2">
+              <button
+                onClick={onClose}
+                className="w-full py-2.5 rounded-xl bg-[#F4F0E7] hover:bg-[#EBF3FA] border border-[#D6E0E7] text-[#172D40] font-semibold text-xs transition shadow-2xs"
+              >
+                ← Return to Flight Log
+              </button>
+            </div>
           </>
         ) : (
           <div className="space-y-3">
@@ -388,9 +402,9 @@ export const FlightDetailPanel: React.FC<FlightDetailPanelProps> = ({
               <button
                 onClick={handleExportGeoJSON}
                 disabled={history.length === 0}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-aviation-sky/15 border border-aviation-sky/30 text-aviation-navy text-xs font-semibold hover:bg-aviation-sky/25 transition disabled:opacity-40"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#EBF3FA] border border-[#8DB7D5] text-[#172D40] text-xs font-semibold hover:bg-[#D6E0E7] transition disabled:opacity-40 font-mono"
               >
-                <Download className="w-3.5 h-3.5" />
+                <Download className="w-3.5 h-3.5 text-[#D87C43]" />
                 Export Trail (GeoJSON)
               </button>
             </div>

@@ -14,8 +14,9 @@ import {
   Menu,
   X,
   UserCheck,
-  CheckCircle2,
   MapPin,
+  Radio,
+  FileText,
 } from 'lucide-react';
 import { Link, useRouter } from '../router/Router';
 import { useAuthStore } from '../store/useAuthStore';
@@ -25,58 +26,70 @@ export const LandingPage: React.FC = () => {
   const { currentUser, isAuthenticated } = useAuthStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const previewFlights = [
-    { callsign: 'BAW178', route: 'LHR → JFK', alt: '37,000 ft', spd: '466 kt', status: 'Cruising', x: '24%', y: '32%' },
-    { callsign: 'AFR008', route: 'CDG → LAX', alt: '36,000 ft', spd: '476 kt', status: 'Climbing', x: '46%', y: '42%' },
-    { callsign: 'ANA006', route: 'HND → LAX', alt: '38,000 ft', spd: '495 kt', status: 'Cruising', x: '74%', y: '48%' },
-    { callsign: 'UAE201', route: 'DXB → JFK', alt: '39,000 ft', spd: '480 kt', status: 'Cruising', x: '58%', y: '50%' },
-    { callsign: 'DLH400', route: 'FRA → ORD', alt: '34,000 ft', spd: '450 kt', status: 'Descending', x: '35%', y: '26%' },
-  ];
-
   return (
-    <div className="min-h-screen bg-aviation-cloud text-aviation-slate flex flex-col font-sans selection:bg-aviation-sky/20 selection:text-aviation-navy">
+    <div className="min-h-screen bg-[#F4F0E7] text-[#172D40] flex flex-col font-sans selection:bg-[#D87C43]/20 selection:text-[#172D40]">
+      {/* 0. Top Dispatch Bar */}
+      <div className="bg-[#20394D] text-[#D6E0E7] text-[11px] font-mono tracking-wider px-4 py-1.5 border-b border-[#172D40] flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-3">
+          <span className="flex items-center gap-1.5 text-white font-semibold">
+            <Radio className="w-3.5 h-3.5 text-[#D87C43] animate-pulse" />
+            GLOBAL AVIATION OBSERVATORY
+          </span>
+          <span className="hidden sm:inline text-[#8DB7D5]">•</span>
+          <span className="hidden sm:inline text-[#8DB7D5]">DOC REF: ATCC-NAVLOG-2026.04</span>
+        </div>
+        <div className="flex items-center gap-4 text-[#8DB7D5]">
+          <span className="hidden md:inline">DATUM: WGS-84</span>
+          <span className="hidden md:inline">AIRSPACE: UNRESTRICTED</span>
+          <span className="flex items-center gap-1.5 text-[#467A67] bg-[#FCFAF5]/10 px-2 py-0.5 rounded text-[10px] font-semibold">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#467A67] animate-ping" />
+            FEED LIVE
+          </span>
+        </div>
+      </div>
+
       {/* 1. Navigation Header */}
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-aviation-border shadow-2xs">
+      <header className="sticky top-0 z-50 bg-[#FCFAF5]/95 backdrop-blur-md border-b border-[#D6E0E7] shadow-2xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* Logo & Wordmark */}
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-aviation-navy flex items-center justify-center text-aviation-sky shadow-xs group-hover:bg-aviation-midnight transition">
-              <Plane className="w-5 h-5 text-white transform -rotate-45" />
+            <div className="w-10 h-10 rounded bg-[#20394D] flex items-center justify-center text-white shadow-xs group-hover:bg-[#172D40] transition border border-[#172D40]">
+              <Plane className="w-5 h-5 text-[#D87C43] transform -rotate-45" />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-bold tracking-tight text-aviation-navy text-base">AirTrafficControl</span>
-                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-aviation-lightSky border border-blue-200 text-aviation-navy">
+                <span className="font-bold tracking-tight text-[#172D40] text-base">AirTrafficControl</span>
+                <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#E3ECF3] border border-[#D6E0E7] text-[#20394D]">
                   CC
                 </span>
               </div>
-              <p className="text-[11px] text-aviation-muted">
-                Global Flight Monitoring
+              <p className="text-[10px] font-mono tracking-wider text-[#82909B] uppercase">
+                Aviation Field Journal
               </p>
             </div>
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-aviation-slate">
-            <a href="#how-it-works" className="hover:text-aviation-navy transition">How It Works</a>
-            <a href="#features" className="hover:text-aviation-navy transition">Features</a>
-            <a href="#coverage" className="hover:text-aviation-navy transition">Data & Transparency</a>
-            <a href="#about" className="hover:text-aviation-navy transition">About</a>
+          <nav className="hidden md:flex items-center gap-8 text-xs font-mono uppercase tracking-wider text-[#456D8B]">
+            <a href="#how-it-works" className="hover:text-[#172D40] transition">How It Works</a>
+            <a href="#features" className="hover:text-[#172D40] transition">Features</a>
+            <a href="#coverage" className="hover:text-[#172D40] transition">Data &amp; Transparency</a>
+            <a href="#about" className="hover:text-[#172D40] transition">About</a>
           </nav>
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-3">
             {isAuthenticated && currentUser ? (
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 bg-aviation-cloud border border-aviation-border rounded-xl px-3 py-1.5 text-xs">
-                  <UserCheck className="w-3.5 h-3.5 text-aviation-green" />
-                  <span className="text-aviation-navy font-medium">{currentUser.callsign}</span>
+                <div className="flex items-center gap-2 bg-[#F4F0E7] border border-[#D6E0E7] rounded px-3 py-1.5 text-xs font-mono">
+                  <UserCheck className="w-3.5 h-3.5 text-[#467A67]" />
+                  <span className="text-[#172D40] font-bold">{currentUser.callsign}</span>
                 </div>
                 <Link
                   to="/dashboard"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-aviation-navy hover:bg-aviation-midnight text-white font-medium text-sm shadow-xs transition"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded bg-[#20394D] hover:bg-[#172D40] text-white font-medium text-xs shadow-xs transition border border-[#172D40]"
                 >
-                  <Compass className="w-4 h-4 text-aviation-sky" />
+                  <Compass className="w-4 h-4 text-[#D87C43]" />
                   Launch Dashboard
                 </Link>
               </div>
@@ -84,16 +97,16 @@ export const LandingPage: React.FC = () => {
               <div className="flex items-center gap-3">
                 <Link
                   to="/signin"
-                  className="text-sm font-medium text-aviation-slate hover:text-aviation-navy px-3 py-2 transition"
+                  className="text-xs font-mono uppercase tracking-wider text-[#456D8B] hover:text-[#172D40] px-3 py-2 transition"
                 >
                   Sign In
                 </Link>
                 <Link
                   to="/dashboard"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-aviation-navy hover:bg-aviation-midnight text-white font-medium text-sm shadow-xs transition"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded bg-[#D87C43] hover:bg-[#C26B34] text-white font-semibold text-xs tracking-wide shadow-xs transition border border-[#B8632E]"
                 >
-                  <span>Explore Live Flights</span>
-                  <ArrowRight className="w-4 h-4 text-aviation-sky" />
+                  <span>Explore Global Traffic</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
             )}
@@ -103,7 +116,7 @@ export const LandingPage: React.FC = () => {
           <div className="flex md:hidden">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-xl bg-aviation-cloud border border-aviation-border text-aviation-navy hover:bg-slate-200 transition"
+              className="p-2 rounded bg-[#F4F0E7] border border-[#D6E0E7] text-[#172D40] hover:bg-[#E3ECF3] transition"
               aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -113,201 +126,230 @@ export const LandingPage: React.FC = () => {
 
         {/* Mobile Dropdown */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-b border-aviation-border bg-white px-4 pt-3 pb-6 space-y-3 shadow-lg">
-            <nav className="flex flex-col space-y-2 text-sm font-medium text-aviation-slate">
+          <div className="md:hidden border-b border-[#D6E0E7] bg-[#FCFAF5] px-4 pt-3 pb-6 space-y-3 shadow-lg">
+            <nav className="flex flex-col space-y-2 text-xs font-mono uppercase tracking-wider text-[#456D8B]">
               <a
                 href="#how-it-works"
                 onClick={() => setMobileMenuOpen(false)}
-                className="py-2 px-3 rounded-lg hover:bg-aviation-cloud"
+                className="py-2 px-3 rounded hover:bg-[#F4F0E7]"
               >
                 How It Works
               </a>
               <a
                 href="#features"
                 onClick={() => setMobileMenuOpen(false)}
-                className="py-2 px-3 rounded-lg hover:bg-aviation-cloud"
+                className="py-2 px-3 rounded hover:bg-[#F4F0E7]"
               >
                 Features
               </a>
               <a
                 href="#coverage"
                 onClick={() => setMobileMenuOpen(false)}
-                className="py-2 px-3 rounded-lg hover:bg-aviation-cloud"
+                className="py-2 px-3 rounded hover:bg-[#F4F0E7]"
               >
-                Data & Transparency
+                Data &amp; Transparency
               </a>
               <a
                 href="#about"
                 onClick={() => setMobileMenuOpen(false)}
-                className="py-2 px-3 rounded-lg hover:bg-aviation-cloud"
+                className="py-2 px-3 rounded hover:bg-[#F4F0E7]"
               >
                 About
               </a>
             </nav>
-            <div className="pt-3 border-t border-aviation-border flex flex-col gap-2">
+            <div className="pt-3 border-t border-[#D6E0E7] flex flex-col gap-2">
               <Link
                 to="/signin"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center py-2 text-sm font-medium text-aviation-navy hover:bg-aviation-cloud rounded-lg"
+                className="w-full text-center py-2 text-xs font-mono uppercase tracking-wider text-[#172D40] hover:bg-[#F4F0E7] rounded"
               >
                 Sign In
               </Link>
               <Link
                 to="/dashboard"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-aviation-navy text-white font-medium text-sm shadow-xs"
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded bg-[#D87C43] text-white font-semibold text-xs tracking-wide shadow-xs"
               >
-                <Compass className="w-4 h-4 text-aviation-sky" />
-                Explore Live Flights
+                <Compass className="w-4 h-4" />
+                Explore Global Traffic
               </Link>
             </div>
           </div>
         )}
       </header>
 
-      {/* 2. Hero Section */}
-      <section className="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-28">
+      {/* 2. Hero Section: Aviation Field Journal */}
+      <section className="relative overflow-hidden pt-10 pb-16 lg:pt-16 lg:pb-24 border-b border-[#D6E0E7]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center max-w-3xl mx-auto">
-            {/* Sector status tag */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-aviation-border text-aviation-slate text-xs font-medium mb-8 shadow-xs">
-              <span className="w-2 h-2 rounded-full bg-aviation-green animate-pulse" />
-              <span className="text-aviation-navy font-semibold">Live Surveillance Active</span>
-              <span className="text-aviation-muted">•</span>
-              <span>OpenSky Network REST API</span>
-            </div>
-
-            {/* Exact Required Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-aviation-navy leading-tight">
-              Explore the World in Motion.
-            </h1>
-
-            {/* Exact Required Supporting Copy */}
-            <p className="mt-6 text-lg sm:text-xl text-aviation-slate leading-relaxed max-w-2xl mx-auto">
-              Discover aircraft around the globe through an interactive map. Search locations, explore nearby air traffic, and inspect available flight information in one clear view.
-            </p>
-
-            {/* Action Buttons */}
-            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <button
-                onClick={() => navigate('/dashboard')}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-xl bg-aviation-navy hover:bg-aviation-midnight text-white font-semibold text-base shadow-sm transition transform hover:-translate-y-0.5 active:translate-y-0"
-              >
-                <Plane className="w-5 h-5 text-aviation-sky" />
-                <span>Explore Live Flights</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-
-              <a
-                href="#how-it-works"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white hover:bg-slate-50 border border-aviation-border text-aviation-navy font-semibold text-base transition shadow-2xs"
-              >
-                <Compass className="w-4 h-4 text-aviation-sky" />
-                <span>Learn How It Works</span>
-              </a>
-            </div>
-
-            {/* Sub-hero trust bullets */}
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs text-aviation-muted font-medium">
-              <span className="flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-aviation-green" />
-                No Account Required
-              </span>
-              <span>•</span>
-              <span className="flex items-center gap-1.5">
-                <Globe2 className="w-4 h-4 text-aviation-sky" />
-                Google Maps + OpenStreetMap
-              </span>
-              <span>•</span>
-              <span className="flex items-center gap-1.5">
-                <MapPin className="w-4 h-4 text-aviation-navy" />
-                Click Any Location to Monitor
-              </span>
-            </div>
-          </div>
-
-          {/* Operational Preview Widget */}
-          <div className="mt-14 max-w-5xl mx-auto">
-            <div className="relative rounded-2xl bg-white border border-aviation-border shadow-lg overflow-hidden p-1">
-              {/* Preview Bar */}
-              <div className="bg-aviation-cloud px-4 py-3 border-b border-aviation-border flex items-center justify-between text-xs">
-                <div className="flex items-center gap-3">
-                  <div className="flex gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-red-400" />
-                    <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
-                    <span className="w-2.5 h-2.5 rounded-full bg-green-400" />
-                  </div>
-                  <span className="text-aviation-navy font-semibold flex items-center gap-1.5">
-                    <Compass className="w-4 h-4 text-aviation-sky" />
-                    Interactive Flight Explorer Preview
-                  </span>
-                </div>
-                <div className="flex items-center gap-4 text-aviation-muted text-xs">
-                  <span>Coverage: <strong className="text-aviation-navy">Global</strong></span>
-                  <button
-                    onClick={() => navigate('/dashboard')}
-                    className="text-aviation-sky hover:text-blue-700 font-semibold flex items-center gap-1"
-                  >
-                    Open Live Map <ExternalLink className="w-3 h-3" />
-                  </button>
-                </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            {/* Left Column: Editorial Headline & Copy */}
+            <div className="lg:col-span-7 space-y-6">
+              {/* Eyebrow */}
+              <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded bg-[#FCFAF5] border border-[#D6E0E7] text-[#20394D] text-[11px] font-mono tracking-wider shadow-2xs">
+                <span className="w-2 h-2 rounded-full bg-[#D87C43] animate-pulse" />
+                <span className="font-bold">GLOBAL AVIATION OBSERVATORY / 001</span>
+                <span className="text-[#82909B]">•</span>
+                <span className="text-[#456D8B]">OPEN SKY TELEMETRY</span>
               </div>
 
-              {/* Daylight Flight Map Simulation Canvas */}
-              <div className="relative h-72 sm:h-96 bg-[#EBF3FA] overflow-hidden flex items-center justify-center">
-                {/* Subtle Map Grid lines */}
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#cbd5e1_1px,transparent_1px),linear-gradient(to_bottom,#cbd5e1_1px,transparent_1px)] bg-[size:48px_48px] opacity-40" />
+              {/* Exact Required Headline */}
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[#172D40] leading-[1.08]">
+                The World, Seen Through Flight.
+              </h1>
 
-                {/* Concentric Range Rings */}
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <div className="w-[520px] h-[520px] rounded-full border border-blue-300/40 relative">
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] h-[320px] rounded-full border border-blue-300/40" />
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140px] h-[140px] rounded-full border border-blue-300/40" />
+              {/* Exact Required Supporting Copy */}
+              <p className="text-base sm:text-lg text-[#20394D]/90 leading-relaxed max-w-2xl">
+                Explore the movement of aircraft across continents. Find a place, follow the traffic, and understand the skies through an interactive global map.
+              </p>
+
+              {/* Action Buttons */}
+              <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+                <button
+                  onClick={() => navigate('/dashboard')}
+                  className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded bg-[#D87C43] hover:bg-[#C26B34] text-white font-semibold text-sm tracking-wide shadow-xs transition border border-[#B8632E] transform hover:-translate-y-0.5 active:translate-y-0"
+                >
+                  <Plane className="w-4 h-4 transform -rotate-45" />
+                  <span>Explore Global Traffic</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+
+                <a
+                  href="#how-it-works"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded bg-[#FCFAF5] hover:bg-white border border-[#D6E0E7] text-[#20394D] font-mono text-xs uppercase tracking-wider transition shadow-2xs"
+                >
+                  <Compass className="w-4 h-4 text-[#456D8B]" />
+                  <span>How It Works</span>
+                </a>
+              </div>
+
+              {/* Technical Datum Indicators */}
+              <div className="pt-4 grid grid-cols-3 gap-3 border-t border-[#D6E0E7]/80 text-[11px] font-mono">
+                <div className="bg-[#FCFAF5] p-2.5 rounded border border-[#D6E0E7]">
+                  <span className="text-[#82909B] block text-[9px] uppercase">COORDINATE DATUM</span>
+                  <span className="text-[#172D40] font-bold">WGS-84 / SPHEROID</span>
+                </div>
+                <div className="bg-[#FCFAF5] p-2.5 rounded border border-[#D6E0E7]">
+                  <span className="text-[#82909B] block text-[9px] uppercase">CARTOGRAPHY</span>
+                  <span className="text-[#172D40] font-bold">GOOGLE MAPS + OSM</span>
+                </div>
+                <div className="bg-[#FCFAF5] p-2.5 rounded border border-[#D6E0E7]">
+                  <span className="text-[#82909B] block text-[9px] uppercase">SURVEILLANCE</span>
+                  <span className="text-[#467A67] font-bold">ADS-B LIVE INGEST</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: Art-Directed Aviation Field Journal Dossier */}
+            <div className="lg:col-span-5">
+              <div className="bg-[#FCFAF5] border-2 border-[#D6E0E7] rounded-xl shadow-md overflow-hidden relative">
+                {/* Dossier Header */}
+                <div className="bg-[#20394D] text-[#FCFAF5] px-4 py-2.5 border-b border-[#172D40] flex items-center justify-between text-xs font-mono">
+                  <div className="flex items-center gap-2">
+                    <FileText className="w-3.5 h-3.5 text-[#D87C43]" />
+                    <span className="font-bold tracking-wider">NAVLOG-DOC-001</span>
                   </div>
+                  <span className="text-[10px] text-[#8DB7D5] bg-[#172D40] px-2 py-0.5 rounded">
+                    TRANSATLANTIC / NAT-B
+                  </span>
                 </div>
 
-                {/* Flight vector preview points */}
-                {previewFlights.map((flt) => (
-                  <div
-                    key={flt.callsign}
-                    className="absolute cursor-pointer transition-transform hover:scale-105"
-                    style={{ left: flt.x, top: flt.y }}
-                    onClick={() => navigate('/dashboard')}
-                  >
-                    <div className="relative flex items-center gap-2 group">
-                      <div className="w-4 h-4 rounded-full bg-aviation-navy text-white flex items-center justify-center shadow-md">
-                        <Plane className="w-2.5 h-2.5 transform -rotate-45" />
-                      </div>
+                {/* Blueprint Nav Canvas */}
+                <div className="p-4 relative bg-[#FCFAF5] blueprint-grid">
+                  {/* Subtle Flight Corridor Arc & Waypoint Fixes */}
+                  <div className="relative h-64 border border-[#D6E0E7] rounded bg-white/70 overflow-hidden p-3 flex flex-col justify-between">
+                    {/* Top Waypoint Bar */}
+                    <div className="flex justify-between items-center text-[10px] font-mono text-[#82909B]">
+                      <span>FIX: GOMUP (51°12&apos;N 008°45&apos;W)</span>
+                      <span>FIX: DOGAL (53°00&apos;N 015°00&apos;W)</span>
+                      <span>FIX: MALOT (54°00&apos;N 020°00&apos;W)</span>
+                    </div>
 
-                      <div className="px-2.5 py-1.5 rounded-xl bg-white/95 border border-aviation-border text-xs shadow-md backdrop-blur-sm whitespace-nowrap">
-                        <div className="flex items-center gap-1.5 font-bold text-aviation-navy">
-                          <span>{flt.callsign}</span>
-                          <span className="text-aviation-muted font-normal text-[11px]">{flt.route}</span>
+                    {/* Visual Route Arc SVG */}
+                    <div className="relative flex-1 flex items-center justify-center my-2">
+                      <svg className="w-full h-full" viewBox="0 0 360 120" fill="none">
+                        {/* Range Rings */}
+                        <circle cx="180" cy="60" r="50" stroke="#D6E0E7" strokeWidth="1" strokeDasharray="3 3" />
+                        <circle cx="180" cy="60" r="90" stroke="#D6E0E7" strokeWidth="1" strokeDasharray="4 4" />
+                        {/* Great Circle Flight Path */}
+                        <path d="M 20 90 Q 180 20 340 85" stroke="#456D8B" strokeWidth="2" strokeDasharray="4 2" />
+                        {/* Active Flight Vectors */}
+                        {/* Flight 1: Active Orange BAW178 */}
+                        <g transform="translate(195, 36)">
+                          <circle cx="0" cy="0" r="10" fill="#D87C43" fillOpacity="0.2" className="animate-ping" />
+                          <circle cx="0" cy="0" r="5" fill="#D87C43" />
+                          <path d="M0 -7 L4 5 L0 3 L-4 5 Z" fill="#D87C43" transform="rotate(275)" />
+                        </g>
+                        {/* Flight 2: Cruising Navy AFR008 */}
+                        <g transform="translate(100, 52)">
+                          <circle cx="0" cy="0" r="4" fill="#20394D" />
+                          <path d="M0 -6 L3 4 L0 2 L-3 4 Z" fill="#20394D" transform="rotate(290)" />
+                        </g>
+                        {/* Flight 3: Climbing Green DLH400 */}
+                        <g transform="translate(290, 68)">
+                          <circle cx="0" cy="0" r="4" fill="#467A67" />
+                          <path d="M0 -6 L3 4 L0 2 L-3 4 Z" fill="#467A67" transform="rotate(260)" />
+                        </g>
+                      </svg>
+                    </div>
+
+                    {/* Active Flight Card: BAW178 */}
+                    <div className="bg-[#FCFAF5] border-l-4 border-l-[#D87C43] border border-[#D6E0E7] p-2.5 rounded shadow-xs">
+                      <div className="flex items-center justify-between text-xs font-mono">
+                        <div className="flex items-center gap-2 font-bold text-[#172D40]">
+                          <Plane className="w-3.5 h-3.5 text-[#D87C43] transform -rotate-45" />
+                          <span>BAW178</span>
+                          <span className="text-[10px] text-[#456D8B] font-normal">B777-300ER • G-STBG</span>
                         </div>
-                        <div className="text-[11px] text-aviation-muted flex items-center gap-2 mt-0.5">
-                          <span>{flt.alt}</span>
-                          <span>{flt.spd}</span>
-                          <span className="text-aviation-green font-medium">
-                            {flt.status}
-                          </span>
+                        <span className="text-[10px] text-[#D87C43] font-bold bg-[#D87C43]/10 px-1.5 py-0.5 rounded">
+                          TRACKED TARGET
+                        </span>
+                      </div>
+                      <div className="mt-1.5 grid grid-cols-4 gap-2 text-[10px] font-mono text-[#20394D]">
+                        <div>
+                          <span className="text-[#82909B] block text-[8px]">ALTITUDE</span>
+                          <span className="font-bold">FL370 (37,000&apos;)</span>
+                        </div>
+                        <div>
+                          <span className="text-[#82909B] block text-[8px]">AIRSPEED</span>
+                          <span className="font-bold">466 KT</span>
+                        </div>
+                        <div>
+                          <span className="text-[#82909B] block text-[8px]">HEADING</span>
+                          <span className="font-bold">274° W</span>
+                        </div>
+                        <div>
+                          <span className="text-[#82909B] block text-[8px]">ROUTE</span>
+                          <span className="font-bold">LHR → JFK</span>
                         </div>
                       </div>
                     </div>
                   </div>
-                ))}
 
-                {/* Bottom Overlay CTA */}
-                <div className="absolute bottom-4 left-4 right-4 sm:left-auto sm:right-4 bg-white/95 backdrop-blur-md border border-aviation-border rounded-xl p-3 flex items-center justify-between gap-4 text-xs shadow-md">
-                  <div>
-                    <span className="text-aviation-muted text-[10px] block uppercase tracking-wider font-semibold">Live Flight Radar</span>
-                    <span className="text-aviation-navy font-bold">Ready to explore worldwide aircraft?</span>
+                  {/* Flight Log Dossier Strip */}
+                  <div className="mt-3 grid grid-cols-2 gap-2 text-[10px] font-mono">
+                    <div className="bg-white p-2 rounded border border-[#D6E0E7] flex items-center justify-between">
+                      <span className="text-[#82909B]">AFR008 (CDG→LAX)</span>
+                      <span className="font-bold text-[#20394D]">FL390 • 482 KT</span>
+                    </div>
+                    <div className="bg-white p-2 rounded border border-[#D6E0E7] flex items-center justify-between">
+                      <span className="text-[#82909B]">DLH400 (FRA→ORD)</span>
+                      <span className="font-bold text-[#467A67]">FL340 • 450 KT</span>
+                    </div>
                   </div>
-                  <button
-                    onClick={() => navigate('/dashboard')}
-                    className="px-4 py-2 rounded-lg bg-aviation-navy hover:bg-aviation-midnight text-white font-medium text-xs shadow-xs transition"
-                  >
-                    Launch Radar
-                  </button>
+
+                  {/* Explore Button */}
+                  <div className="mt-3 pt-3 border-t border-[#D6E0E7] flex items-center justify-between">
+                    <span className="text-[10px] font-mono text-[#82909B]">
+                      SURVEILLANCE RADAR LIVE
+                    </span>
+                    <button
+                      onClick={() => navigate('/dashboard')}
+                      className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-[#D87C43] hover:text-[#C26B34] transition"
+                    >
+                      <span>Open Full Map</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -315,202 +357,222 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 3. Three Simple Steps Section */}
-      <section id="how-it-works" className="py-20 bg-white border-t border-aviation-border">
+      {/* 3. Three Simple Steps Section: Editorial Workflow */}
+      <section id="how-it-works" className="py-16 bg-[#FCFAF5] border-b border-[#D6E0E7]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="text-xs uppercase font-bold text-aviation-sky tracking-wider block mb-2">
-              Three Simple Steps
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <span className="text-[11px] font-mono font-bold text-[#D87C43] tracking-widest uppercase block mb-1">
+              OPERATIONAL WORKFLOW / PROTOCOL
             </span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-aviation-navy tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#172D40] tracking-tight">
               Learn How It Works
             </h2>
-            <p className="mt-4 text-aviation-slate text-base">
-              Get started in seconds with an intuitive, approachable workflow designed for everyone.
+            <p className="mt-3 text-[#456D8B] text-sm sm:text-base leading-relaxed">
+              Explore airspace anywhere in the world using three intuitive operations.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
             {/* Step 1 */}
-            <div className="bg-aviation-cloud/50 border border-aviation-border rounded-2xl p-8 relative hover:border-aviation-sky transition">
-              <div className="text-5xl font-black text-slate-200 absolute top-6 right-6">
+            <div className="bg-white border border-[#D6E0E7] rounded-xl p-6 relative hover:border-[#D87C43] transition shadow-2xs group">
+              <div className="text-4xl font-mono font-black text-[#D6E0E7] group-hover:text-[#D87C43]/20 transition absolute top-5 right-5">
                 01
               </div>
-              <div className="w-12 h-12 rounded-xl bg-aviation-lightSky border border-blue-200 flex items-center justify-center text-aviation-navy mb-6">
-                <Search className="w-6 h-6 text-aviation-sky" />
+              <div className="w-10 h-10 rounded bg-[#F4F0E7] border border-[#D6E0E7] flex items-center justify-center text-[#20394D] mb-5">
+                <Search className="w-5 h-5 text-[#D87C43]" />
               </div>
-              <h3 className="text-xl font-bold text-aviation-navy mb-3">Find a location</h3>
-              <p className="text-aviation-slate text-sm leading-relaxed">
-                Search for an airport, city, or landmark, or simply click anywhere on the interactive map to set an airspace monitoring center.
+              <h3 className="text-lg font-bold text-[#172D40] mb-2 font-mono">
+                01 — Find your location.
+              </h3>
+              <p className="text-[#20394D]/80 text-xs sm:text-sm leading-relaxed">
+                Search for an aerodrome, metropolitan center, or coordinate, or click directly on the interactive map to establish an airspace surveillance anchor.
               </p>
             </div>
 
             {/* Step 2 */}
-            <div className="bg-aviation-cloud/50 border border-aviation-border rounded-2xl p-8 relative hover:border-aviation-sky transition">
-              <div className="text-5xl font-black text-slate-200 absolute top-6 right-6">
+            <div className="bg-white border border-[#D6E0E7] rounded-xl p-6 relative hover:border-[#D87C43] transition shadow-2xs group">
+              <div className="text-4xl font-mono font-black text-[#D6E0E7] group-hover:text-[#D87C43]/20 transition absolute top-5 right-5">
                 02
               </div>
-              <div className="w-12 h-12 rounded-xl bg-aviation-lightSky border border-blue-200 flex items-center justify-center text-aviation-navy mb-6">
-                <Compass className="w-6 h-6 text-aviation-sky" />
+              <div className="w-10 h-10 rounded bg-[#F4F0E7] border border-[#D6E0E7] flex items-center justify-center text-[#20394D] mb-5">
+                <Compass className="w-5 h-5 text-[#456D8B]" />
               </div>
-              <h3 className="text-xl font-bold text-aviation-navy mb-3">Explore nearby flights</h3>
-              <p className="text-aviation-slate text-sm leading-relaxed">
-                Adjust your monitoring perimeter from 25 km to 250 km. Observe live aircraft positions and movements updated in real time.
+              <h3 className="text-lg font-bold text-[#172D40] mb-2 font-mono">
+                02 — Explore aircraft in view.
+              </h3>
+              <p className="text-[#20394D]/80 text-xs sm:text-sm leading-relaxed">
+                Adjust your monitoring perimeter from 25 km to 250 km. Observe real-time aircraft positions, headings, and vertical rate trends in your sector.
               </p>
             </div>
 
             {/* Step 3 */}
-            <div className="bg-aviation-cloud/50 border border-aviation-border rounded-2xl p-8 relative hover:border-aviation-sky transition">
-              <div className="text-5xl font-black text-slate-200 absolute top-6 right-6">
+            <div className="bg-white border border-[#D6E0E7] rounded-xl p-6 relative hover:border-[#D87C43] transition shadow-2xs group">
+              <div className="text-4xl font-mono font-black text-[#D6E0E7] group-hover:text-[#D87C43]/20 transition absolute top-5 right-5">
                 03
               </div>
-              <div className="w-12 h-12 rounded-xl bg-aviation-lightSky border border-blue-200 flex items-center justify-center text-aviation-navy mb-6">
-                <Plane className="w-6 h-6 text-aviation-sky" />
+              <div className="w-10 h-10 rounded bg-[#F4F0E7] border border-[#D6E0E7] flex items-center justify-center text-[#20394D] mb-5">
+                <Plane className="w-5 h-5 text-[#467A67]" />
               </div>
-              <h3 className="text-xl font-bold text-aviation-navy mb-3">Select an aircraft</h3>
-              <p className="text-aviation-slate text-sm leading-relaxed">
-                Select any flight marker to inspect its callsign, altitude, speed, heading, vertical trend, and historical flight breadcrumb trail.
+              <h3 className="text-lg font-bold text-[#172D40] mb-2 font-mono">
+                03 — Inspect available flight information.
+              </h3>
+              <p className="text-[#20394D]/80 text-xs sm:text-sm leading-relaxed">
+                Select any flight to view its navigation log: callsign, barometric altitude, true airspeed, heading bearing, squawk status, and waypoint breadcrumbs.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 4. Features Section */}
-      <section id="features" className="py-20 border-t border-aviation-border bg-aviation-cloud/40">
+      {/* 4. Features Section: Aeronautical Chart Standards */}
+      <section id="features" className="py-16 bg-[#F4F0E7] border-b border-[#D6E0E7]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="text-xs uppercase font-bold text-aviation-sky tracking-wider block mb-2">
-              Capabilities
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <span className="text-[11px] font-mono font-bold text-[#D87C43] tracking-widest uppercase block mb-1">
+              SYSTEM CAPABILITIES / INSTRUMENTS
             </span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-aviation-navy tracking-tight">
-              Built for Clarity and Insight
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#172D40] tracking-tight">
+              Aviation-Grade Precision &amp; Transparency
             </h2>
-            <p className="mt-4 text-aviation-slate text-base">
-              Every detail is crafted for approachable usability, reliable geospatial accuracy, and complete data honesty.
+            <p className="mt-3 text-[#456D8B] text-sm sm:text-base leading-relaxed">
+              Every interface element is crafted for clarity, dependable geospatial accuracy, and complete data integrity.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Feature 1 */}
-            <div className="bg-white border border-aviation-border rounded-2xl p-6 shadow-2xs hover:shadow-xs transition">
-              <div className="w-12 h-12 rounded-xl bg-aviation-lightSky border border-blue-200 flex items-center justify-center mb-5 text-aviation-sky">
-                <Globe2 className="w-6 h-6" />
+            <div className="bg-[#FCFAF5] border border-[#D6E0E7] rounded-xl p-6 shadow-2xs hover:border-[#456D8B] transition">
+              <div className="w-10 h-10 rounded bg-white border border-[#D6E0E7] flex items-center justify-center mb-4 text-[#456D8B]">
+                <Globe2 className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-bold text-aviation-navy mb-2">Google Maps + OpenStreetMap</h3>
-              <p className="text-aviation-slate text-sm leading-relaxed">
-                Switch seamlessly between official Google Maps (Roadmap, Satellite, Terrain, Hybrid) and OpenStreetMap tiles with zero watermarks.
+              <h3 className="text-base font-bold text-[#172D40] mb-2 font-mono">
+                Google Maps + OpenStreetMap
+              </h3>
+              <p className="text-[#20394D]/80 text-xs sm:text-sm leading-relaxed">
+                Switch between official Google Maps (Roadmap, Satellite, Terrain, Hybrid) and OpenStreetMap tiles with zero watermarks or API lockouts.
               </p>
             </div>
 
             {/* Feature 2 */}
-            <div className="bg-white border border-aviation-border rounded-2xl p-6 shadow-2xs hover:shadow-xs transition">
-              <div className="w-12 h-12 rounded-xl bg-aviation-lightSky border border-blue-200 flex items-center justify-center mb-5 text-aviation-sky">
-                <MapPin className="w-6 h-6" />
+            <div className="bg-[#FCFAF5] border border-[#D6E0E7] rounded-xl p-6 shadow-2xs hover:border-[#456D8B] transition">
+              <div className="w-10 h-10 rounded bg-white border border-[#D6E0E7] flex items-center justify-center mb-4 text-[#D87C43]">
+                <MapPin className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-bold text-aviation-navy mb-2">Location-Driven Monitoring</h3>
-              <p className="text-aviation-slate text-sm leading-relaxed">
-                Search cities or major hubs, or click directly on the map to anchor a focused 25 to 250 km surveillance radius around any point of interest.
+              <h3 className="text-base font-bold text-[#172D40] mb-2 font-mono">
+                Location-Driven Monitoring
+              </h3>
+              <p className="text-[#20394D]/80 text-xs sm:text-sm leading-relaxed">
+                Search global aerodromes or click directly on any coordinate to establish a focused 25 to 250 km surveillance perimeter around your target.
               </p>
             </div>
 
             {/* Feature 3 */}
-            <div className="bg-white border border-aviation-border rounded-2xl p-6 shadow-2xs hover:shadow-xs transition">
-              <div className="w-12 h-12 rounded-xl bg-aviation-lightSky border border-blue-200 flex items-center justify-center mb-5 text-aviation-sky">
-                <Activity className="w-6 h-6" />
+            <div className="bg-[#FCFAF5] border border-[#D6E0E7] rounded-xl p-6 shadow-2xs hover:border-[#456D8B] transition">
+              <div className="w-10 h-10 rounded bg-white border border-[#D6E0E7] flex items-center justify-center mb-4 text-[#467A67]">
+                <Activity className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-bold text-aviation-navy mb-2">Clear Flight Telemetry</h3>
-              <p className="text-aviation-slate text-sm leading-relaxed">
-                Inspect callsign, country of origin, altitude in feet and meters, airspeed in knots, climb rate, and transponder codes with graceful fallbacks.
+              <h3 className="text-base font-bold text-[#172D40] mb-2 font-mono">
+                Pilot Dossier Telemetry
+              </h3>
+              <p className="text-[#20394D]/80 text-xs sm:text-sm leading-relaxed">
+                Inspect callsign, country of origin, altitude in feet and meters, speed in knots, climb rate, and transponder codes with graceful fallbacks.
               </p>
             </div>
 
             {/* Feature 4 */}
-            <div className="bg-white border border-aviation-border rounded-2xl p-6 shadow-2xs hover:shadow-xs transition">
-              <div className="w-12 h-12 rounded-xl bg-aviation-lightSky border border-blue-200 flex items-center justify-center mb-5 text-aviation-sky">
-                <Clock className="w-6 h-6" />
+            <div className="bg-[#FCFAF5] border border-[#D6E0E7] rounded-xl p-6 shadow-2xs hover:border-[#456D8B] transition">
+              <div className="w-10 h-10 rounded bg-white border border-[#D6E0E7] flex items-center justify-center mb-4 text-[#456D8B]">
+                <Clock className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-bold text-aviation-navy mb-2">Freshness & Status Tracking</h3>
-              <p className="text-aviation-slate text-sm leading-relaxed">
-                Automatic refresh intervals with clear data freshness badges, countdown sweeps, and friendly notifications if live rates become throttled.
+              <h3 className="text-base font-bold text-[#172D40] mb-2 font-mono">
+                Freshness Sweeps &amp; Zulu Time
+              </h3>
+              <p className="text-[#20394D]/80 text-xs sm:text-sm leading-relaxed">
+                Automatic refresh intervals with data freshness badges, countdown sweeps, and friendly notifications when public cloud rates throttle.
               </p>
             </div>
 
             {/* Feature 5 */}
-            <div className="bg-white border border-aviation-border rounded-2xl p-6 shadow-2xs hover:shadow-xs transition">
-              <div className="w-12 h-12 rounded-xl bg-aviation-lightSky border border-blue-200 flex items-center justify-center mb-5 text-aviation-sky">
-                <Layers className="w-6 h-6" />
+            <div className="bg-[#FCFAF5] border border-[#D6E0E7] rounded-xl p-6 shadow-2xs hover:border-[#456D8B] transition">
+              <div className="w-10 h-10 rounded bg-white border border-[#D6E0E7] flex items-center justify-center mb-4 text-[#D87C43]">
+                <Layers className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-bold text-aviation-navy mb-2">Recent Flight Breadcrumbs</h3>
-              <p className="text-aviation-slate text-sm leading-relaxed">
+              <h3 className="text-base font-bold text-[#172D40] mb-2 font-mono">
+                Recent Flight Breadcrumbs
+              </h3>
+              <p className="text-[#20394D]/80 text-xs sm:text-sm leading-relaxed">
                 Visual flight trails track historical aircraft observations color-coded by altitude to illustrate flight trajectories and approach patterns.
               </p>
             </div>
 
             {/* Feature 6 */}
-            <div className="bg-white border border-aviation-border rounded-2xl p-6 shadow-2xs hover:shadow-xs transition">
-              <div className="w-12 h-12 rounded-xl bg-red-50 border border-red-200 flex items-center justify-center mb-5 text-aviation-red">
-                <AlertTriangle className="w-6 h-6" />
+            <div className="bg-[#FCFAF5] border border-[#D6E0E7] rounded-xl p-6 shadow-2xs hover:border-[#C94C4C] transition">
+              <div className="w-10 h-10 rounded bg-white border border-[#D6E0E7] flex items-center justify-center mb-4 text-[#C94C4C]">
+                <AlertTriangle className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-bold text-aviation-navy mb-2">Emergency Squawk Filter</h3>
-              <p className="text-aviation-slate text-sm leading-relaxed">
-                Filter for emergency squawk codes (7700 general emergency, 7600 radio loss, 7500 hijacking) with instant visual priority.
+              <h3 className="text-base font-bold text-[#172D40] mb-2 font-mono">
+                Emergency Squawk Filter
+              </h3>
+              <p className="text-[#20394D]/80 text-xs sm:text-sm leading-relaxed">
+                Filter for emergency squawk codes (7700 general emergency, 7600 radio loss, 7500 unlawful interference) with high visual priority.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 5. Trust and Transparency Section */}
-      <section id="coverage" className="py-16 bg-white border-t border-aviation-border">
+      {/* 5. Trust and Transparency Section: OpenSky Network Policy */}
+      <section id="coverage" className="py-16 bg-[#FCFAF5] border-b border-[#D6E0E7]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto bg-aviation-cloud/50 border border-aviation-border rounded-2xl p-8 sm:p-10 shadow-xs">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2.5 rounded-xl bg-aviation-lightSky border border-blue-200 text-aviation-navy">
-                <ShieldCheck className="w-6 h-6 text-aviation-sky" />
+          <div className="max-w-4xl mx-auto bg-white border border-[#D6E0E7] rounded-xl p-6 sm:p-8 shadow-xs">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="p-2.5 rounded bg-[#F4F0E7] border border-[#D6E0E7] text-[#20394D]">
+                <ShieldCheck className="w-6 h-6 text-[#D87C43]" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-aviation-navy">Trust, Data Transparency & API Policy</h3>
-                <p className="text-xs text-aviation-muted">Adhering to OpenSky Network & ADS-B Standards</p>
+                <h3 className="text-lg font-bold text-[#172D40] font-mono">
+                  Trust, Data Transparency &amp; API Policy
+                </h3>
+                <p className="text-xs text-[#82909B] font-mono">Adhering to OpenSky Network &amp; ADS-B Standards</p>
               </div>
             </div>
 
-            <div className="space-y-4 text-sm text-aviation-slate leading-relaxed">
+            <div className="space-y-4 text-xs sm:text-sm text-[#20394D]/90 leading-relaxed">
               <p>
                 <strong>AirTrafficControl-CC</strong> retrieves actual aircraft data via the documented{' '}
                 <a
                   href="https://opensky-network.org/apidoc/rest.html"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-aviation-sky hover:underline font-medium"
+                  className="text-[#D87C43] hover:underline font-bold"
                 >
                   OpenSky Network REST API
                 </a>
                 .
               </p>
-              <div className="p-4 rounded-xl bg-white border border-aviation-border space-y-2.5 text-xs">
+              <div className="p-4 rounded bg-[#FCFAF5] border border-[#D6E0E7] space-y-2.5 text-xs font-mono">
                 <div className="flex items-start gap-2.5">
-                  <span className="text-aviation-green font-bold text-sm">•</span>
+                  <span className="text-[#467A67] font-bold">•</span>
                   <span><strong>Data Honesty:</strong> Live flight data is never simulated behind your back. If the feed is delayed or interrupted, a clear plain-language status alert is presented immediately.</span>
                 </div>
                 <div className="flex items-start gap-2.5">
-                  <span className="text-aviation-sky font-bold text-sm">•</span>
+                  <span className="text-[#D87C43] font-bold">•</span>
                   <span><strong>Cloud IP Policy &amp; Demonstration Flights:</strong> OpenSky Network officially restricts unauthenticated requests from cloud hosting platforms (Vercel/AWS). When restricted, our proxy catches the 504/timeout and provides a seamless option to continue exploring with demonstration flights.</span>
                 </div>
                 <div className="flex items-start gap-2.5">
-                  <span className="text-aviation-navy font-bold text-sm">•</span>
+                  <span className="text-[#456D8B] font-bold">•</span>
                   <span><strong>Registered Credentials:</strong> OpenSky users can configure client credentials in deployment environment variables to query with authorized rate quotas.</span>
                 </div>
               </div>
             </div>
 
-            <div className="mt-8 pt-6 border-t border-aviation-border flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="text-xs text-aviation-muted">
+            <div className="mt-6 pt-5 border-t border-[#D6E0E7] flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="text-[11px] font-mono text-[#82909B]">
                 Cartography: Official Google Maps Platform &amp; OpenStreetMap contributors. Clean daylight tiles with zero watermarks.
               </div>
               <button
                 onClick={() => navigate('/dashboard')}
-                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-aviation-navy hover:bg-aviation-midnight text-white font-medium text-xs shadow-xs transition"
+                className="w-full sm:w-auto px-5 py-2.5 rounded bg-[#20394D] hover:bg-[#172D40] text-white font-mono text-xs uppercase tracking-wider shadow-xs transition"
               >
                 Launch Live Dashboard
               </button>
@@ -519,50 +581,50 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 6. Footer */}
-      <footer id="about" className="mt-auto border-t border-aviation-border bg-white py-12 text-xs text-aviation-muted">
+      {/* 6. Footer: Publication Colophon */}
+      <footer id="about" className="mt-auto bg-[#20394D] text-[#D6E0E7] py-12 text-xs font-mono">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             <div className="space-y-3">
               <div className="flex items-center gap-2">
-                <Plane className="w-5 h-5 text-aviation-sky" />
-                <span className="font-bold text-aviation-navy text-sm">AirTrafficControl-CC</span>
+                <Plane className="w-5 h-5 text-[#D87C43]" />
+                <span className="font-bold text-white text-sm">AirTrafficControl-CC</span>
               </div>
-              <p className="text-aviation-muted leading-relaxed">
+              <p className="text-[#8DB7D5] leading-relaxed text-[11px]">
                 CodeChef-VIT Promotional Cycle 2026–27 Frontend Development Task. Real-time geospatial
                 aviation monitoring system.
               </p>
             </div>
 
             <div>
-              <h4 className="text-aviation-navy uppercase font-bold mb-3 tracking-wider text-[11px]">
+              <h4 className="text-white uppercase font-bold mb-3 tracking-wider text-[11px]">
                 Navigation
               </h4>
-              <ul className="space-y-2">
-                <li><Link to="/" className="hover:text-aviation-navy transition">Home</Link></li>
-                <li><Link to="/dashboard" className="hover:text-aviation-navy transition">Live Flights Dashboard</Link></li>
-                <li><Link to="/signin" className="hover:text-aviation-navy transition">Sign In</Link></li>
-                <li><Link to="/signup" className="hover:text-aviation-navy transition">Create Account</Link></li>
+              <ul className="space-y-2 text-[11px] text-[#8DB7D5]">
+                <li><Link to="/" className="hover:text-white transition">Home / Field Journal</Link></li>
+                <li><Link to="/dashboard" className="hover:text-white transition">Live Flights Dashboard</Link></li>
+                <li><Link to="/signin" className="hover:text-white transition">Sign In</Link></li>
+                <li><Link to="/signup" className="hover:text-white transition">Create Account</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="text-aviation-navy uppercase font-bold mb-3 tracking-wider text-[11px]">
+              <h4 className="text-white uppercase font-bold mb-3 tracking-wider text-[11px]">
                 Aviation Providers
               </h4>
-              <ul className="space-y-2">
+              <ul className="space-y-2 text-[11px] text-[#8DB7D5]">
                 <li>
-                  <a href="https://opensky-network.org" target="_blank" rel="noopener noreferrer" className="hover:text-aviation-navy transition flex items-center gap-1">
+                  <a href="https://opensky-network.org" target="_blank" rel="noopener noreferrer" className="hover:text-white transition flex items-center gap-1">
                     OpenSky Network <ExternalLink className="w-3 h-3" />
                   </a>
                 </li>
                 <li>
-                  <a href="https://www.openstreetmap.org" target="_blank" rel="noopener noreferrer" className="hover:text-aviation-navy transition flex items-center gap-1">
+                  <a href="https://www.openstreetmap.org" target="_blank" rel="noopener noreferrer" className="hover:text-white transition flex items-center gap-1">
                     OpenStreetMap <ExternalLink className="w-3 h-3" />
                   </a>
                 </li>
                 <li>
-                  <a href="https://leafletjs.com" target="_blank" rel="noopener noreferrer" className="hover:text-aviation-navy transition flex items-center gap-1">
+                  <a href="https://leafletjs.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition flex items-center gap-1">
                     Leaflet JS <ExternalLink className="w-3 h-3" />
                   </a>
                 </li>
@@ -570,34 +632,34 @@ export const LandingPage: React.FC = () => {
             </div>
 
             <div>
-              <h4 className="text-aviation-navy uppercase font-bold mb-3 tracking-wider text-[11px]">
-                Repository & Build
+              <h4 className="text-white uppercase font-bold mb-3 tracking-wider text-[11px]">
+                Repository &amp; Build
               </h4>
-              <ul className="space-y-2">
+              <ul className="space-y-2 text-[11px] text-[#8DB7D5]">
                 <li>
                   <a
                     href="https://github.com/SarveshS1407/Airtrafficcontrol-CC"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:text-aviation-navy transition flex items-center gap-1"
+                    className="hover:text-white transition flex items-center gap-1"
                   >
                     GitHub Repository <ExternalLink className="w-3 h-3" />
                   </a>
                 </li>
                 <li>Stack: React + Vite + TypeScript</li>
                 <li>State: Zustand Store</li>
-                <li>Styling: Tailwind CSS (Aviation Theme)</li>
+                <li>Theme: Aviation Field Journal</li>
               </ul>
             </div>
           </div>
 
-          <div className="pt-8 border-t border-aviation-border flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px]">
+          <div className="pt-6 border-t border-[#172D40] flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] text-[#8DB7D5]">
             <div>
               &copy; {new Date().getFullYear()} AirTrafficControl-CC. Built for CodeChef-VIT.
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-aviation-green" />
-              <span className="text-aviation-slate font-medium">All Systems Operational</span>
+              <span className="w-2 h-2 rounded-full bg-[#467A67]" />
+              <span className="text-[#FCFAF5] font-semibold">ALL RADAR SYSTEMS OPERATIONAL</span>
             </div>
           </div>
         </div>

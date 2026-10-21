@@ -45,7 +45,6 @@ export const LocationSearchControl: React.FC<LocationSearchControlProps> = ({
 
     const trimmed = query.trim();
     if (!trimmed) {
-      // Show top 6 major global aviation hubs by default when opened
       setResults(GLOBAL_AVIATION_WAYPOINTS.slice(0, 6));
       setLoading(false);
       return;
@@ -113,12 +112,12 @@ export const LocationSearchControl: React.FC<LocationSearchControlProps> = ({
   return (
     <div ref={containerRef} className={`relative font-sans text-xs ${className}`}>
       {/* Search Input Box */}
-      <div className="relative flex items-center bg-white/95 border border-slate-200 hover:border-aviation-sky focus-within:border-aviation-navy focus-within:ring-2 focus-within:ring-aviation-sky/30 rounded-xl shadow-md backdrop-blur-md transition">
-        <div className="pl-3 pr-2 text-aviation-navy flex items-center pointer-events-none">
+      <div className="relative flex items-center bg-[#FCFAF5]/95 border border-[#D6E0E7] hover:border-[#8DB7D5] focus-within:border-[#20394D] focus-within:ring-2 focus-within:ring-[#8DB7D5]/30 rounded-xl shadow-md backdrop-blur-md transition">
+        <div className="pl-3 pr-2 text-[#20394D] flex items-center pointer-events-none">
           {loading ? (
-            <Loader2 className="w-4 h-4 text-aviation-sky animate-spin" />
+            <Loader2 className="w-4 h-4 text-[#D87C43] animate-spin" />
           ) : (
-            <Search className="w-4 h-4 text-aviation-navy" />
+            <Search className="w-4 h-4 text-[#20394D]" />
           )}
         </div>
 
@@ -132,7 +131,7 @@ export const LocationSearchControl: React.FC<LocationSearchControlProps> = ({
           onFocus={() => setIsOpen(true)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="w-full py-2.5 bg-transparent text-slate-800 placeholder-slate-400 text-xs focus:outline-none pr-8 font-medium"
+          className="w-full py-2.5 bg-transparent text-[#172D40] placeholder-[#82909B] text-xs focus:outline-none pr-8 font-medium"
         />
 
         {query && (
@@ -141,7 +140,7 @@ export const LocationSearchControl: React.FC<LocationSearchControlProps> = ({
               setQuery('');
               setResults(GLOBAL_AVIATION_WAYPOINTS.slice(0, 6));
             }}
-            className="pr-3 text-slate-400 hover:text-slate-700 transition"
+            className="pr-3 text-[#82909B] hover:text-[#172D40] transition"
             title="Clear search"
           >
             <X className="w-3.5 h-3.5" />
@@ -151,12 +150,12 @@ export const LocationSearchControl: React.FC<LocationSearchControlProps> = ({
 
       {/* Autocomplete Dropdown */}
       {isOpen && (
-        <div className="absolute left-0 right-0 mt-1.5 bg-white border border-slate-200 rounded-xl shadow-xl backdrop-blur-xl z-50 overflow-hidden divide-y divide-slate-100 animate-fadeIn">
+        <div className="absolute left-0 right-0 mt-1.5 bg-[#FCFAF5] border border-[#D6E0E7] rounded-xl shadow-xl backdrop-blur-xl z-50 overflow-hidden divide-y divide-[#D6E0E7] animate-fadeIn">
           {/* Popular Hub Quick Links if query is empty */}
           {!query && (
-            <div className="p-2.5 bg-slate-50/80">
-              <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold block mb-1.5 flex items-center gap-1">
-                <Navigation className="w-3 h-3 text-aviation-navy" />
+            <div className="p-3 bg-[#F4F0E7]">
+              <span className="text-[10px] text-[#82909B] uppercase tracking-wider font-bold block mb-2 flex items-center gap-1.5 tech-stamp">
+                <Navigation className="w-3 h-3 text-[#20394D]" />
                 Featured Global Hubs
               </span>
               <div className="flex flex-wrap gap-1.5">
@@ -171,7 +170,7 @@ export const LocationSearchControl: React.FC<LocationSearchControlProps> = ({
                         handleSelect(match);
                       }
                     }}
-                    className="px-2.5 py-1 rounded-md bg-white hover:bg-aviation-sky/15 border border-slate-200 hover:border-aviation-sky text-slate-700 hover:text-aviation-navy text-[11px] transition font-medium shadow-sm"
+                    className="px-2.5 py-1 rounded-md bg-[#FCFAF5] hover:bg-[#EBF3FA] border border-[#D6E0E7] hover:border-[#8DB7D5] text-[#172D40] text-[11px] transition font-mono font-bold shadow-2xs"
                   >
                     {hub.code}
                   </button>
@@ -181,9 +180,9 @@ export const LocationSearchControl: React.FC<LocationSearchControlProps> = ({
           )}
 
           {/* Results List */}
-          <div className="max-h-64 overflow-y-auto divide-y divide-slate-100">
+          <div className="max-h-64 overflow-y-auto divide-y divide-[#D6E0E7]/60">
             {results.length === 0 ? (
-              <div className="p-4 text-center text-slate-500 text-xs">
+              <div className="p-4 text-center text-[#82909B] text-xs">
                 No aviation sectors found matching &quot;{query}&quot;. Try an airport code or city name.
               </div>
             ) : (
@@ -194,22 +193,22 @@ export const LocationSearchControl: React.FC<LocationSearchControlProps> = ({
                   onMouseEnter={() => setHighlightedIndex(idx)}
                   className={`w-full px-3 py-2.5 text-left flex items-start gap-2.5 transition ${
                     highlightedIndex === idx
-                      ? 'bg-aviation-sky/15 text-aviation-navy'
-                      : 'hover:bg-slate-50 text-slate-700'
+                      ? 'bg-[#EBF3FA] text-[#172D40] border-l-2 border-[#D87C43]'
+                      : 'hover:bg-[#F4F0E7] text-[#172D40]'
                   }`}
                 >
                   <Plane className={`w-4 h-4 mt-0.5 shrink-0 ${
-                    highlightedIndex === idx ? 'text-aviation-navy' : 'text-slate-400'
+                    highlightedIndex === idx ? 'text-[#D87C43]' : 'text-[#82909B]'
                   }`} />
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between font-medium text-xs truncate">
-                      <span className="truncate text-slate-800">{loc.name}</span>
-                      <span className="text-[10px] text-slate-400 shrink-0 ml-2">
+                    <div className="flex items-center justify-between font-semibold text-xs truncate">
+                      <span className="truncate text-[#172D40]">{loc.name}</span>
+                      <span className="text-[10px] text-[#82909B] font-mono shrink-0 ml-2">
                         {loc.lat.toFixed(2)}°, {loc.lng.toFixed(2)}°
                       </span>
                     </div>
                     {loc.formattedAddress && (
-                      <p className="text-[11px] text-slate-500 truncate mt-0.5">
+                      <p className="text-[11px] text-[#82909B] truncate mt-0.5">
                         {loc.formattedAddress}
                       </p>
                     )}

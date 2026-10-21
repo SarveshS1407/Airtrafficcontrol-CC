@@ -35,22 +35,22 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     (filters.emergencyOnly ? 1 : 0);
 
   return (
-    <div className="bg-white border-b border-aviation-border text-xs font-sans">
+    <div className="bg-[#FCFAF5] border-b border-[#D6E0E7] text-xs font-sans">
       {/* Search Bar */}
       <div className="p-3 pb-2">
         <div className="relative">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-aviation-muted" />
+          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#82909B]" />
           <input
             type="text"
             placeholder="Search callsign, ICAO hex, or country..."
             value={filters.searchQuery}
             onChange={(e) => onFilterChange({ searchQuery: e.target.value })}
-            className="w-full pl-9 pr-7 py-2 bg-aviation-cloud/50 border border-aviation-border hover:border-slate-300 focus:border-aviation-sky focus:bg-white rounded-xl text-aviation-navy placeholder-aviation-muted text-xs font-medium focus:outline-none transition shadow-2xs"
+            className="w-full pl-9 pr-7 py-2 bg-[#F4F0E7] border border-[#D6E0E7] hover:border-[#8DB7D5] focus:border-[#20394D] focus:bg-[#FCFAF5] rounded-xl text-[#172D40] placeholder-[#82909B] text-xs font-medium focus:outline-none transition shadow-2xs"
           />
           {filters.searchQuery && (
             <button
               onClick={() => onFilterChange({ searchQuery: '' })}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-aviation-muted hover:text-aviation-navy text-xs font-bold p-0.5"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#82909B] hover:text-[#172D40] text-xs font-bold p-0.5"
             >
               ×
             </button>
@@ -59,15 +59,15 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       </div>
 
       {/* Filter Toggle Header */}
-      <div className="px-3 py-2 flex items-center justify-between border-t border-aviation-border/60">
+      <div className="px-3 py-2 flex items-center justify-between border-t border-[#D6E0E7]">
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="flex items-center gap-1.5 text-xs text-aviation-slate hover:text-aviation-navy font-semibold uppercase tracking-wider"
+          className="flex items-center gap-1.5 text-xs text-[#172D40] hover:text-[#D87C43] font-bold uppercase tracking-wider tech-stamp"
         >
-          <Filter className="w-3.5 h-3.5 text-aviation-sky" />
+          <Filter className="w-3.5 h-3.5 text-[#D87C43]" />
           Telemetry Filters
           {activeFilterCount > 0 && (
-            <span className="px-2 py-0.5 rounded-full text-[10px] bg-aviation-lightSky text-aviation-navy border border-blue-200 font-bold">
+            <span className="px-2 py-0.5 rounded-full text-[10px] bg-[#EBF3FA] text-[#172D40] border border-[#8DB7D5] font-bold font-mono">
               {activeFilterCount}
             </span>
           )}
@@ -77,7 +77,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
           {activeFilterCount > 0 && (
             <button
               onClick={onResetFilters}
-              className="flex items-center gap-1 text-xs font-medium text-aviation-sky hover:text-blue-700"
+              className="flex items-center gap-1 text-xs font-semibold text-[#D87C43] hover:text-[#20394D]"
               title="Reset all filters to defaults"
             >
               <RotateCcw className="w-3 h-3" />
@@ -86,7 +86,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
           )}
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="text-aviation-muted hover:text-aviation-navy p-1"
+            className="text-[#82909B] hover:text-[#172D40] p-1"
           >
             {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
@@ -95,21 +95,21 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
       {/* Filter controls expandable body */}
       {isExpanded && (
-        <div className="px-3 pb-3 space-y-3 pt-1 border-t border-aviation-border/60">
+        <div className="px-3 pb-3 space-y-3 pt-1 border-t border-[#D6E0E7]/60">
           {/* Ground state filter pills */}
           <div>
-            <label className="text-[11px] font-semibold text-aviation-muted uppercase tracking-wider block mb-1">
+            <label className="text-[10px] font-bold text-[#82909B] uppercase tracking-wider block mb-1 tech-stamp">
               Flight State
             </label>
-            <div className="grid grid-cols-3 gap-1 bg-aviation-cloud p-1 rounded-xl border border-aviation-border text-center text-xs">
+            <div className="grid grid-cols-3 gap-1 bg-[#F4F0E7] p-1 rounded-xl border border-[#D6E0E7] text-center text-xs">
               {(['ALL', 'AIRBORNE', 'ON_GROUND'] as GroundFilter[]).map((state) => (
                 <button
                   key={state}
                   onClick={() => onFilterChange({ groundState: state })}
-                  className={`py-1.5 rounded-lg transition font-medium text-xs ${
+                  className={`py-1.5 rounded-lg transition font-semibold text-xs ${
                     filters.groundState === state
-                      ? 'bg-white text-aviation-navy shadow-xs font-semibold'
-                      : 'text-aviation-muted hover:text-aviation-navy'
+                      ? 'bg-[#20394D] text-white shadow-xs'
+                      : 'text-[#82909B] hover:text-[#172D40]'
                   }`}
                 >
                   {state === 'ALL' ? 'All' : state === 'AIRBORNE' ? 'Airborne' : 'On Ground'}
@@ -120,23 +120,23 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
           {/* Vertical state filter pills */}
           <div>
-            <label className="text-[11px] font-semibold text-aviation-muted uppercase tracking-wider block mb-1">
+            <label className="text-[10px] font-bold text-[#82909B] uppercase tracking-wider block mb-1 tech-stamp">
               Vertical Trend
             </label>
-            <div className="grid grid-cols-4 gap-1 bg-aviation-cloud p-1 rounded-xl border border-aviation-border text-center text-xs">
+            <div className="grid grid-cols-4 gap-1 bg-[#F4F0E7] p-1 rounded-xl border border-[#D6E0E7] text-center text-xs font-mono">
               {(['ALL', 'CLIMBING', 'LEVEL', 'DESCENDING'] as VerticalFilter[]).map((vState) => (
                 <button
                   key={vState}
                   onClick={() => onFilterChange({ verticalState: vState })}
-                  className={`py-1.5 rounded-lg flex items-center justify-center gap-1 transition font-medium text-xs ${
+                  className={`py-1.5 rounded-lg flex items-center justify-center gap-1 transition font-semibold text-xs ${
                     filters.verticalState === vState
-                      ? 'bg-white text-aviation-navy shadow-xs font-semibold'
-                      : 'text-aviation-muted hover:text-aviation-navy'
+                      ? 'bg-[#20394D] text-white shadow-xs'
+                      : 'text-[#82909B] hover:text-[#172D40]'
                   }`}
                 >
-                  {vState === 'CLIMBING' && <ArrowUpRight className="w-3 h-3 text-aviation-green" />}
-                  {vState === 'DESCENDING' && <ArrowDownRight className="w-3 h-3 text-aviation-amber" />}
-                  {vState === 'LEVEL' && <Minus className="w-3 h-3 text-aviation-muted" />}
+                  {vState === 'CLIMBING' && <ArrowUpRight className="w-3 h-3 text-[#467A67]" />}
+                  {vState === 'DESCENDING' && <ArrowDownRight className="w-3 h-3 text-[#C99B45]" />}
+                  {vState === 'LEVEL' && <Minus className="w-3 h-3 text-[#82909B]" />}
                   {vState === 'ALL' ? 'All' : vState.slice(0, 5)}
                 </button>
               ))}
@@ -149,19 +149,19 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               onClick={() => onFilterChange({ emergencyOnly: !filters.emergencyOnly })}
               className={`w-full py-2 px-3 rounded-xl border flex items-center justify-between text-xs transition shadow-2xs ${
                 filters.emergencyOnly
-                  ? 'bg-red-50 border-aviation-red text-aviation-red font-semibold'
-                  : 'bg-aviation-cloud border-aviation-border text-aviation-slate hover:border-slate-300'
+                  ? 'bg-red-50 border-[#C94C4C] text-[#C94C4C] font-bold'
+                  : 'bg-[#F4F0E7] border-[#D6E0E7] text-[#172D40] hover:border-[#8DB7D5]'
               }`}
             >
               <span className="flex items-center gap-2">
                 <span
                   className={`w-2 h-2 rounded-full ${
-                    filters.emergencyOnly ? 'bg-aviation-red animate-ping' : 'bg-slate-400'
+                    filters.emergencyOnly ? 'bg-[#C94C4C] animate-ping' : 'bg-[#82909B]'
                   }`}
                 />
-                Emergency Squawk Only (7700/7600/7500)
+                Emergency Squawk (7700/7600/7500)
               </span>
-              <span className="text-[11px] uppercase font-bold">
+              <span className="text-[10px] uppercase font-bold font-mono">
                 {filters.emergencyOnly ? 'Active' : 'Off'}
               </span>
             </button>
@@ -169,9 +169,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
           {/* Altitude Range Slider */}
           <div>
-            <div className="flex items-center justify-between text-xs mb-1">
-              <span className="text-aviation-muted">Altitude Ceiling</span>
-              <span className="text-aviation-navy font-semibold">
+            <div className="flex items-center justify-between text-xs mb-1 font-mono">
+              <span className="text-[#82909B]">Altitude Ceiling</span>
+              <span className="text-[#172D40] font-bold">
                 {filters.minAltitudeFt.toLocaleString()} — {filters.maxAltitudeFt >= 55000 ? '55,000+ ft' : `${filters.maxAltitudeFt.toLocaleString()} ft`}
               </span>
             </div>
@@ -182,15 +182,15 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               step="1000"
               value={filters.maxAltitudeFt}
               onChange={(e) => onFilterChange({ maxAltitudeFt: parseInt(e.target.value, 10) })}
-              className="w-full accent-aviation-sky bg-aviation-cloud h-1.5 rounded-lg cursor-pointer"
+              className="w-full accent-[#D87C43] bg-[#D6E0E7] h-1.5 rounded-lg cursor-pointer"
             />
           </div>
 
           {/* Speed Range Slider */}
           <div>
-            <div className="flex items-center justify-between text-xs mb-1">
-              <span className="text-aviation-muted">Speed Range</span>
-              <span className="text-aviation-navy font-semibold">
+            <div className="flex items-center justify-between text-xs mb-1 font-mono">
+              <span className="text-[#82909B]">Speed Range</span>
+              <span className="text-[#172D40] font-bold">
                 {filters.minVelocityKts} — {filters.maxVelocityKts >= 700 ? '700+ kt' : `${filters.maxVelocityKts} kt`}
               </span>
             </div>
@@ -201,7 +201,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               step="25"
               value={filters.maxVelocityKts}
               onChange={(e) => onFilterChange({ maxVelocityKts: parseInt(e.target.value, 10) })}
-              className="w-full accent-aviation-sky bg-aviation-cloud h-1.5 rounded-lg cursor-pointer"
+              className="w-full accent-[#D87C43] bg-[#D6E0E7] h-1.5 rounded-lg cursor-pointer"
             />
           </div>
         </div>

@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-aviation-cloud text-aviation-slate font-sans antialiased min-h-screen;
+    @apply bg-aviation-paper text-aviation-ink font-sans antialiased min-h-screen;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
 }
@@ -16,63 +16,88 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #F0F4F8;
+  background: #F4F0E7;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: #D6E0E7;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: #82909B;
 }
 
-/* Leaflet Light Aviation Theme Overrides */
+/* Aviation Field Journal Graphic Utilities */
+.runway-divider {
+  background-image: linear-gradient(to right, #82909B 50%, transparent 50%);
+  background-size: 12px 2px;
+  background-repeat: repeat-x;
+  height: 2px;
+}
+
+.blueprint-grid {
+  background-image: radial-gradient(#D6E0E7 1.5px, transparent 1.5px);
+  background-size: 24px 24px;
+}
+
+.blueprint-grid-dense {
+  background-image: radial-gradient(#D6E0E7 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+.tech-stamp {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Leaflet Editorial Aviation Theme Overrides */
 .leaflet-container {
   background-color: #EBF3FA !important;
   font-family: inherit;
 }
 
 .leaflet-bar {
-  border: 1px solid #D1DCE5 !important;
+  border: 1px solid #D6E0E7 !important;
   border-radius: 8px !important;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(23, 50, 77, 0.08) !important;
+  box-shadow: 0 2px 8px rgba(23, 45, 64, 0.08) !important;
 }
 
 .leaflet-bar a {
-  background-color: #FFFFFF !important;
-  color: #35465A !important;
-  border-bottom: 1px solid #E2E8F0 !important;
+  background-color: #FCFAF5 !important;
+  color: #172D40 !important;
+  border-bottom: 1px solid #D6E0E7 !important;
   transition: all 0.15s ease;
 }
 
 .leaflet-bar a:hover {
-  background-color: #F5F8FB !important;
-  color: #17324D !important;
+  background-color: #F4F0E7 !important;
+  color: #D87C43 !important;
 }
 
 .leaflet-control-attribution {
-  background-color: rgba(255, 255, 255, 0.85) !important;
-  color: #708096 !important;
+  background-color: rgba(252, 250, 245, 0.9) !important;
+  color: #82909B !important;
   font-family: inherit !important;
   font-size: 10px !important;
   backdrop-filter: blur(4px);
   border-top-left-radius: 6px;
-  border: 1px solid rgba(209, 220, 229, 0.6);
+  border: 1px solid #D6E0E7;
   border-right: none;
   border-bottom: none;
-  padding: 2px 6px !important;
+  padding: 2px 8px !important;
 }
 
 .leaflet-control-attribution a {
-  color: #17324D !important;
+  color: #172D40 !important;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .leaflet-control-attribution a:hover {
+  color: #D87C43 !important;
   text-decoration: underline;
 }
 

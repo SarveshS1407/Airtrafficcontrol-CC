@@ -22,21 +22,21 @@ describe('Landing Page & Authentication Suite', () => {
         </RouterProvider>
       );
 
-      // Check required headline: "Explore the World in Motion."
+      // Check required headline: "The World, Seen Through Flight."
       expect(
-        screen.getByRole('heading', { level: 1, name: /Explore the World in Motion\./i })
+        screen.getByRole('heading', { level: 1, name: /The World, Seen Through Flight\./i })
       ).toBeInTheDocument();
 
       // Check required supporting copy
       expect(
         screen.getByText(
-          /Discover aircraft around the globe through an interactive map\. Search locations, explore nearby air traffic, and inspect available flight information in one clear view\./i
+          /Explore the movement of aircraft across continents\. Find a place, follow the traffic, and understand the skies through an interactive global map\./i
         )
       ).toBeInTheDocument();
 
       // Check primary CTAs
-      expect(screen.getByRole('button', { name: /Explore Live Flights/i })).toBeInTheDocument();
-      expect(screen.getByRole('link', { name: /Learn How It Works/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Explore Global Traffic/i })).toBeInTheDocument();
+      expect(screen.getAllByRole('link', { name: /How It Works/i }).length).toBeGreaterThanOrEqual(1);
       expect(screen.getAllByText(/AirTrafficControl/i).length).toBeGreaterThanOrEqual(1);
     });
 
@@ -49,9 +49,9 @@ describe('Landing Page & Authentication Suite', () => {
 
       expect(screen.getAllByText(/Google Maps \+ OpenStreetMap/i).length).toBeGreaterThanOrEqual(1);
       expect(screen.getByText(/Location-Driven Monitoring/i)).toBeInTheDocument();
-      expect(screen.getByText(/Find a location/i)).toBeInTheDocument();
-      expect(screen.getByText(/Explore nearby flights/i)).toBeInTheDocument();
-      expect(screen.getByText(/Select an aircraft/i)).toBeInTheDocument();
+      expect(screen.getByText(/01 — Find your location\./i)).toBeInTheDocument();
+      expect(screen.getByText(/02 — Explore aircraft in view\./i)).toBeInTheDocument();
+      expect(screen.getByText(/03 — Inspect available flight information\./i)).toBeInTheDocument();
       expect(screen.getByText(/Trust, Data Transparency & API Policy/i)).toBeInTheDocument();
     });
   });

@@ -149,6 +149,29 @@ export function calculateDistanceKm(
 }
 
 /**
+ * Creates a geographic bounding box around a center coordinate with a specified radius in kilometers.
+ * Clamps coordinates to valid WGS84 ranges.
+ */
+export function createRadiusBoundingBox(
+  lat: number,
+  lng: number,
+  radiusKm: number
+): BoundingBox {
+  const safeRadius = Math.max(1, radiusKm);
+  const dLat = safeRadius / 111.0;
+  const radLat = (lat * Math.PI) / 180;
+  const cosLat = Math.cos(radLat);
+  const dLng = safeRadius / (111.0 * (Math.abs(cosLat) > 0.05 ? Math.abs(cosLat) : 0.05));
+
+  return {
+    lamin: Number(Math.max(-85, lat - dLat).toFixed(4)),
+    lamax: Number(Math.min(85, lat + dLat).toFixed(4)),
+    lomin: Number(Math.max(-180, lng - dLng).toFixed(4)),
+    lomax: Number(Math.min(180, lng + dLng).toFixed(4)),
+  };
+}
+
+/**
  * Formats decimal degrees into clean DMS-like aviation string
  */
 export function formatCoordinates(lat: number | null, lon: number | null): string {

@@ -3,6 +3,8 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Aircraft, AircraftObservation } from '../../types/opensky';
 import { BoundingBox, RegionPreset } from '../../types/geo';
+import { MonitoringTarget } from '../../store/useAtcStore';
+import { reverseGeocodeCoordinates } from '../../services/googleMapsLoader';
 import { ATC_CONFIG } from '../../constants/config';
 import { createAircraftDivIcon } from './mapIcons';
 import { MapControls } from './MapControls';
@@ -13,6 +15,7 @@ interface RadarMapProps {
   selectedHistory: AircraftObservation[];
   currentRegion: RegionPreset;
   activeBounds: BoundingBox;
+  monitoringTarget?: MonitoringTarget | null;
   viewportSyncEnabled: boolean;
   tileProviderKey: 'osmDark' | 'osmStandard' | 'osmHot';
   showTrail: boolean;
@@ -25,6 +28,7 @@ interface RadarMapProps {
   onToggleBoundsRectangle: () => void;
   onResetGlobalView?: () => void;
   onClearCenterTarget?: () => void;
+  onMapClick?: (lat: number, lng: number, placeName?: string) => void;
 }
 
 function getMarkerTooltipHtml(ac: Aircraft): string {
@@ -83,6 +87,7 @@ export const RadarMap: React.FC<RadarMapProps> = ({
   showTrail,
   showBoundsRectangle,
   mapCenterTarget,
+  monitoringTarget,
   onSelectAircraft,
   onViewportChange,
   onTileProviderChange,
@@ -90,6 +95,7 @@ export const RadarMap: React.FC<RadarMapProps> = ({
   onToggleBoundsRectangle,
   onResetGlobalView,
   onClearCenterTarget,
+  onMapClick,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -98,6 +104,7 @@ export const RadarMap: React.FC<RadarMapProps> = ({
   const trailPolylineRef = useRef<L.Polyline | null>(null);
   const boundsRectangleRef = useRef<L.Rectangle | null>(null);
   const rangeRingsRef = useRef<L.LayerGroup | null>(null);
+  const monitorCircleRef = useRef<L.Circle | null>(null);
 
   // Initialize Leaflet Map
   useEffect(() => {
@@ -124,10 +131,14 @@ export const RadarMap: React.FC<RadarMapProps> = ({
       onViewportChange(newBounds);
     });
 
-    // Deselect on map click
-    map.on('click', (e) => {
+    // Deselect on map click & trigger onMapClick for radius monitoring
+    map.on('click', async (e: L.LeafletMouseEvent) => {
       if ((e.originalEvent.target as HTMLElement)?.classList.contains('leaflet-container')) {
         onSelectAircraft(null);
+        if (onMapClick && e.latlng) {
+          const placeName = await reverseGeocodeCoordinates(e.latlng.lat, e.latlng.lng);
+          onMapClick(e.latlng.lat, e.latlng.lng, placeName);
+        }
       }
     });
 
@@ -136,6 +147,30 @@ export const RadarMap: React.FC<RadarMapProps> = ({
       mapInstanceRef.current = null;
     };
   }, []);
+
+  // Sync Click-to-Monitor Radius Circle on Leaflet
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+
+    if (monitorCircleRef.current) {
+      monitorCircleRef.current.remove();
+      monitorCircleRef.current = null;
+    }
+
+    if (!monitoringTarget) return;
+
+    const circle = L.circle([monitoringTarget.lat, monitoringTarget.lng], {
+      radius: monitoringTarget.radiusKm * 1000,
+      color: '#00e5ff',
+      weight: 2,
+      dashArray: '6, 6',
+      fillColor: '#00e5ff',
+      fillOpacity: 0.12,
+    }).addTo(map);
+
+    monitorCircleRef.current = circle;
+  }, [monitoringTarget]);
 
   // ResizeObserver to handle sidebar / drawer toggle without map distortion
   useEffect(() => {

@@ -22,31 +22,33 @@ describe('Landing Page & Authentication Suite', () => {
         </RouterProvider>
       );
 
-      // Check required headline
+      // Check required headline: "See the Skies. Understand the Movement."
       expect(
-        screen.getByRole('heading', { level: 1, name: /Global Air Traffic\. One Clear View\./i })
+        screen.getByRole('heading', { level: 1, name: /See the Skies\.\s+Understand the Movement\./i })
       ).toBeInTheDocument();
 
       // Check required supporting copy
       expect(
         screen.getByText(
-          /Explore aircraft movements across the globe through an interactive flight-monitoring experience built for clarity, situational awareness, and smarter aviation insights\./i
+          /Explore global aircraft activity through an interactive map, location-aware discovery, and real-time flight data where available\./i
         )
       ).toBeInTheDocument();
 
       // Check primary CTAs
       expect(screen.getByRole('button', { name: /Explore Live Traffic/i })).toBeInTheDocument();
-      expect(screen.getByRole('link', { name: /Learn How It Works/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /Discover the Platform/i })).toBeInTheDocument();
       expect(screen.getAllByText(/AIRTRAFFICCONTROL/i).length).toBeGreaterThanOrEqual(1);
     });
 
-    it('renders the 3 operational steps and trust disclosures', () => {
+    it('renders the operational steps, Google Maps integration, and trust disclosures', () => {
       render(
         <RouterProvider>
           <LandingPage />
         </RouterProvider>
       );
 
+      expect(screen.getByText(/Google Maps Platform \+ OSM/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/Location-Aware Discovery/i).length).toBeGreaterThanOrEqual(1);
       expect(screen.getByText(/Open Global Traffic View/i)).toBeInTheDocument();
       expect(screen.getByText(/Filter & Refine Targets/i)).toBeInTheDocument();
       expect(screen.getByText(/Inspect Live Telemetry/i)).toBeInTheDocument();
@@ -162,6 +164,65 @@ describe('Landing Page & Authentication Suite', () => {
       expect(ids).toContain('latin-america');
       expect(ids).toContain('africa');
       expect(ids).toContain('oceania');
+    });
+  });
+
+  describe('Location-Driven Discovery & Dual Engine Integration', () => {
+    it('creates radius bounding box correctly', async () => {
+      const { createRadiusBoundingBox } = await import('../services/geoUtils');
+      const bounds = createRadiusBoundingBox(51.47, -0.45, 50); // LHR 50km
+      expect(bounds.lamin).toBeLessThan(51.47);
+      expect(bounds.lamax).toBeGreaterThan(51.47);
+      expect(bounds.lomin).toBeLessThan(-0.45);
+      expect(bounds.lomax).toBeGreaterThan(-0.45);
+    });
+
+    it('stores and switches map engine between google and leaflet', async () => {
+      const { useAtcStore } = await import('../store/useAtcStore');
+      const store = useAtcStore.getState();
+
+      store.setMapEngine('google');
+      expect(useAtcStore.getState().mapEngine).toBe('google');
+
+      store.setMapEngine('leaflet');
+      expect(useAtcStore.getState().mapEngine).toBe('leaflet');
+    });
+
+    it('sets and updates monitoring target and radius', async () => {
+      const { useAtcStore } = await import('../store/useAtcStore');
+      const store = useAtcStore.getState();
+
+      store.setMonitoringTarget({
+        name: 'London Heathrow Airport (LHR)',
+        lat: 51.47,
+        lng: -0.45,
+        radiusKm: 50,
+      });
+
+      expect(useAtcStore.getState().monitoringTarget).not.toBeNull();
+      expect(useAtcStore.getState().monitoringTarget?.name).toContain('Heathrow');
+      expect(useAtcStore.getState().monitoringTarget?.radiusKm).toBe(50);
+
+      // Adjust radius to 100km
+      store.setMonitoringRadius(100);
+      expect(useAtcStore.getState().monitoringTarget?.radiusKm).toBe(100);
+
+      // Clear target
+      store.setMonitoringTarget(null);
+      expect(useAtcStore.getState().monitoringTarget).toBeNull();
+    });
+
+    it('renders LocationSearchControl and shows popular hubs', async () => {
+      const { LocationSearchControl } = await import('../components/Location/LocationSearchControl');
+      render(<LocationSearchControl onSelectLocation={() => {}} />);
+
+      const input = screen.getByPlaceholderText(/Search airport, city, or sector/i);
+      expect(input).toBeInTheDocument();
+
+      fireEvent.focus(input);
+      expect(screen.getByText(/Featured Global Hubs/i)).toBeInTheDocument();
+      expect(screen.getByText('LHR')).toBeInTheDocument();
+      expect(screen.getByText('JFK')).toBeInTheDocument();
     });
   });
 });

@@ -3,7 +3,6 @@ import {
   Plane,
   Radar,
   Globe2,
-  SlidersHorizontal,
   Activity,
   ShieldCheck,
   ArrowRight,
@@ -186,16 +185,15 @@ export const LandingPage: React.FC = () => {
 
             {/* Main Headline */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
-              Global Air Traffic.{' '}
+              See the Skies.{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-300 to-blue-500">
-                One Clear View.
+                Understand the Movement.
               </span>
             </h1>
 
             {/* Supporting Copy */}
             <p className="mt-6 text-lg sm:text-xl text-slate-300 leading-relaxed max-w-2xl mx-auto">
-              Explore aircraft movements across the globe through an interactive flight-monitoring
-              experience built for clarity, situational awareness, and smarter aviation insights.
+              Explore global aircraft activity through an interactive map, location-aware discovery, and real-time flight data where available.
             </p>
 
             {/* Action Buttons */}
@@ -210,11 +208,11 @@ export const LandingPage: React.FC = () => {
               </button>
 
               <a
-                href="#how-it-works"
+                href="#features"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-slate-200 font-semibold text-base transition"
               >
                 <Compass className="w-4 h-4 text-cyan-400" />
-                <span>Learn How It Works</span>
+                <span>Discover the Platform</span>
               </a>
             </div>
 
@@ -226,12 +224,12 @@ export const LandingPage: React.FC = () => {
               <span>•</span>
               <span className="flex items-center gap-1.5">
                 <Globe2 className="w-4 h-4 text-cyan-400" />
-                World-Scale Viewport
+                Google Maps + OpenStreetMap
               </span>
               <span>•</span>
               <span className="flex items-center gap-1.5">
                 <Layers className="w-4 h-4 text-blue-400" />
-                Leaflet + OpenStreetMap
+                Location-Aware Discovery
               </span>
             </div>
           </div>
@@ -357,27 +355,27 @@ export const LandingPage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Feature 1: Global Tracking */}
+            {/* Feature 1: Dual Map Engines */}
             <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-6 hover:border-cyan-500/50 transition">
               <div className="w-12 h-12 rounded-lg bg-cyan-950/80 border border-cyan-500/40 flex items-center justify-center mb-5 text-cyan-400">
                 <Globe2 className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-white mb-2">Global Aircraft Tracking</h3>
+              <h3 className="text-lg font-bold text-white mb-2">Google Maps Platform + OSM</h3>
               <p className="text-slate-400 text-sm leading-relaxed">
-                Starts with an unrestricted world-scale viewport. Track intercontinental transits,
-                major oceanic routes, and high-density terminal approach corridors simultaneously.
+                Seamless dual-engine architecture. Switch effortlessly between official Google Maps
+                (with dark tactical roadmap, satellite, hybrid, terrain) and OpenStreetMap with zero friction.
               </p>
             </div>
 
-            {/* Feature 2: Regional & Country Filters */}
+            {/* Feature 2: Location-Aware Discovery */}
             <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-6 hover:border-cyan-500/50 transition">
               <div className="w-12 h-12 rounded-lg bg-cyan-950/80 border border-cyan-500/40 flex items-center justify-center mb-5 text-cyan-400">
-                <SlidersHorizontal className="w-6 h-6" />
+                <Compass className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-white mb-2">Regional & Country Filtering</h3>
+              <h3 className="text-lg font-bold text-white mb-2">Location-Aware Discovery</h3>
               <p className="text-slate-400 text-sm leading-relaxed">
-                Filter by continent (North America, Europe, Asia, Africa, South America, Oceania)
-                or narrow in on high-density sectors like London TMA, New York TRACON, or Tokyo Bay.
+                Search airports (LHR, JFK, DXB, HND), cities, or sectors with instant geocoded autocomplete.
+                Click anywhere on the map to anchor a focused 25km to 250km surveillance perimeter.
               </p>
             </div>
 
@@ -541,7 +539,7 @@ export const LandingPage: React.FC = () => {
 
             <div className="mt-8 pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="text-xs text-slate-400 font-mono">
-                Basemap provided by OpenStreetMap contributors. No watermarked commercial tiles.
+                Cartography supported: Official Google Maps Platform &amp; OpenStreetMap contributors. No watermarked commercial tiles.
               </div>
               <button
                 onClick={() => navigate('/dashboard')}

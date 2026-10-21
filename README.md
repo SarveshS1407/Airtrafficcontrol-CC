@@ -1,10 +1,10 @@
 # Airtrafficcontrol-CC — Global Air Traffic Monitoring System
 
-A mission-critical aviation surveillance and flight-monitoring web application engineered with **React 18, Vite, TypeScript, Leaflet, and Zustand**, consuming live ADS-B state vectors from the **OpenSky Network REST API**.
+A mission-critical aviation surveillance and flight-monitoring web application engineered with **React 18, Vite, TypeScript, Google Maps Platform, Leaflet, and Zustand**, consuming live ADS-B state vectors from the **OpenSky Network REST API**.
 
 **Production Deployment:** [https://airtrafficcontrol-cc.vercel.app/](https://airtrafficcontrol-cc.vercel.app/)  
 **GitHub Repository:** [https://github.com/SarveshS1407/Airtrafficcontrol-CC](https://github.com/SarveshS1407/Airtrafficcontrol-CC)  
-**Test Suite Status:** **46 / 46 Passing** (6 Suites)  
+**Test Suite Status:** **50 / 50 Passing** (6 Suites)  
 **Production Build:** **100% Clean Bundle, Strict TypeScript**
 
 ---
@@ -18,11 +18,13 @@ A mission-critical aviation surveillance and flight-monitoring web application e
          ▼                                                                   ▼
 PUBLIC LANDING PAGE (/)                                         MONITORING DASHBOARD (/dashboard)
 - Brand Wordmark & Animated Radar                               - Genuinely Global Initial Viewport
-- Hero: "Global Air Traffic. One Clear View."                   - Multi-Sector Switcher (Continents & TMAs)
-- Interactive Live Radar Console Preview                        - Sub-views: Live Radar, Fleet Analytics, Settings
-- 6 Mission-Critical Features Overview                          - Leaflet + OpenStreetMap (Zero Watermarks)
-- 3-Step Operational Workflow                                   - Search, Multi-Criteria Filters, Emergency Squawk
-- Trust & Data Transparency Policy                              - Real-time Telemetry Inspector & Flight Trails
+- Hero: "See the Skies. Understand the Movement."               - Dual Engine: Google Maps Platform + OSM Leaflet
+- Copy: "Explore global aircraft activity through an            - Location Search & Autocomplete (Airports/Cities)
+  interactive map, location-aware discovery, and                - Click-to-Monitor Radius (25km to 250km)
+  real-time flight data where available."                       - Multi-Sector Switcher (Continents & TMAs)
+- CTAs: "Explore Live Traffic" & "Discover the Platform"        - Sub-views: Live Radar, Fleet Analytics, Settings
+- Interactive Live Radar Console Preview                        - Search, Multi-Criteria Filters, Emergency Squawk
+- Location-Aware Discovery Showcase                             - Real-time Telemetry Inspector & Flight Trails
 - Complete Aviation Attribution & Links                         - Watchlist Pinning & Session State Preservation
          │                                                                   │
          ├─────────────────────────────────┬─────────────────────────────────┤
@@ -196,12 +198,13 @@ npm run test
 
 ## 7. Automated Test Suite
 
-**46 automated tests across 6 test suites** verify all functional criteria:
+**50 automated tests across 6 test suites** verify all functional criteria:
 
 ```
-✓ src/test/landingAndAuth.test.tsx (9 tests)
-  - Renders exact required landing headline and copy
-  - Verifies 3 operational steps and trust disclosures
+✓ src/test/landingAndAuth.test.tsx (13 tests)
+  - Renders exact required landing headline: "See the Skies. Understand the Movement."
+  - Renders exact required supporting copy and CTAs
+  - Verifies operational workflow, Google Maps integration, and trust disclosures
   - 1-click evaluator login via demoLogin
   - Watchlist pin/unpin toggling
   - SignInPage with demo button and validation
@@ -209,6 +212,10 @@ npm run test
   - ForgotPasswordPage with recovery dispatch
   - Global View (Worldwide) default sector verification
   - Continental sectors coverage (all 6 continents + global)
+  - Radius bounding box mathematical calculation (createRadiusBoundingBox)
+  - Dual map engine preference and runtime switching (Google Maps ⇋ Leaflet)
+  - LocationSearchControl autocomplete with featured global hubs (LHR, JFK, etc.)
+  - Monitoring target and radius adjustment
 
 ✓ src/test/geoUtils.test.ts (13 tests)
   - validateBoundingBox (valid bounds, inverted latitudes, inverted longitudes, out of range, max area)

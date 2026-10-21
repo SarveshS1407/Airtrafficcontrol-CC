@@ -24,7 +24,7 @@ import { MetricsBanner } from '../components/Sidebar/MetricsBanner';
 import { RegionSelector } from '../components/Sidebar/RegionSelector';
 import { FilterPanel } from '../components/Sidebar/FilterPanel';
 import { FlightList } from '../components/Sidebar/FlightList';
-import { RadarMap } from '../components/Map/RadarMap';
+import { UnifiedMap } from '../components/Map/UnifiedMap';
 import { FlightDetailPanel } from '../components/Telemetry/FlightDetailPanel';
 import { FleetAnalyticsView } from '../components/Analytics/FleetAnalyticsView';
 import { AirspaceSettingsView } from '../components/Settings/AirspaceSettingsView';
@@ -496,7 +496,7 @@ export const DashboardPage: React.FC = () => {
 
             {/* Central Radar Map Workspace */}
             <main className="flex-1 flex flex-col min-w-0 h-full relative">
-              <RadarMap
+              <UnifiedMap
                 aircraftList={allFilteredAircraft}
                 selectedIcao24={selectedIcao24}
                 selectedHistory={historyObservations}

@@ -15,7 +15,15 @@ import {
   createObservationFromAircraft,
   OpenSkyRateLimitError,
 } from '../services/openskyApi';
-import { isWithinBounds, validateBoundingBox } from '../services/geoUtils';
+import { isWithinBounds, validateBoundingBox, createRadiusBoundingBox } from '../services/geoUtils';
+import { isGoogleMapsConfigured } from '../services/googleMapsLoader';
+
+export interface MonitoringTarget {
+  name: string;
+  lat: number;
+  lng: number;
+  radiusKm: number;
+}
 
 export interface AtcState {
   // Aircraft Registry (Keyed by ICAO24 for O(1) identity preservation)
@@ -29,6 +37,10 @@ export interface AtcState {
   customBounds: BoundingBox;
   activeBounds: BoundingBox;
   viewportSyncEnabled: boolean;
+  monitoringTarget: MonitoringTarget | null;
+
+  // Map Engine Preference
+  mapEngine: 'google' | 'leaflet';
 
   // Filters & Sorting
   filters: AircraftFilterCriteria;
@@ -50,6 +62,9 @@ export interface AtcState {
   activeAbortController: AbortController | null;
 
   // Actions
+  setMapEngine: (engine: 'google' | 'leaflet') => void;
+  setMonitoringTarget: (target: MonitoringTarget | null) => void;
+  setMonitoringRadius: (radiusKm: number) => void;
   setDataSource: (source: DataSource) => void;
   setRegion: (regionId: string) => void;
   setCustomBounds: (bounds: BoundingBox) => void;
@@ -100,6 +115,14 @@ export const useAtcStore = create<AtcState>((set, get) => ({
   customBounds: { ...DEFAULT_REGION.bounds },
   activeBounds: { ...DEFAULT_REGION.bounds },
   viewportSyncEnabled: false,
+  monitoringTarget: null,
+
+  mapEngine:
+    typeof window !== 'undefined' && localStorage.getItem('atc_map_engine_pref')
+      ? (localStorage.getItem('atc_map_engine_pref') as 'google' | 'leaflet')
+      : isGoogleMapsConfigured()
+      ? 'google'
+      : 'leaflet',
 
   filters: { ...DEFAULT_FILTERS },
   sortConfig: { field: 'altitude', direction: 'desc' },
@@ -128,6 +151,42 @@ export const useAtcStore = create<AtcState>((set, get) => ({
 
   activeAbortController: null,
 
+  setMapEngine: (engine: 'google' | 'leaflet') => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('atc_map_engine_pref', engine);
+    }
+    set({ mapEngine: engine });
+  },
+
+  setMonitoringTarget: (target: MonitoringTarget | null) => {
+    if (!target) {
+      set({ monitoringTarget: null });
+      return;
+    }
+    const bounds = createRadiusBoundingBox(target.lat, target.lng, target.radiusKm);
+    set({
+      monitoringTarget: target,
+      activeBounds: bounds,
+      customBounds: bounds,
+      viewportSyncEnabled: false,
+      mapCenterTarget: [target.lat, target.lng],
+    });
+    get().fetchAircraftSnapshot(true);
+  },
+
+  setMonitoringRadius: (radiusKm: number) => {
+    const current = get().monitoringTarget;
+    if (!current) return;
+    const updated = { ...current, radiusKm };
+    const bounds = createRadiusBoundingBox(updated.lat, updated.lng, radiusKm);
+    set({
+      monitoringTarget: updated,
+      activeBounds: bounds,
+      customBounds: bounds,
+    });
+    get().fetchAircraftSnapshot(true);
+  },
+
   setDataSource: (source: DataSource) => {
     // If switching to demo, reset error state
     set((state) => ({
@@ -149,6 +208,7 @@ export const useAtcStore = create<AtcState>((set, get) => ({
       currentRegion: region,
       activeBounds: { ...region.bounds },
       viewportSyncEnabled: false,
+      monitoringTarget: null,
       mapCenterTarget: [...region.center] as [number, number],
     });
     get().fetchAircraftSnapshot(true);

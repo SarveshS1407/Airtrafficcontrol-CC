@@ -3,6 +3,8 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 export type RoutePath =
   | '/'
   | '/dashboard'
+  | '/account'
+  | '/settings'
   | '/signin'
   | '/signup'
   | '/forgot-password'

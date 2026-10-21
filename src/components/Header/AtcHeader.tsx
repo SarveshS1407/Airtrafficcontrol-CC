@@ -21,6 +21,7 @@ import {
   ThemeNightIcon,
   ThemeAutoIcon,
 } from '../AviationDesignSystem';
+import { AccountMenu } from '../Account/AccountMenu';
 
 interface AtcHeaderProps {
   onToggleSidebar: () => void;
@@ -276,6 +277,9 @@ export const AtcHeader: React.FC<AtcHeaderProps> = ({
           >
             <HelpCircle className="w-3.5 h-3.5" />
           </button>
+
+          {/* Account Profile & Session Control */}
+          <AccountMenu align="right" />
         </div>
       </header>
 

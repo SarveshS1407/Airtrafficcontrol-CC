@@ -8,7 +8,6 @@ import {
   Settings,
   Star,
   Globe2,
-  LogOut,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
@@ -30,15 +29,15 @@ import {
   AviationEmblem,
   CommercialAircraftIcon,
   AirportPinIcon,
-  PilotWingsIcon,
 } from '../components/AviationDesignSystem';
+import { AccountMenu } from '../components/Account/AccountMenu';
 
 type DashboardView = 'radar' | 'analytics' | 'settings';
 type SidebarTab = 'flights' | 'filters' | 'sectors' | 'watchlist';
 type MobileSheet = 'none' | 'flights' | 'filters' | 'telemetry';
 
 export const DashboardPage: React.FC = () => {
-  const { currentUser, isAuthenticated, signOut, toggleWatchlist } = useAuthStore();
+  const { currentUser, toggleWatchlist } = useAuthStore();
 
   const {
     currentRegion,
@@ -240,39 +239,9 @@ export const DashboardPage: React.FC = () => {
           )}
         </div>
 
-        {/* Right: Auth Profile / Sign In */}
+        {/* Right: Auth Profile / Account Menu */}
         <div className="flex items-center gap-3">
-          {isAuthenticated && currentUser ? (
-            <div className="flex items-center gap-2 text-xs">
-              <div className="hidden sm:flex items-center gap-2 bg-[#172D40]/80 border border-white/15 rounded-xl px-3 py-1.5">
-                <PilotWingsIcon size={16} color="#467A67" />
-                <span className="text-white font-mono font-bold">{currentUser.callsign}</span>
-                {currentUser.watchlist.length > 0 && (
-                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-[#C99B45] text-[#172D40] font-bold font-mono flex items-center gap-0.5">
-                    <Star className="w-2.5 h-2.5 fill-[#172D40]" />
-                    {currentUser.watchlist.length}
-                  </span>
-                )}
-              </div>
-              <button
-                onClick={signOut}
-                className="p-2 rounded-xl bg-[#172D40]/80 hover:bg-red-950/60 border border-white/15 text-slate-300 hover:text-white transition"
-                title="Sign Out"
-                aria-label="Sign Out"
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2 text-xs">
-              <Link
-                to="/signin"
-                className="px-3.5 py-1.5 rounded-xl bg-[#FCFAF5] text-[#172D40] font-bold hover:bg-[#F4F0E7] transition shadow-xs"
-              >
-                Sign In
-              </Link>
-            </div>
-          )}
+          <AccountMenu align="right" />
         </div>
       </header>
 

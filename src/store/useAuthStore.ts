@@ -6,15 +6,21 @@ export interface UserProfile {
   callsign: string;
   email: string;
   role: 'Senior Air Traffic Controller' | 'Radar Operations Specialist' | 'Flight Dispatcher' | 'Aviation Enthusiast';
+  avatarUrl?: string;
+  authProvider?: 'password' | 'demo' | 'google';
+  emailVerified?: boolean;
+  densityPreference?: 'comfortable' | 'compact';
   watchlist: string[];
   savedSectors: string[];
   createdAt: number;
+  lastLoginAt?: number;
 }
 
 interface AuthState {
   currentUser: UserProfile | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isInitialized: boolean;
   authError: string | null;
 
   // Actions
@@ -22,6 +28,12 @@ interface AuthState {
   signUp: (name: string, callsign: string, email: string, password: string) => Promise<boolean>;
   signOut: () => void;
   resetPassword: (email: string) => Promise<{ success: boolean; message: string }>;
+  updateProfile: (
+    updates: Partial<Pick<UserProfile, 'name' | 'callsign' | 'role' | 'densityPreference' | 'avatarUrl'>>
+  ) => Promise<{ success: boolean; message: string }>;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<{ success: boolean; message: string }>;
+  deleteAccount: () => Promise<boolean>;
+  clearWatchlist: () => void;
   demoLogin: () => void;
   toggleWatchlist: (icao24: string) => void;
   isWatchlisted: (icao24: string) => boolean;
@@ -38,9 +50,13 @@ const DEMO_USER: UserProfile = {
   callsign: 'TOWER-LEAD',
   email: 'controller@skywatch.aero',
   role: 'Senior Air Traffic Controller',
+  authProvider: 'demo',
+  emailVerified: true,
+  densityPreference: 'comfortable',
   watchlist: ['40061e', 'a0b1c2', 'e0f1a2'],
   savedSectors: ['global', 'london-tma', 'new-york-tracon'],
   createdAt: 1718000000000,
+  lastLoginAt: Date.now(),
 };
 
 function loadStoredSession(): UserProfile | null {
@@ -76,20 +92,22 @@ export const useAuthStore = create<AuthState>((set, get) => {
     currentUser: initialUser,
     isAuthenticated: initialUser !== null,
     isLoading: false,
+    isInitialized: true,
     authError: null,
 
     signIn: async (email: string, password: string): Promise<boolean> => {
       set({ isLoading: true, authError: null });
       // Simulate network verification
-      await new Promise((res) => setTimeout(res, 400));
+      await new Promise((res) => setTimeout(res, 350));
 
       const cleanEmail = email.trim().toLowerCase();
 
       // Check against demo user
       if (cleanEmail === DEMO_USER.email.toLowerCase()) {
         if (password.length >= 6) {
-          saveStoredSession(DEMO_USER);
-          set({ currentUser: DEMO_USER, isAuthenticated: true, isLoading: false, authError: null });
+          const userWithTimestamp = { ...DEMO_USER, lastLoginAt: Date.now() };
+          saveStoredSession(userWithTimestamp);
+          set({ currentUser: userWithTimestamp, isAuthenticated: true, isLoading: false, authError: null });
           return true;
         } else {
           set({ isLoading: false, authError: 'Invalid password. Password must be at least 6 characters.' });
@@ -106,8 +124,15 @@ export const useAuthStore = create<AuthState>((set, get) => {
         if (found) {
           if (found.passwordHash === password || password.length >= 6) {
             const { passwordHash: _, ...profile } = found;
-            saveStoredSession(profile);
-            set({ currentUser: profile, isAuthenticated: true, isLoading: false, authError: null });
+            const updatedProfile: UserProfile = {
+              ...profile,
+              authProvider: profile.authProvider ?? 'password',
+              emailVerified: profile.emailVerified ?? true,
+              densityPreference: profile.densityPreference ?? 'comfortable',
+              lastLoginAt: Date.now(),
+            };
+            saveStoredSession(updatedProfile);
+            set({ currentUser: updatedProfile, isAuthenticated: true, isLoading: false, authError: null });
             return true;
           } else {
             set({ isLoading: false, authError: 'Incorrect password for this account.' });
@@ -118,7 +143,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
         // Fall through
       }
 
-      // If user not registered, provide friendly guidance or allow if valid email/pass
+      // If user not registered, check format
       if (!cleanEmail.includes('@') || password.length < 6) {
         set({
           isLoading: false,
@@ -134,9 +159,13 @@ export const useAuthStore = create<AuthState>((set, get) => {
         callsign: `ATC-${Math.floor(100 + Math.random() * 900)}`,
         email: cleanEmail,
         role: 'Radar Operations Specialist',
+        authProvider: 'password',
+        emailVerified: true,
+        densityPreference: 'comfortable',
         watchlist: [],
         savedSectors: ['global'],
         createdAt: Date.now(),
+        lastLoginAt: Date.now(),
       };
 
       saveStoredSession(newUser);
@@ -146,7 +175,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
 
     signUp: async (name: string, callsign: string, email: string, password: string): Promise<boolean> => {
       set({ isLoading: true, authError: null });
-      await new Promise((res) => setTimeout(res, 500));
+      await new Promise((res) => setTimeout(res, 400));
 
       const cleanEmail = email.trim().toLowerCase();
       if (!cleanEmail.includes('@') || !cleanEmail.includes('.')) {
@@ -165,9 +194,13 @@ export const useAuthStore = create<AuthState>((set, get) => {
         callsign: (callsign.trim() || 'ATC-' + Math.floor(100 + Math.random() * 900)).toUpperCase(),
         email: cleanEmail,
         role: 'Radar Operations Specialist',
+        authProvider: 'password',
+        emailVerified: true,
+        densityPreference: 'comfortable',
         watchlist: [],
         savedSectors: ['global'],
         createdAt: Date.now(),
+        lastLoginAt: Date.now(),
       };
 
       // Store in users registry
@@ -195,16 +228,129 @@ export const useAuthStore = create<AuthState>((set, get) => {
       if (!cleanEmail.includes('@')) {
         return { success: false, message: 'Please provide a valid registered email address.' };
       }
-      await new Promise((res) => setTimeout(res, 600));
+      await new Promise((res) => setTimeout(res, 500));
       return {
         success: true,
         message: `A secure password reset authorization link has been dispatched to ${cleanEmail}. Check your inbox within 15 minutes.`,
       };
     },
 
+    updateProfile: async (
+      updates: Partial<Pick<UserProfile, 'name' | 'callsign' | 'role' | 'densityPreference' | 'avatarUrl'>>
+    ): Promise<{ success: boolean; message: string }> => {
+      const current = get().currentUser;
+      if (!current) {
+        return { success: false, message: 'No active session found.' };
+      }
+
+      if (updates.name !== undefined && !updates.name.trim()) {
+        return { success: false, message: 'Name cannot be empty.' };
+      }
+
+      if (updates.callsign !== undefined && !updates.callsign.trim()) {
+        return { success: false, message: 'Callsign cannot be empty.' };
+      }
+
+      const updatedUser: UserProfile = {
+        ...current,
+        ...updates,
+        name: updates.name ? updates.name.trim() : current.name,
+        callsign: updates.callsign ? updates.callsign.trim().toUpperCase() : current.callsign,
+      };
+
+      // Update in storage
+      saveStoredSession(updatedUser);
+
+      // Also update in registered users list
+      try {
+        const storedUsersRaw = localStorage.getItem(STORAGE_KEY_USERS);
+        if (storedUsersRaw) {
+          const users: Array<UserProfile & { passwordHash: string }> = JSON.parse(storedUsersRaw);
+          const idx = users.findIndex((u) => u.id === updatedUser.id || u.email.toLowerCase() === updatedUser.email.toLowerCase());
+          if (idx !== -1) {
+            users[idx] = { ...users[idx], ...updatedUser };
+            localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(users));
+          }
+        }
+      } catch {
+        // Ignore
+      }
+
+      set({ currentUser: updatedUser });
+      return { success: true, message: 'Profile dossier updated successfully.' };
+    },
+
+    changePassword: async (currentPassword: string, newPassword: string): Promise<{ success: boolean; message: string }> => {
+      const current = get().currentUser;
+      if (!current) {
+        return { success: false, message: 'Authentication required.' };
+      }
+
+      if (!currentPassword) {
+        return { success: false, message: 'Please enter your current password.' };
+      }
+
+      if (newPassword.length < 8) {
+        return { success: false, message: 'New password must be at least 8 characters long.' };
+      }
+
+      // If registered user, update passwordHash
+      try {
+        const storedUsersRaw = localStorage.getItem(STORAGE_KEY_USERS);
+        if (storedUsersRaw) {
+          const users: Array<UserProfile & { passwordHash: string }> = JSON.parse(storedUsersRaw);
+          const found = users.find((u) => u.email.toLowerCase() === current.email.toLowerCase());
+          if (found && found.passwordHash !== currentPassword) {
+            return { success: false, message: 'Current password does not match existing record.' };
+          }
+          if (found) {
+            found.passwordHash = newPassword;
+            localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(users));
+          }
+        }
+      } catch {
+        // Ignore
+      }
+
+      await new Promise((res) => setTimeout(res, 400));
+      return { success: true, message: 'Security credentials updated successfully.' };
+    },
+
+    deleteAccount: async (): Promise<boolean> => {
+      const current = get().currentUser;
+      if (!current) return false;
+
+      try {
+        const storedUsersRaw = localStorage.getItem(STORAGE_KEY_USERS);
+        if (storedUsersRaw) {
+          const users: Array<UserProfile & { passwordHash: string }> = JSON.parse(storedUsersRaw);
+          const filtered = users.filter((u) => u.id !== current.id && u.email.toLowerCase() !== current.email.toLowerCase());
+          localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(filtered));
+        }
+      } catch {
+        // Ignore
+      }
+
+      saveStoredSession(null);
+      set({ currentUser: null, isAuthenticated: false, authError: null });
+      return true;
+    },
+
+    clearWatchlist: () => {
+      const current = get().currentUser;
+      if (!current) return;
+      const updatedUser: UserProfile = { ...current, watchlist: [] };
+      saveStoredSession(updatedUser);
+      set({ currentUser: updatedUser });
+    },
+
     demoLogin: () => {
-      saveStoredSession(DEMO_USER);
-      set({ currentUser: DEMO_USER, isAuthenticated: true, isLoading: false, authError: null });
+      const userWithTimestamp: UserProfile = {
+        ...DEMO_USER,
+        lastLoginAt: Date.now(),
+      };
+      saveStoredSession(userWithTimestamp);
+      set({ currentUser: userWithTimestamp, isAuthenticated: true, isLoading: false, authError: null });
     },
 
     toggleWatchlist: (icao24: string) => {

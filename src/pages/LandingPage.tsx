@@ -5,7 +5,6 @@ import {
   AlertTriangle,
   Menu,
   X,
-  UserCheck,
   ShieldCheck,
   Compass,
 } from 'lucide-react';
@@ -29,6 +28,7 @@ import {
   RunwayFlightDivider,
   AirportStampBadge,
 } from '../components/AviationDesignSystem';
+import { AccountMenu } from '../components/Account/AccountMenu';
 
 export const LandingPage: React.FC = () => {
   const { navigate } = useRouter();
@@ -88,37 +88,15 @@ export const LandingPage: React.FC = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-3">
-            {isAuthenticated && currentUser ? (
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 bg-[#F4F0E7] dark:bg-[#172D40] border border-[#D6E0E7] dark:border-[#2D4B63] rounded px-3 py-1.5 text-xs font-mono">
-                  <UserCheck className="w-3.5 h-3.5 text-[#467A67]" />
-                  <span className="text-[#172D40] dark:text-[#E3ECF3] font-bold">{currentUser.callsign}</span>
-                </div>
-                <Link
-                  to="/dashboard"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded bg-[#20394D] hover:bg-[#172D40] text-white font-medium text-xs shadow-xs transition border border-[#172D40]"
-                >
-                  <Compass className="w-4 h-4 text-[#D87C43]" />
-                  Launch Dashboard
-                </Link>
-              </div>
-            ) : (
-              <div className="flex items-center gap-3">
-                <Link
-                  to="/signin"
-                  className="text-xs font-mono uppercase tracking-wider text-[#456D8B] dark:text-[#8DB7D5] hover:text-[#172D40] dark:hover:text-white px-3 py-2 transition"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  to="/dashboard"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded bg-[#D87C43] hover:bg-[#C26B34] text-white font-semibold text-xs tracking-wide shadow-xs transition border border-[#B8632E]"
-                >
-                  <span>Explore Global Traffic</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-            )}
+            <Link
+              to="/dashboard"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#D87C43] hover:bg-[#C26B34] text-white font-semibold text-xs tracking-wide shadow-xs transition border border-[#B8632E]"
+            >
+              <span>Explore Global Traffic</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+
+            <AccountMenu align="right" />
           </div>
 
           {/* Mobile Menu Button */}
@@ -167,13 +145,19 @@ export const LandingPage: React.FC = () => {
               </a>
             </nav>
             <div className="pt-3 border-t border-[#D6E0E7] dark:border-[#2D4B63] flex flex-col gap-2">
-              <Link
-                to="/signin"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center py-2 text-xs font-mono uppercase tracking-wider text-[#172D40] dark:text-[#E3ECF3] hover:bg-[#F4F0E7] dark:hover:bg-[#172D40] rounded"
-              >
-                Sign In
-              </Link>
+              {isAuthenticated && currentUser ? (
+                <div className="flex items-center justify-between p-2 rounded-xl bg-[#F4F0E7] dark:bg-[#172D40] border border-[#D6E0E7] dark:border-[#2D4B63]">
+                  <AccountMenu align="left" compactOnMobile={false} />
+                </div>
+              ) : (
+                <Link
+                  to="/signin"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-center py-2 text-xs font-mono uppercase tracking-wider text-[#172D40] dark:text-[#E3ECF3] hover:bg-[#F4F0E7] dark:hover:bg-[#172D40] rounded border border-[#D6E0E7] dark:border-[#2D4B63]"
+                >
+                  Sign In
+                </Link>
+              )}
               <Link
                 to="/dashboard"
                 onClick={() => setMobileMenuOpen(false)}
